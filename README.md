@@ -1,62 +1,32 @@
+# Gestão Executiva EXECUTA Web — MVP 10 usuários v2
 
-# Gestão Executiva EXECUTA Web — MVP 5 usuários v1
+## Mudanças principais
 
-Versão web simples para teste gratuito com até 5 usuários.
+- Limite aumentado para 10 usuários.
+- Permissões por perfil:
+  - Administrador vê Usuários, cria usuários e pode editar/apagar dados.
+  - Usuário lança, edita e apaga dados, mas não cria usuários.
+  - Somente leitura só visualiza.
+- Diagnóstico virou Minha Empresa e ficou na primeira posição.
+- Capital de Giro saiu do menu e aparece no Painel.
+- Alertas agora ficam no módulo Alerta.
+- Fluxo de Caixa tem parcelas, edição e exclusão.
+- Contas a Pagar/Receber são visualização, edição, baixa e exclusão.
+- DRE completo com pesquisa por período.
+- Calendário/Agenda com categorias e cores.
+- Valores aceitam padrão brasileiro, como 50.000,00.
 
-## Módulos inclusos
+## Atualizar no Supabase
 
-- Painel
-- Diagnóstico
-- Fluxo de Caixa
-- Contas a Pagar
-- Contas a Receber
-- DRE
-- Capital de Giro
-- Plano de Ação
-- Método EXECUTA
-- Conselheiro EXECUTA simples sem API
-- Usuários
+Execute `supabase_schema.sql` no SQL Editor.
 
-## Como rodar localmente
+## Atualizar no Streamlit
 
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
+Substitua no GitHub:
+- app.py
+- requirements.txt
+- supabase_schema.sql
+- README.md
+- CHANGELOG.md
 
-Sem Supabase configurado, o app usa SQLite local. Para uso compartilhado real no Streamlit Cloud, configure Supabase.
-
-## Como subir no Streamlit Cloud
-
-1. Crie um projeto no Supabase.
-2. Vá em SQL Editor e execute o arquivo `supabase_schema.sql`.
-3. Crie um repositório no GitHub com estes arquivos.
-4. No Streamlit Cloud, crie um app apontando para `app.py`.
-5. Em App > Settings > Secrets, cole:
-
-```toml
-SUPABASE_URL = "https://SEU-PROJETO.supabase.co"
-SUPABASE_ANON_KEY = "SUA-ANON-KEY"
-SETUP_CODE = "executa2026"
-```
-
-## Login
-
-O sistema permite criar até 5 usuários usando o código definido em `SETUP_CODE`.
-
-Código padrão de teste: `executa2026`
-
-Troque esse código antes de compartilhar.
-
-## Importante
-
-Esta é uma versão MVP gratuita. Para vender como produto, o ideal depois é reforçar:
-
-- segurança;
-- RLS no Supabase;
-- permissões por empresa;
-- recuperação de senha;
-- auditoria;
-- backup automático;
-- multiempresa;
-- assinatura/pagamentos.
+Depois faça Reboot no Streamlit.
