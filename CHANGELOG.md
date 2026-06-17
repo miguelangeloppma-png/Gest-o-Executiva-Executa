@@ -1,14 +1,13 @@
 # Changelog
 
-## MVP 10 usuários v2
+## Executive OS v5 FINAL
 
-- Limite para 10 usuários.
-- Permissões por perfil.
-- Minha Empresa substitui Diagnóstico.
-- Alerta criado.
-- Capital de Giro removido do menu e levado para Painel.
-- Fluxo de Caixa com parcelas, editar e apagar.
-- Contas a Pagar/Receber sem lançamento direto, com editar/apagar/baixar.
-- DRE expandido com pesquisa por período.
-- Calendário/Agenda criado.
-- Valores em formato brasileiro.
+- Reposicionamento do produto como Conselheiro CEO / Chief of Staff digital.
+- Novo módulo Sala do CEO.
+- Novo módulo Marketing e Oferta.
+- Novo módulo Unidade Econômica.
+- Novo módulo OKRs e 90 Dias.
+- Conselheiro EXECUTA virou Conselheiro CEO, com diagnóstico objetivo, decisão executiva, perguntas difíceis e plano de 7 dias.
+- Relatórios incluem próximo movimento recomendado.
+- Novas tabelas Supabase: `marketing_playbook`, `unit_economics`, `okr_records`.
+- Mantida base do Método EXECUTA: caixa, margem, processo, demanda, liderança e execução.

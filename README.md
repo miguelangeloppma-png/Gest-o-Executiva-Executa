@@ -1,32 +1,50 @@
-# Gestão Executiva EXECUTA Web — MVP 10 usuários v2
+# Gestão Executiva EXECUTA — Executive OS v5 FINAL
 
-## Mudanças principais
+Esta versão muda a natureza do produto: o sistema deixa de ser apenas um lugar para armazenar dados da empresa e passa a funcionar como um **Conselheiro CEO / Chief of Staff digital** para o empreendedor.
 
-- Limite aumentado para 10 usuários.
-- Permissões por perfil:
-  - Administrador vê Usuários, cria usuários e pode editar/apagar dados.
-  - Usuário lança, edita e apaga dados, mas não cria usuários.
-  - Somente leitura só visualiza.
-- Diagnóstico virou Minha Empresa e ficou na primeira posição.
-- Capital de Giro saiu do menu e aparece no Painel.
-- Alertas agora ficam no módulo Alerta.
-- Fluxo de Caixa tem parcelas, edição e exclusão.
-- Contas a Pagar/Receber são visualização, edição, baixa e exclusão.
-- DRE completo com pesquisa por período.
-- Calendário/Agenda com categorias e cores.
-- Valores aceitam padrão brasileiro, como 50.000,00.
+## Posicionamento do produto
 
-## Atualizar no Supabase
+O produto não promete apenas controle financeiro. Ele ajuda o empresário a:
 
-Execute `supabase_schema.sql` no SQL Editor.
+- enxergar a verdade do negócio;
+- decidir com base em caixa, margem, demanda, operação e liderança;
+- transformar diagnóstico em ação semanal;
+- validar mercado e oferta;
+- registrar decisões e aprender com elas;
+- manter foco de 90 dias;
+- construir rotina executiva.
 
-## Atualizar no Streamlit
+## Principais módulos da v5
 
-Substitua no GitHub:
-- app.py
-- requirements.txt
-- supabase_schema.sql
-- README.md
-- CHANGELOG.md
+- **Sala do CEO**: comando central com próximo movimento recomendado, perguntas difíceis e ação rápida.
+- **Minha Empresa**: base da realidade empresarial.
+- **Painel Executivo**: visão financeira, execução, capital de giro e validação.
+- **Indicadores**: score, margem, liquidez, execução, MVP e risco.
+- **Marketing e Oferta**: ICP, dor, promessa, oferta, prova, objeções, canais e próximo teste.
+- **Unidade Econômica**: ticket, margem, CAC, LTV, payback e leitura de escala.
+- **OKRs e 90 Dias**: foco, resultados-chave, responsável, prazo e confiança.
+- **Fluxo de Caixa / Contas / DRE**: base financeira.
+- **Plano de Ação / Decisões / Rotina Executiva**: governança prática.
+- **Validação MVP**: feedback real de usuários/testadores.
+- **Conselheiro CEO**: orientação executiva com diagnóstico, decisão, perguntas difíceis e plano de 7 dias.
+- **Relatórios**: relatório executivo para sócios/equipe.
 
-Depois faça Reboot no Streamlit.
+## Observação crítica
+
+Para MVP fechado, esta versão é adequada para testar proposta de valor e comportamento de uso. Para venda pública como SaaS, ainda será necessário evoluir: multiempresa por tenant, RLS no Supabase, logs de auditoria, backups, termos de uso, política de privacidade, domínio próprio e esteira de onboarding.
+
+## Atualização no Supabase
+
+Execute `supabase_schema.sql` no SQL Editor quando o Supabase estiver acessível.
+
+## Atualização no GitHub/Streamlit
+
+Substitua estes arquivos no repositório:
+
+- `app.py`
+- `requirements.txt`
+- `supabase_schema.sql`
+- `README.md`
+- `CHANGELOG.md`
+
+Depois faça Reboot no Streamlit Cloud.
