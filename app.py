@@ -10,7 +10,7 @@ except Exception:
     create_client = None
 
 APP_NAME="Gestão Executiva EXECUTA Web"
-APP_VERSION="EXECUTA Executive OS v5"
+APP_VERSION="EXECUTA Experience OS v6 FINAL"
 MAX_USERS=10
 DATE_DB="%Y-%m-%d"
 DATE_BR="%d/%m/%Y"
@@ -78,6 +78,35 @@ st.markdown("""
 .ceo-grid-card{padding:18px 20px;border-radius:24px;background:linear-gradient(145deg,rgba(16,23,37,.96),rgba(9,15,25,.82));border:1px solid rgba(0,209,255,.16);min-height:150px;box-shadow:0 12px 32px rgba(0,0,0,.22)}
 .ceo-card-title{font-size:15px;font-weight:900;color:#EEF6FF;margin-bottom:8px}.ceo-card-text{font-size:13px;color:#AFC0D2;line-height:1.45}
 .ceo-question{padding:10px 12px;border-left:3px solid #00D1FF;background:rgba(0,209,255,.055);border-radius:10px;margin:7px 0;color:#DDEBFA}
+
+
+/* Experience OS v6 — UX profissional e consultivo */
+:root{
+  --exec-bg:#070A12; --exec-surface:#101725; --exec-surface-2:#131B2B;
+  --exec-primary:#00D1FF; --exec-violet:#7C5CFF; --exec-green:#29E6A7;
+  --exec-yellow:#FFCC66; --exec-red:#FF5C7A; --exec-text:#EEF6FF; --exec-muted:#AFC0D2;
+}
+.block-container{padding-top:1.25rem; padding-bottom:2rem; max-width:1500px;}
+.main-header{border-radius:28px!important; padding:24px 28px!important; background:linear-gradient(135deg,rgba(16,23,37,.98),rgba(10,15,25,.92))!important;}
+.main-title{font-size:34px!important; letter-spacing:-.035em!important;}
+.main-subtitle{font-size:15px!important; line-height:1.55!important; max-width:980px;}
+[data-testid="stSidebar"]{min-width:310px!important;}
+[data-testid="stSidebar"] div[role="radiogroup"] label{min-height:48px!important; padding:10px 14px!important; border-radius:17px!important; margin:5px 0!important;}
+[data-testid="stSidebar"] div[role="radiogroup"] label p{font-size:15.5px!important; font-weight:760!important;}
+.stTabs [data-baseweb="tab-list"]{gap:8px;background:rgba(16,23,37,.55);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:6px;}
+.stTabs [data-baseweb="tab"]{border-radius:14px; padding:8px 12px; font-weight:800;}
+.exec-hero{padding:22px 24px;border-radius:26px;border:1px solid rgba(0,209,255,.20);background:radial-gradient(circle at 5% 10%,rgba(0,209,255,.16),transparent 36%),linear-gradient(135deg,rgba(19,27,43,.96),rgba(10,15,25,.94));box-shadow:0 20px 50px rgba(0,0,0,.28);margin-bottom:16px;}
+.exec-hero h3{margin:0;color:#EEF6FF;font-size:22px;letter-spacing:-.02em}.exec-hero p{color:#AFC0D2;margin:8px 0 0 0;line-height:1.5;font-size:14px;}
+.ux-card{padding:18px 20px;border-radius:24px;background:linear-gradient(145deg,rgba(16,23,37,.96),rgba(11,17,29,.88));border:1px solid rgba(255,255,255,.08);box-shadow:0 14px 36px rgba(0,0,0,.22);margin-bottom:12px;min-height:132px;}
+.ux-card-title{font-weight:900;font-size:16px;color:#EEF6FF;margin-bottom:8px}.ux-card-text{font-size:13px;color:#AFC0D2;line-height:1.48}.ux-card-action{font-size:12px;color:#00D1FF;font-weight:900;margin-top:10px;}
+.help-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:999px;background:rgba(0,209,255,.14);border:1px solid rgba(0,209,255,.32);color:#00D1FF;font-size:12px;font-weight:900;margin-right:6px;}
+.tooltip-box{padding:12px 14px;border-radius:16px;background:rgba(0,209,255,.07);border:1px solid rgba(0,209,255,.16);color:#AFC0D2;font-size:13px;line-height:1.45;margin:8px 0 12px 0;}
+.step-row{display:flex;gap:12px;align-items:flex-start;padding:13px 15px;border-radius:18px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);margin:8px 0;}
+.step-num{flex:0 0 auto;width:28px;height:28px;border-radius:999px;background:linear-gradient(135deg,#00D1FF,#7C5CFF);color:#07101B;font-weight:950;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.step-title{color:#EEF6FF;font-weight:900}.step-desc{color:#AFC0D2;font-size:13px;line-height:1.45;margin-top:3px}.step-status{margin-left:auto;font-size:12px;font-weight:900;padding:4px 8px;border-radius:999px;}
+.status-done{background:rgba(41,230,167,.12);color:#29E6A7;border:1px solid rgba(41,230,167,.25)}.status-open{background:rgba(255,204,102,.11);color:#FFCC66;border:1px solid rgba(255,204,102,.25)}
+.strategy-lane{padding:15px;border-radius:20px;border:1px solid rgba(255,255,255,.08);background:rgba(16,23,37,.82);margin-bottom:10px}.lane-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.lane-title{font-size:15px;font-weight:900;color:#EEF6FF}.lane-score{font-size:13px;font-weight:950;color:#00D1FF}.lane-body{color:#AFC0D2;font-size:13px;line-height:1.45;margin-top:8px}.lane-action{color:#29E6A7;font-weight:850;font-size:12px;margin-top:8px}
+.small-help{font-size:12px;color:#8EA4BC;line-height:1.4;margin-top:-2px;margin-bottom:8px}
 </style>""",unsafe_allow_html=True)
 
 EXECUTA_FRENTES=[("Diagnóstico executivo","Medir caixa, margem, estoque, canais, equipe, riscos e oportunidades antes de decidir."),("Validação de mercado","Testar demanda antes de investir pesado."),("Engenharia financeira","Controlar caixa, margem, capital de giro, preço e dívida."),("Sistema comercial","Transformar venda em processo previsível."),("Operação e escala","Padronizar atendimento, entrega, compras, estoque e treinamento."),("Tecnologia e dados","Reduzir erro, economizar tempo e integrar dados."),("Cultura e governança","Reduzir dependência do fundador e formar líderes.")]
@@ -114,6 +143,32 @@ def money_input(label,value=0,key=None,help_text=""):
     return val
 def header(t,s=""): st.markdown(f'<div class="main-header"><div class="main-title">{t}</div><div class="main-subtitle">{s}</div></div>',unsafe_allow_html=True)
 def metric(l,v,s=""): st.markdown(f'<div class="metric-card"><div class="metric-label">{l}</div><div class="metric-value">{v}</div><div class="metric-status">{s}</div></div>',unsafe_allow_html=True)
+
+def ux_card(title, text, action=""):
+    st.markdown(f"<div class='ux-card'><div class='ux-card-title'>{title}</div><div class='ux-card-text'>{text}</div>{f'<div class=\'ux-card-action\'>{action}</div>' if action else ''}</div>", unsafe_allow_html=True)
+
+def help_note(title, technical, example=""):
+    example_html = f"<br><b>Exemplo:</b> {example}" if example else ""
+    st.markdown(f"<div class='tooltip-box'><span class='help-badge'>?</span><b>{title}</b><br>{technical}{example_html}</div>", unsafe_allow_html=True)
+
+def progress_steps():
+    p=ensure_profile(); cash=cash_df(); dre=dre_df(); acc=accounts_df(); acts=actions_df(); market=marketing_df(); unit=unit_df(); okrs=okr_df(); fb=feedback_df(); routines=routines_df(); dec=decisions_df()
+    return [
+        ("Minha Empresa", bool(p.get("company_name")), "Cadastrar realidade da empresa", "Nome, segmento, porte, caixa inicial, custos, estoque e observações."),
+        ("Fluxo de Caixa", not cash.empty, "Lançar entradas e saídas", "Sem fluxo, o conselheiro não enxerga a sobrevivência financeira."),
+        ("DRE", not dre.empty, "Separar lucro de caixa", "DRE mostra resultado econômico; fluxo mostra dinheiro entrando e saindo."),
+        ("Contas", not acc.empty, "Mapear pagar e receber", "Vencimentos, baixas e histórico reduzem surpresa de caixa."),
+        ("Marketing e Oferta", not market.empty, "Definir cliente, dor e promessa", "Sem oferta clara, vender vira tentativa solta."),
+        ("Unidade Econômica", not unit.empty, "Medir venda saudável", "Ticket, margem, CAC e LTV indicam se escalar vale a pena."),
+        ("OKRs e 90 Dias", not okrs.empty, "Focar execução", "Um objetivo e poucos resultados-chave evitam dispersão."),
+        ("Plano de Ação", not acts.empty, "Transformar decisão em execução", "Toda ação precisa de responsável, prazo e status."),
+        ("Validação MVP", not fb.empty, "Ouvir mercado real", "Feedback, dor e objeção mostram o que melhora e o que vende."),
+        ("Rotina Executiva", not routines.empty or not dec.empty, "Criar ritual de gestão", "Revisão semanal, decisões registradas e aprendizado acumulado."),
+    ]
+
+def completion_score():
+    steps=progress_steps()
+    return int(sum(1 for _,done,_,__ in steps if done)/len(steps)*100) if steps else 0
 def hpw(pw,s=None):
     s=s or uuid.uuid4().hex
     return s,hashlib.pbkdf2_hmac("sha256",pw.encode(),s.encode(),120000).hex()
@@ -344,7 +399,7 @@ def alertas():
 def sidebar():
     u=st.session_state.user
     st.sidebar.markdown(f'<div class="user-pill">👤 <b>{u["name"]}</b><br>{u.get("role","usuario")}</div>',unsafe_allow_html=True)
-    pages=["Sala do CEO","Minha Empresa","Painel","Indicadores","Marketing e Oferta","Unidade Econômica","OKRs e 90 Dias","Fluxo de Caixa","Contas a Pagar","Contas a Receber","DRE","Plano de Ação","Calendário","Rotina Executiva","Validação MVP","Decisões","Conselheiro CEO","Relatórios","Alerta"]
+    pages=["Sala do CEO","Jornada Guiada","Mapa de Crescimento","Minha Empresa","Painel","Indicadores","Marketing e Oferta","Unidade Econômica","OKRs e 90 Dias","Fluxo de Caixa","Contas a Pagar","Contas a Receber","DRE","Plano de Ação","Calendário","Rotina Executiva","Validação MVP","Decisões","Conselheiro CEO","Relatórios","Alerta"]
     if is_admin():pages.append("Usuários")
     page=st.sidebar.radio("Módulos",pages)
     st.sidebar.markdown("<br>",unsafe_allow_html=True)
@@ -353,15 +408,59 @@ def sidebar():
 def topbar():
     c1,c2=st.columns([5.8,1.4])
     with c1:
-        st.markdown('<div class="topbar"><span class="topbar-title">EXECUTA Executive OS • conselheiro, decisão, execução e crescimento</span><span class="pro-badge">EXECUTIVE OS v5</span></div>', unsafe_allow_html=True)
+        st.markdown('<div class="topbar"><span class="topbar-title">EXECUTA Experience OS • conselheiro, crescimento, decisão e execução</span><span class="pro-badge">EXPERIENCE OS v6</span></div>', unsafe_allow_html=True)
     with c2:
         if st.button("📘 Método EXECUTA", use_container_width=True):
             return "Método EXECUTA"
     return None
 
 def select_record(df,lab,key):
+    # Mantido por compatibilidade, mas a v5.1 usa seleção direta na tabela.
     opts=[(lab(r),r.get("id")) for _,r in df.iterrows()]
     return st.selectbox("Selecionar registro",opts,format_func=lambda x:x[0],key=key) if opts else None
+
+def selected_row_from_table(raw_df, display_df, columns, key, caption="Clique em uma linha da tabela para selecionar."):
+    """Mostra uma tabela clicável e retorna a linha original selecionada.
+    Evita IndexError quando o estado do Streamlit fica com uma seleção antiga.
+    """
+    if raw_df is None or raw_df.empty:
+        return None
+    raw = raw_df.reset_index(drop=True).copy()
+    view = display_df.reset_index(drop=True).copy()
+    st.caption(caption)
+    try:
+        event = st.dataframe(
+            view[columns],
+            use_container_width=True,
+            hide_index=True,
+            on_select="rerun",
+            selection_mode="single-row",
+            key=key,
+        )
+        try:
+            rows = list(event.selection.rows)
+        except Exception:
+            rows = list((event or {}).get("selection", {}).get("rows", []))
+        if rows:
+            pos = int(rows[0])
+            if 0 <= pos < len(raw):
+                return raw.iloc[pos].to_dict()
+    except TypeError:
+        # Fallback para versões antigas do Streamlit: mostra a tabela normal e deixa selecionar pelo campo.
+        st.dataframe(view[columns], use_container_width=True, hide_index=True, key=key)
+        opts=[]
+        for i, r in raw.iterrows():
+            if "date" in raw.columns:
+                label=f"{date_br(r.get('date'))} | {r.get('type','')} | {r.get('category','')} | {brl(r.get('amount',0))} | {r.get('description','')}"
+            elif "due_date" in raw.columns:
+                label=f"{date_br(r.get('due_date'))} | {r.get('supplier_client','')} | {brl(r.get('amount',0))} | {r.get('description','')}"
+            else:
+                label=" | ".join(str(r.get(c,'')) for c in raw.columns[:4])
+            opts.append((label, i))
+        chosen=st.selectbox("Selecionar linha", opts, format_func=lambda x:x[0], key=key+"_fallback")
+        if chosen:
+            return raw.iloc[int(chosen[1])].to_dict()
+    return None
 
 def ceo_next_move():
     m=calc(); s,als=alertas(); fb=feedback_df(); acts=actions_df(); dec=decisions_df(); okrs=okr_df()
@@ -386,8 +485,44 @@ def ceo_questions():
     qs += ["Qual decisão você está adiando por medo de encarar os números?", "O que deve parar de ser feito para liberar caixa, tempo e foco?", "Qual métrica provaria que a empresa está pronta para crescer?"]
     return qs[:6]
 
+
+def page_jornada_guiada():
+    header("Jornada Guiada", "Onboarding executivo para o usuário não se perder: primeiro realidade, depois leitura, decisão, execução e revisão.")
+    score=completion_score(); steps=progress_steps()
+    st.markdown(f"<div class='exec-hero'><h3>Seu avanço de estruturação: {score}%</h3><p>O objetivo não é preencher tudo por preencher. O objetivo é criar uma rotina que ajude a empresa a faturar mais com caixa, margem, foco e execução.</p></div>", unsafe_allow_html=True)
+    c=st.columns(3)
+    with c[0]: ux_card("1. Verdade", "Cadastre a empresa, fluxo, contas e DRE. O app precisa de realidade para aconselhar.", "Evite achismo")
+    with c[1]: ux_card("2. Decisão", "Use Indicadores, Alerta, Unidade Econômica e Conselheiro CEO para escolher o próximo movimento.", "Menos opinião, mais evidência")
+    with c[2]: ux_card("3. Execução", "Transforme decisão em Plano de Ação, OKRs, Rotina Executiva e Decisões registradas.", "Dono + prazo + revisão")
+    st.subheader("Checklist de maturidade do uso")
+    for i,(name,done,title,desc) in enumerate(steps,1):
+        status='Concluído' if done else 'Aberto'
+        cls='status-done' if done else 'status-open'
+        st.markdown(f"<div class='step-row'><div class='step-num'>{i}</div><div><div class='step-title'>{name} — {title}</div><div class='step-desc'>{desc}</div></div><div class='step-status {cls}'>{status}</div></div>", unsafe_allow_html=True)
+    st.info("Experiência recomendada para novos usuários: preencher Minha Empresa → lançar Fluxo/DRE → abrir Sala do CEO → registrar uma decisão → criar 3 ações → fazer Rotina Executiva semanal.")
+
+def page_mapa_crescimento():
+    header("Mapa de Crescimento", "Leitura estratégica por frentes: financeiro, mercado, execução, operação e liderança. Serve para mostrar onde a empresa deve atuar primeiro.")
+    m=calc(); cash=cash_df(); dre=dre_df(); acts=actions_df(); market=marketing_df(); unit=unit_df(); okrs=okr_df(); fb=feedback_df(); routines=routines_df(); dec=decisions_df()
+    financeiro = 20 + (20 if not cash.empty else 0) + (20 if not dre.empty else 0) + (20 if m['margem']>=10 else 0) + (20 if m['caixa']>=0 else 0)
+    mercado = 15 + (25 if not market.empty else 0) + (20 if not fb.empty else 0) + (20 if not unit.empty else 0) + (20 if m['margem']>=10 else 0)
+    execucao = 15 + min(35, len(acts)*7) + (25 if not okrs.empty else 0) + (25 if not routines.empty else 0)
+    operacao = 25 + (20 if m['estoque'] <= max(1,m['receita']) else 0) + (20 if m['ncg'] <= max(1,m['receita']) else 0) + (20 if not dec.empty else 0) + (15 if not acts.empty else 0)
+    lideranca = 20 + (25 if not okrs.empty else 0) + (25 if not routines.empty else 0) + (20 if not dec.empty else 0) + (10 if not acts.empty else 0)
+    lanes=[
+        ("Financeiro", min(100,financeiro), "Caixa, DRE, margem, contas e capital de giro.", "Se estiver baixo: atualizar DRE, renegociar contas e revisar preço/custo."),
+        ("Mercado e Oferta", min(100,mercado), "Cliente ideal, dor, promessa, prova, CAC, LTV e feedback real.", "Se estiver baixo: fazer 10 entrevistas e testar uma oferta simples."),
+        ("Execução", min(100,execucao), "Plano, OKRs, responsáveis, prazos e rotina semanal.", "Se estiver baixo: criar 3 ações prioritárias para 7 dias."),
+        ("Operação", min(100,operacao), "Processo, estoque, giro, decisões e capacidade operacional.", "Se estiver baixo: padronizar a rotina crítica antes de escalar."),
+        ("Liderança", min(100,lideranca), "Dono, decisão, governança, reunião e cadência de gestão.", "Se estiver baixo: registrar decisões e criar ritual semanal de liderança."),
+    ]
+    for title,score,body,action in lanes:
+        st.markdown(f"<div class='strategy-lane'><div class='lane-head'><div class='lane-title'>{title}</div><div class='lane-score'>{score}/100</div></div><div class='lane-body'>{body}</div><div class='lane-action'>{action}</div></div>", unsafe_allow_html=True)
+    st.warning("Regra executiva: não acelerar marketing ou contratação se Financeiro, Mercado e Execução estiverem fracos. Primeiro corrija a base, depois escale.")
+
 def page_sala_ceo():
-    header("Sala do CEO", "O app não é só um lugar para guardar dados: é um sistema de comando para decidir, executar e revisar.")
+    header("Sala do CEO", "O app não é um depósito de dados: é uma sala de comando para ler a empresa, decidir, executar e revisar.")
+    st.markdown("<div class='exec-hero'><h3>O que o usuário deve sentir aqui</h3><p>Em menos de 2 minutos, o empreendedor precisa entender: estou saudável? Qual gargalo está travando crescimento? O que faço esta semana?</p></div>", unsafe_allow_html=True)
     m=calc(); s,als=alertas(); fb=feedback_df(); acts=actions_df(); dec=decisions_df(); okrs=okr_df()
     c=st.columns(5)
     with c[0]: metric("Score", f"{s}/100", "saúde geral")
@@ -418,6 +553,7 @@ def page_sala_ceo():
 
 def page_marketing_oferta():
     header("Marketing e Oferta", "Transforme o sistema em conselheiro comercial: cliente, dor, promessa, prova, objeção, canal e próximo teste.")
+    help_note("Como pensar oferta", "Uma boa oferta une cliente específico, dor cara, promessa clara, prova confiável e próximo passo simples. O erro comum é descrever o produto, não o resultado que o cliente compra.", "Para lojistas que perdem tempo com notas fiscais, reduzir 80% do trabalho manual em 7 dias.")
     readonly_warning()
     if can_edit():
         with st.form("marketing_form", clear_on_submit=True):
@@ -448,6 +584,7 @@ def page_marketing_oferta():
 
 def page_unit_economics():
     header("Unidade Econômica", "O crescimento só é saudável quando cada venda gera margem suficiente para pagar aquisição, operação e caixa.")
+    help_note("Como usar unidade econômica", "Preencha ticket médio, margem de contribuição e CAC para saber se vender mais realmente cria valor. Se o CAC for alto e a margem baixa, crescer pode destruir caixa.", "Ticket R$ 300, margem 40%, CAC R$ 60: a primeira venda gera R$ 120 de margem e paga aquisição.")
     readonly_warning()
     if can_edit():
         with st.form("unit_form", clear_on_submit=True):
@@ -578,19 +715,23 @@ def page_fluxo():
     st.subheader("Entradas e saídas lançadas");df=cash_df()
     if df.empty:st.info("Sem lançamentos no caixa.")
     else:
-        show=df.copy();show["date"]=show.date.apply(date_br);show["amount"]=show.amount.apply(brl);st.dataframe(show[["date","type","category","description","amount","channel","created_by"]],use_container_width=True,hide_index=True)
-        if can_edit():
-            st.subheader("Editar ou apagar lançamento");sel=select_record(df,lambda r:f"{date_br(r.get('date'))} | {r.get('type')} | {r.get('category')} | {brl(r.get('amount'))} | {r.get('description') or ''}","cash_edit")
-            if sel:
-                rec=df[df.id==sel[1]].iloc[0].to_dict()
-                with st.form("edit_cash"):
-                    c1,c2,c3=st.columns(3)
-                    with c1:e_date=st.date_input("Data",value=dt.datetime.strptime(rec["date"][:10],DATE_DB).date(),format="DD/MM/YYYY");e_type=st.selectbox("Tipo",["Entrada","Saída"],index=0 if rec["type"]=="Entrada" else 1)
-                    with c2:e_cat=st.text_input("Categoria",rec.get("category",""));e_amount=money_input("Valor",rec.get("amount",0),"edit_cash_amount")
-                    with c3:e_channel=st.text_input("Canal/Origem",rec.get("channel",""));e_desc=st.text_input("Descrição",rec.get("description",""))
-                    a,b=st.columns(2);save=a.form_submit_button("Salvar edição");delete=b.form_submit_button("Apagar lançamento")
-                if save:db.update("cash_flow",rec["id"],dict(date=e_date.strftime(DATE_DB),type=e_type,category=e_cat,description=e_desc,amount=e_amount,channel=e_channel));st.success("Lançamento editado.");st.rerun()
-                if delete:db.delete("cash_flow",rec["id"]);st.success("Lançamento apagado.");st.rerun()
+        raw=df.reset_index(drop=True).copy()
+        show=raw.copy();show["date"]=show.date.apply(date_br);show["amount"]=show.amount.apply(brl)
+        rec=selected_row_from_table(raw,show,["date","type","category","description","amount","channel","created_by"],"cash_table_select","Clique em uma linha para editar ou apagar o lançamento selecionado.")
+        if can_edit() and rec:
+            st.success(f"Linha selecionada: {date_br(rec.get('date'))} • {rec.get('type')} • {brl(rec.get('amount'))}")
+            with st.form("edit_cash"):
+                c1,c2,c3=st.columns(3)
+                with c1:e_date=st.date_input("Data",value=dt.datetime.strptime(str(rec["date"])[:10],DATE_DB).date(),format="DD/MM/YYYY");e_type=st.selectbox("Tipo",["Entrada","Saída"],index=0 if rec.get("type")=="Entrada" else 1)
+                with c2:e_cat=st.text_input("Categoria",rec.get("category","") or "");e_amount=money_input("Valor",rec.get("amount",0),"edit_cash_amount")
+                with c3:e_channel=st.text_input("Canal/Origem",rec.get("channel","") or "");e_desc=st.text_input("Descrição",rec.get("description","") or "")
+                a,b=st.columns(2);save=a.form_submit_button("Salvar edição da linha selecionada");delete=b.form_submit_button("Excluir toda a linha selecionada")
+            if save:
+                db.update("cash_flow",rec["id"],dict(date=e_date.strftime(DATE_DB),type=e_type,category=e_cat,description=e_desc,amount=e_amount,channel=e_channel));st.success("Lançamento editado.");st.rerun()
+            if delete:
+                db.delete("cash_flow",rec["id"]);st.success("Linha excluída com sucesso.");st.rerun()
+        elif can_edit():
+            st.info("Para editar ou excluir, clique em uma linha da tabela acima.")
     st.subheader("Histórico de contas pagas e recebidas");acc=accounts_df()
     if acc.empty:st.info("Sem contas baixadas ainda.")
     else:
@@ -598,35 +739,44 @@ def page_fluxo():
         if hist.empty:st.info("Ainda não há contas pagas ou recebidas.")
         else:
             hist["due_date"]=hist.due_date.apply(date_br);hist["paid_date"]=hist.paid_date.apply(date_br);hist["amount"]=hist.amount.apply(brl);st.dataframe(hist[["paid_date","kind","supplier_client","description","amount","status","created_by"]],use_container_width=True,hide_index=True)
+
 def page_accounts(kind):
     title="Contas a Pagar" if kind=="Pagar" else "Contas a Receber";closed="Pago" if kind=="Pagar" else "Recebido";header(title,"Visualizar, editar, apagar e baixar contas. Novos lançamentos são criados pelo Fluxo de Caixa.");readonly_warning()
-    df=accounts_df();df=df[df.kind==kind] if not df.empty else df;open_df=df[~df.status.isin([closed])] if not df.empty else df;closed_df=df[df.status.isin([closed])] if not df.empty else df
+    df=accounts_df();df=df[df.kind==kind].reset_index(drop=True) if not df.empty else df;open_df=df[~df.status.isin([closed])].reset_index(drop=True) if not df.empty else df;closed_df=df[df.status.isin([closed])].reset_index(drop=True) if not df.empty else df
     st.subheader("Em aberto")
+    selected_open=None
     if open_df.empty:st.info("Nenhuma conta em aberto.")
     else:
-        show=open_df.copy();show["due_date"]=show.due_date.apply(date_br);show["amount"]=show.amount.apply(brl);st.dataframe(show[["due_date","supplier_client","description","amount","status","created_by"]],use_container_width=True,hide_index=True)
+        show=open_df.copy();show["due_date"]=show.due_date.apply(date_br);show["amount"]=show.amount.apply(brl)
+        selected_open=selected_row_from_table(open_df,show,["due_date","supplier_client","description","amount","status","created_by"],f"acc_open_{kind}","Clique em uma linha para editar, baixar ou excluir a conta selecionada.")
     if can_edit() and not df.empty:
-        st.subheader("Editar, apagar ou baixar conta");sel=select_record(df,lambda r:f"{date_br(r.get('due_date'))} | {r.get('supplier_client')} | {brl(r.get('amount'))} | {r.get('description') or ''}",f"acc_{kind}")
-        if sel:
-            rec=df[df.id==sel[1]].iloc[0].to_dict()
+        rec=selected_open
+        if rec is None:
+            st.info("Para editar, baixar ou excluir, clique em uma linha da tabela em aberto acima. Se a conta já foi baixada, use o histórico abaixo apenas para consulta.")
+        else:
+            st.success(f"Linha selecionada: {date_br(rec.get('due_date'))} • {rec.get('supplier_client')} • {brl(rec.get('amount'))}")
             with st.form(f"edit_acc_{kind}"):
                 c1,c2,c3=st.columns(3)
-                with c1:due=st.date_input("Vencimento",value=dt.datetime.strptime(rec["due_date"][:10],DATE_DB).date(),format="DD/MM/YYYY");person=st.text_input("Fornecedor/Cliente",rec.get("supplier_client",""))
-                with c2:desc=st.text_input("Descrição",rec.get("description",""));amount=money_input("Valor",rec.get("amount",0),f"edit_amount_{kind}")
+                with c1:due=st.date_input("Vencimento",value=dt.datetime.strptime(str(rec["due_date"])[:10],DATE_DB).date(),format="DD/MM/YYYY");person=st.text_input("Fornecedor/Cliente",rec.get("supplier_client","") or "")
+                with c2:desc=st.text_input("Descrição",rec.get("description","") or "");amount=money_input("Valor",rec.get("amount",0),f"edit_amount_{kind}")
                 with c3:opts=["Aberto","Pendente",closed];status=st.selectbox("Status",opts,index=opts.index(rec.get("status")) if rec.get("status") in opts else 0);paid=st.date_input("Data de baixa",value=dt.date.today(),format="DD/MM/YYYY")
-                a,b,c=st.columns(3);save=a.form_submit_button("Salvar edição");delete=b.form_submit_button("Apagar conta");baixar=c.form_submit_button(f"Marcar como {closed}")
-            if save:db.update("accounts",rec["id"],dict(due_date=due.strftime(DATE_DB),supplier_client=person,description=desc,amount=amount,status=status,paid_date=paid.strftime(DATE_DB) if status==closed else ""));st.success("Conta editada.");st.rerun()
-            if delete:db.delete("accounts",rec["id"]);st.success("Conta apagada.");st.rerun()
+                a,b,c=st.columns(3);save=a.form_submit_button("Salvar edição");delete=b.form_submit_button("Excluir toda a linha selecionada");baixar=c.form_submit_button(f"Marcar como {closed}")
+            if save:
+                db.update("accounts",rec["id"],dict(due_date=due.strftime(DATE_DB),supplier_client=person,description=desc,amount=amount,status=status,paid_date=paid.strftime(DATE_DB) if status==closed else ""));st.success("Conta editada.");st.rerun()
+            if delete:
+                db.delete("accounts",rec["id"]);st.success("Linha excluída com sucesso.");st.rerun()
             if baixar:
                 db.update("accounts",rec["id"],dict(status=closed,paid_date=paid.strftime(DATE_DB)))
-                db.insert("cash_flow",dict(id=str(uuid.uuid4()),date=paid.strftime(DATE_DB),type="Saída" if kind=="Pagar" else "Entrada",category=f"Conta {kind}",description=rec.get("description",""),amount=float(rec.get("amount") or 0),channel=rec.get("supplier_client",""),created_by=user_name()))
+                db.insert("cash_flow",dict(id=str(uuid.uuid4()),date=paid.strftime(DATE_DB),type="Saída" if kind=="Pagar" else "Entrada",category=f"Conta {kind}",description=rec.get("description","") or "",amount=float(rec.get("amount") or 0),channel=rec.get("supplier_client","") or "",created_by=user_name()))
                 st.success(f"Conta marcada como {closed} e lançada no Fluxo de Caixa.");st.rerun()
     st.subheader("Histórico: já pago/recebido")
     if closed_df.empty:st.info(f"Nenhum registro {closed.lower()} ainda.")
     else:
         show=closed_df.copy();show["due_date"]=show.due_date.apply(date_br);show["paid_date"]=show.paid_date.apply(date_br);show["amount"]=show.amount.apply(brl);st.dataframe(show[["paid_date","due_date","supplier_client","description","amount","status","created_by"]],use_container_width=True,hide_index=True)
+
 def page_dre():
     header("DRE","Preencha e pesquise por período. Datas no padrão dd/mm/aaaa.");readonly_warning()
+    help_note("Como preencher o DRE", "Use valores do período escolhido. Se não souber algum resultado calculado, deixe zero: o sistema estima receita líquida, lucro bruto, EBITDA, lucro operacional e lucro líquido.", "Receita bruta 100.000,00; impostos 12.000,00; CMV 45.000,00; despesas 25.000,00.")
     if can_edit():
         with st.form("dre_form",clear_on_submit=True):
             st.subheader("Novo DRE");c0,c1,c2=st.columns(3)
@@ -654,7 +804,11 @@ def page_dre():
     with c[3]:metric("Lucro líquido",brl(tot["lucro_liquido"]),f"Margem {pct((tot['lucro_liquido']/tot['receita_bruta']*100) if tot['receita_bruta'] else 0)}")
     show=filt.copy();show["period_start"]=show.period_start.apply(date_br);show["period_end"]=show.period_end.apply(date_br)
     for col in cols:show[col]=show[col].apply(brl)
-    st.dataframe(show[["period_start","period_end"]+cols+["created_by"]],use_container_width=True,hide_index=True)
+    selected_dre=selected_row_from_table(filt.reset_index(drop=True),show.reset_index(drop=True),["period_start","period_end"]+cols+["created_by"],"dre_table_select","Clique em uma linha para selecionar um DRE lançado.")
+    if can_edit() and selected_dre:
+        st.success(f"DRE selecionado: {date_br(selected_dre.get('period_start'))} a {date_br(selected_dre.get('period_end'))}")
+        if st.button("Excluir DRE selecionado", key="delete_dre_selected"):
+            db.delete("dre_records", selected_dre["id"]); st.success("DRE excluído com sucesso."); st.rerun()
 def page_actions():
     header("Plano de Ação","Decisão com responsável, prazo e execução.");readonly_warning()
     if can_edit():
@@ -666,7 +820,16 @@ def page_actions():
             if st.form_submit_button("Adicionar ação"):db.insert("action_plan",dict(id=str(uuid.uuid4()),priority=pr,area=area,action=action,responsible=resp,due_date=due.strftime(DATE_DB),status=status,created_by=user_name()));st.success("Ação criada.");st.rerun()
     df=actions_df()
     if df.empty:st.info("Nenhuma ação cadastrada.");return
-    show=df.copy();show["due_date"]=show.due_date.apply(date_br);st.dataframe(show[["priority","area","action","responsible","due_date","status","created_by"]],use_container_width=True,hide_index=True)
+    raw=df.reset_index(drop=True).copy(); show=raw.copy();show["due_date"]=show.due_date.apply(date_br)
+    rec=selected_row_from_table(raw,show,["priority","area","action","responsible","due_date","status","created_by"],"actions_table_select","Clique em uma linha para selecionar uma ação.")
+    if can_edit() and rec:
+        st.success(f"Ação selecionada: {rec.get('priority')} • {rec.get('area')}")
+        c1,c2=st.columns(2)
+        new_status=c1.selectbox("Alterar status da ação selecionada",["Pendente","Em andamento","Concluído"],index=["Pendente","Em andamento","Concluído"].index(rec.get("status")) if rec.get("status") in ["Pendente","Em andamento","Concluído"] else 0,key="action_status_selected")
+        if c1.button("Salvar status",key="save_action_status"):
+            db.update("action_plan",rec["id"],dict(status=new_status)); st.success("Status atualizado."); st.rerun()
+        if c2.button("Excluir toda a linha selecionada",key="delete_action_selected"):
+            db.delete("action_plan",rec["id"]); st.success("Linha excluída com sucesso."); st.rerun()
 def page_calendar():
     header("Calendário","Agenda com compromissos diários, categorias e níveis por cor.");readonly_warning();colors={"Baixa":"#29E6A7","Média":"#FFCC66","Alta":"#FF8A3D","Crítica":"#FF5C7A"}
     if can_edit():
@@ -689,7 +852,12 @@ def page_calendar():
     st.subheader("Compromissos do mês")
     if mev.empty:st.info("Sem compromissos no mês.")
     else:
-        show=mev.copy();show["event_date"]=show.event_date.apply(date_br);st.dataframe(show[["event_date","event_time","title","category","level","notes","created_by"]],use_container_width=True,hide_index=True)
+        raw=mev.reset_index(drop=True).copy();show=raw.copy();show["event_date"]=show.event_date.apply(date_br)
+        rec=selected_row_from_table(raw,show,["event_date","event_time","title","category","level","notes","created_by"],"calendar_table_select","Clique em uma linha para selecionar um compromisso.")
+        if can_edit() and rec:
+            st.success(f"Compromisso selecionado: {date_br(rec.get('event_date'))} • {rec.get('event_time')} • {rec.get('title')}")
+            if st.button("Excluir compromisso selecionado", key="delete_calendar_selected"):
+                db.delete("calendar_events", rec["id"]); st.success("Compromisso excluído com sucesso."); st.rerun()
 
 def page_indicadores():
     header("Indicadores","KPIs essenciais para decisão: margem, liquidez, execução, validação e risco.")
@@ -882,6 +1050,8 @@ def main():
     if override:
         page=override
     if page=="Sala do CEO":page_sala_ceo()
+    elif page=="Jornada Guiada":page_jornada_guiada()
+    elif page=="Mapa de Crescimento":page_mapa_crescimento()
     elif page=="Minha Empresa":page_minha_empresa()
     elif page=="Painel":page_painel()
     elif page=="Indicadores":page_indicadores()

@@ -1,13 +1,33 @@
 # Changelog
 
-## Executive OS v5 FINAL
+## PRO v4 FINAL
 
-- Reposicionamento do produto como Conselheiro CEO / Chief of Staff digital.
-- Novo módulo Sala do CEO.
-- Novo módulo Marketing e Oferta.
-- Novo módulo Unidade Econômica.
-- Novo módulo OKRs e 90 Dias.
-- Conselheiro EXECUTA virou Conselheiro CEO, com diagnóstico objetivo, decisão executiva, perguntas difíceis e plano de 7 dias.
-- Relatórios incluem próximo movimento recomendado.
-- Novas tabelas Supabase: `marketing_playbook`, `unit_economics`, `okr_records`.
-- Mantida base do Método EXECUTA: caixa, margem, processo, demanda, liderança e execução.
+- Painel executivo refeito com leitura de decisão.
+- Indicadores estratégicos adicionados.
+- Rotina Executiva adicionada.
+- Validação MVP adicionada.
+- Decisões adicionada.
+- Relatórios executivos adicionados.
+- Método EXECUTA mantido no topo, fora da lateral.
+- Alertas no fim da lateral.
+- Tabelas novas no Supabase: `mvp_feedback`, `executive_routines`, `decision_log`.
+- Banco mais tolerante a erros de tabela ausente.
+- Conteúdo reforçado para uso em MVP real.
+
+
+## v5.1 HOTFIX
+
+- Corrigido erro IndexError no Fluxo de Caixa quando a seleção antiga do Streamlit não encontrava mais o registro.
+- Fluxo de Caixa agora permite clicar diretamente na linha da tabela e excluir toda a linha selecionada.
+- Contas a Pagar/Receber agora permitem clicar diretamente na linha em aberto e excluir toda a linha selecionada.
+- DRE, Plano de Ação e Calendário também ganharam seleção direta de linha para ações rápidas.
+
+
+## EXECUTA Experience OS v6 FINAL
+
+- Criada Jornada Guiada para onboarding e ativação do usuário.
+- Criado Mapa de Crescimento com score por frente estratégica.
+- Refinamento visual da interface: cards, hero blocks, status tags, espaçamento e navegação.
+- Reforço de tooltips/ajudas técnicas nos módulos principais.
+- Sala do CEO reposicionada como central de decisão e execução.
+- Mantida compatibilidade com Supabase e estrutura da v5.1.

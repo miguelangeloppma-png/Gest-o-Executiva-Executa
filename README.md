@@ -1,45 +1,32 @@
-# Gestão Executiva EXECUTA — Executive OS v5 FINAL
+# Gestão Executiva EXECUTA Web — PRO v4 FINAL
 
-Esta versão muda a natureza do produto: o sistema deixa de ser apenas um lugar para armazenar dados da empresa e passa a funcionar como um **Conselheiro CEO / Chief of Staff digital** para o empreendedor.
+Versão refinada para MVP real, combinando gestão financeira, execução, validação de mercado e rotina executiva.
 
-## Posicionamento do produto
+## O que mudou na v4
 
-O produto não promete apenas controle financeiro. Ele ajuda o empresário a:
+- Painel executivo com leitura de decisão, não só números.
+- Novo módulo **Indicadores** com score, margem, ponto de equilíbrio, execução e validação MVP.
+- Novo módulo **Rotina Executiva** para reunião semanal, riscos, decisões e próximos passos.
+- Novo módulo **Validação MVP** para registrar feedback real de usuários/testadores.
+- Novo módulo **Decisões** para registrar motivo, dono, prazo e resultado esperado.
+- Novo módulo **Relatórios** com relatório executivo pronto para baixar.
+- **Método EXECUTA** continua fora da lateral e fica no topo.
+- **Alerta** permanece na parte inferior da lateral.
+- Lateral com módulos maiores e visual mais profissional.
+- DRE com explicação em cada campo.
+- App mais resistente: se uma tabela do Supabase ainda não existir, evita travar e orienta pelo SQL.
 
-- enxergar a verdade do negócio;
-- decidir com base em caixa, margem, demanda, operação e liderança;
-- transformar diagnóstico em ação semanal;
-- validar mercado e oferta;
-- registrar decisões e aprender com elas;
-- manter foco de 90 dias;
-- construir rotina executiva.
+## Base conceitual
 
-## Principais módulos da v5
-
-- **Sala do CEO**: comando central com próximo movimento recomendado, perguntas difíceis e ação rápida.
-- **Minha Empresa**: base da realidade empresarial.
-- **Painel Executivo**: visão financeira, execução, capital de giro e validação.
-- **Indicadores**: score, margem, liquidez, execução, MVP e risco.
-- **Marketing e Oferta**: ICP, dor, promessa, oferta, prova, objeções, canais e próximo teste.
-- **Unidade Econômica**: ticket, margem, CAC, LTV, payback e leitura de escala.
-- **OKRs e 90 Dias**: foco, resultados-chave, responsável, prazo e confiança.
-- **Fluxo de Caixa / Contas / DRE**: base financeira.
-- **Plano de Ação / Decisões / Rotina Executiva**: governança prática.
-- **Validação MVP**: feedback real de usuários/testadores.
-- **Conselheiro CEO**: orientação executiva com diagnóstico, decisão, perguntas difíceis e plano de 7 dias.
-- **Relatórios**: relatório executivo para sócios/equipe.
-
-## Observação crítica
-
-Para MVP fechado, esta versão é adequada para testar proposta de valor e comportamento de uso. Para venda pública como SaaS, ainda será necessário evoluir: multiempresa por tenant, RLS no Supabase, logs de auditoria, backups, termos de uso, política de privacidade, domínio próprio e esteira de onboarding.
+O app foi construído para um MVP de verdade: aprender rápido com usuários reais, controlar caixa/margem, e transformar diagnóstico em ação semanal. A lógica do produto segue o princípio do Método EXECUTA: crescer apenas quando há margem, caixa, processo, demanda, liderança e capacidade operacional.
 
 ## Atualização no Supabase
 
-Execute `supabase_schema.sql` no SQL Editor quando o Supabase estiver acessível.
+Execute `supabase_schema.sql` no SQL Editor. Ele usa `create table if not exists`, então pode ser rodado mais de uma vez.
 
 ## Atualização no GitHub/Streamlit
 
-Substitua estes arquivos no repositório:
+Substitua no repositório:
 
 - `app.py`
 - `requirements.txt`
@@ -47,4 +34,34 @@ Substitua estes arquivos no repositório:
 - `README.md`
 - `CHANGELOG.md`
 
-Depois faça Reboot no Streamlit Cloud.
+Depois reinicie o app no Streamlit Cloud.
+
+## Observação crítica
+
+Para MVP fechado com poucos usuários, a configuração atual é suficiente para teste. Para vender como SaaS público, é necessário evoluir segurança: RLS no Supabase, multiempresa por tenant, logs de auditoria completos, backup e permissões por registro.
+
+
+## v5.1 HOTFIX
+
+- Corrigido erro IndexError no Fluxo de Caixa quando a seleção antiga do Streamlit não encontrava mais o registro.
+- Fluxo de Caixa agora permite clicar diretamente na linha da tabela e excluir toda a linha selecionada.
+- Contas a Pagar/Receber agora permitem clicar diretamente na linha em aberto e excluir toda a linha selecionada.
+- DRE, Plano de Ação e Calendário também ganharam seleção direta de linha para ações rápidas.
+
+
+## EXECUTA Experience OS v6 FINAL
+
+Esta versão foi refinada para melhorar a experiência do usuário e transformar o produto em um sistema de decisão executiva, não apenas em um cadastro financeiro.
+
+### Melhorias de experiência
+
+- Novo módulo **Jornada Guiada** com checklist de implantação do usuário.
+- Novo módulo **Mapa de Crescimento** com leitura por frentes: Financeiro, Mercado, Execução, Operação e Liderança.
+- Melhorias visuais no layout, cards, espaçamento, hierarquia e navegação.
+- Mais explicações técnicas com balões/ajudas em DRE, Marketing e Oferta, Unidade Econômica e pontos críticos.
+- Sala do CEO reforçada como central de comando do empreendedor.
+- Mantida a base EXECUTA: verdade financeira, mercado, execução, liderança, governança e escala com caixa.
+
+### Filosofia do produto
+
+O app não deve ser percebido como “sistema para guardar dados”. Ele deve ser percebido como um conselheiro operacional: lê informações, aponta gargalos, força decisão, organiza plano e cria rotina de execução.
