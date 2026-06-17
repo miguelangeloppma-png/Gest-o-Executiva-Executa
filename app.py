@@ -10,7 +10,7 @@ except Exception:
     create_client = None
 
 APP_NAME="Gestão Executiva EXECUTA Web"
-APP_VERSION="EXECUTA Experience OS v6 FINAL"
+APP_VERSION="EXECUTA Experience OS v6.1 REFINADA"
 MAX_USERS=10
 DATE_DB="%Y-%m-%d"
 DATE_BR="%d/%m/%Y"
@@ -109,6 +109,28 @@ st.markdown("""
 .small-help{font-size:12px;color:#8EA4BC;line-height:1.4;margin-top:-2px;margin-bottom:8px}
 </style>""",unsafe_allow_html=True)
 
+
+
+# Refinamento v6.1 — menos topo cortado, menu mais limpo e hierarquia melhor
+st.markdown("""
+<style>
+.block-container{padding-top:.45rem!important; padding-bottom:1.25rem!important;}
+.main-header{padding:16px 20px!important; border-radius:22px!important; margin:0 0 12px 0!important;}
+.main-title{font-size:28px!important; line-height:1.08!important;}
+.main-subtitle{font-size:13.5px!important; line-height:1.35!important; max-height:none!important; overflow:visible!important;}
+.topbar{padding:6px 8px!important; margin-bottom:8px!important; background:transparent!important; border:none!important; justify-content:flex-end!important;}
+[data-testid="stSidebar"]{min-width:300px!important; overflow:visible!important;}
+[data-testid="stSidebar"] section{overflow:visible!important;}
+[data-testid="stSidebar"] div[role="radiogroup"]{gap:3px!important;}
+[data-testid="stSidebar"] div[role="radiogroup"] label{min-height:42px!important; padding:8px 12px!important; margin:3px 0!important; border-radius:15px!important;}
+[data-testid="stSidebar"] div[role="radiogroup"] label p{font-size:14.5px!important; font-weight:780!important;}
+.solution-card{padding:14px 16px;border-radius:18px;background:rgba(41,230,167,.07);border:1px solid rgba(41,230,167,.18);margin:8px 0 14px 0;color:#DDEBFA;}
+.solution-title{font-weight:900;color:#29E6A7;margin-bottom:6px}.solution-card li{margin-bottom:4px;}
+.ceo-panel-card{padding:16px 18px;border-radius:22px;background:linear-gradient(135deg,rgba(0,209,255,.08),rgba(124,92,255,.08));border:1px solid rgba(0,209,255,.18);margin-bottom:12px;}
+.calendar-dot{display:inline-block;width:9px;height:9px;border-radius:999px;margin-right:5px;vertical-align:middle;}
+</style>
+""", unsafe_allow_html=True)
+
 EXECUTA_FRENTES=[("Diagnóstico executivo","Medir caixa, margem, estoque, canais, equipe, riscos e oportunidades antes de decidir."),("Validação de mercado","Testar demanda antes de investir pesado."),("Engenharia financeira","Controlar caixa, margem, capital de giro, preço e dívida."),("Sistema comercial","Transformar venda em processo previsível."),("Operação e escala","Padronizar atendimento, entrega, compras, estoque e treinamento."),("Tecnologia e dados","Reduzir erro, economizar tempo e integrar dados."),("Cultura e governança","Reduzir dependência do fundador e formar líderes.")]
 PILARES=["Verdade financeira","Cliente no centro","Venda como sistema","Operação replicável","Tecnologia útil","Gente forte","Cultura com consequência","Escala com caixa","Marca com narrativa","Governança para durar"]
 
@@ -162,7 +184,7 @@ def progress_steps():
         ("Unidade Econômica", not unit.empty, "Medir venda saudável", "Ticket, margem, CAC e LTV indicam se escalar vale a pena."),
         ("OKRs e 90 Dias", not okrs.empty, "Focar execução", "Um objetivo e poucos resultados-chave evitam dispersão."),
         ("Plano de Ação", not acts.empty, "Transformar decisão em execução", "Toda ação precisa de responsável, prazo e status."),
-        ("Validação MVP", not fb.empty, "Ouvir mercado real", "Feedback, dor e objeção mostram o que melhora e o que vende."),
+        ("Feedback de Mercado", not fb.empty, "Ouvir mercado real", "Feedback, dor e objeção mostram o que melhora e o que vende."),
         ("Rotina Executiva", not routines.empty or not dec.empty, "Criar ritual de gestão", "Revisão semanal, decisões registradas e aprendizado acumulado."),
     ]
 
@@ -267,27 +289,41 @@ def login_user(email,pw):
     if not cpw(pw,u["password_salt"],u["password_hash"]):return None,"Senha incorreta."
     return u,"OK"
 def login_screen():
-    header(APP_NAME,f"{APP_VERSION} • teste gratuito com até {MAX_USERS} usuários.")
-    c1,c2=st.columns(2,gap="large")
+    header(APP_NAME, "Acesso executivo da empresa")
+    total_users = db.count("app_users")
+    if total_users == 0:
+        st.warning("Primeiro acesso: crie o administrador inicial. Depois disso, novos usuários serão criados apenas por um administrador dentro do sistema.")
+        with st.form("first_admin"):
+            code = st.text_input("Código de criação", type="password")
+            name = st.text_input("Nome do administrador")
+            email = st.text_input("E-mail")
+            pw = st.text_input("Senha", type="password")
+            sub = st.form_submit_button("Criar administrador")
+        if sub:
+            if code != secret("SETUP_CODE", "executa2026"):
+                st.error("Código de criação incorreto.")
+            else:
+                ok, msg = create_user(name, email, pw, "administrador")
+                st.success(msg) if ok else st.error(msg)
+        return
+
+    c1, c2 = st.columns([1.15, .85], gap="large")
     with c1:
         st.subheader("Entrar")
         with st.form("login"):
-            email=st.text_input("E-mail");pw=st.text_input("Senha",type="password");ok=st.form_submit_button("Entrar")
+            email = st.text_input("E-mail")
+            pw = st.text_input("Senha", type="password")
+            ok = st.form_submit_button("Entrar", use_container_width=True)
         if ok:
-            u,msg=login_user(email,pw)
-            if u: st.session_state.user=u; st.rerun()
-            else: st.error(msg)
-        st.info(f"Banco atual: **{db.mode.upper()}**.")
-    with c2:
-        st.subheader("Criar usuário de teste")
-        st.caption(f"Usuários: {db.count('app_users')}/{MAX_USERS}")
-        with st.form("signup"):
-            code=st.text_input("Código de criação",type="password");name=st.text_input("Nome");email2=st.text_input("E-mail");pw2=st.text_input("Senha",type="password");rv=st.selectbox("Perfil",["administrador","usuario","somente leitura"]);sub=st.form_submit_button("Criar usuário")
-        if sub:
-            if code!=secret("SETUP_CODE","executa2026"):st.error("Código de criação incorreto.")
+            u, msg = login_user(email, pw)
+            if u:
+                st.session_state.user = u
+                st.rerun()
             else:
-                ok,msg=create_user(name,email2,pw2,rv); st.success(msg) if ok else st.error(msg)
-
+                st.error(msg)
+    with c2:
+        st.markdown("<div class='tooltip-box'><span class='help-badge'>?</span><b>Acesso controlado</b><br>Novos usuários não aparecem para qualquer visitante. Apenas o administrador cria acessos dentro do sistema.</div>", unsafe_allow_html=True)
+        st.info(f"Banco atual: **{db.mode.upper()}**")
 def ensure_profile():
     r=db.select("company_profile",limit=1)
     if r:return r[0]
@@ -365,7 +401,7 @@ def exec_reading():
     elif s>=45:txt.append("A empresa tem sinais de atenção. O caminho é reduzir variáveis soltas, reforçar caixa e transformar ação em rotina semanal.")
     else:txt.append("A empresa está em zona de risco. Antes de crescer, é necessário proteger caixa, rever margem, priorizar pagamentos e atacar gargalos operacionais.")
     if not fb.empty:
-        avg=float(fb.score.mean()); txt.append(f"Validação MVP média: {avg:.1f}/10. Use os feedbacks para melhorar oferta, comunicação e funcionalidades antes de escalar.")
+        avg=float(fb.score.mean()); txt.append(f"Feedback de mercado médio: {avg:.1f}/10. Use os feedbacks para melhorar oferta, comunicação e funcionalidades antes de escalar.")
     if actions.empty: txt.append("O plano de ação está vazio; sem ação com dono e prazo, o painel vira apenas relatório.")
     if not dec.empty: txt.append("Há decisões registradas; revise semanalmente se elas produziram resultado real.")
     if als: txt.append("Alertas principais: " + "; ".join([a[1] for a in als[:3]]) + ".")
@@ -396,24 +432,97 @@ def alertas():
     if m["ncg"]>max(1,m["receita"]):s-=12;als.append(("Atenção","Capital de giro necessário alto","Reduzir estoque parado e acelerar recebimentos."))
     if actions_df().empty:s-=8;als.append(("Atenção","Plano de ação ainda não estruturado","Criar 3 ações prioritárias com responsável e prazo."))
     return max(0,min(100,int(s))),als
+
+def solution_steps(title, action):
+    t = (title or "").lower()
+    if "caixa" in t:
+        return [
+            "Liste todos os vencimentos dos próximos 30 dias e separe o que é essencial do que pode ser renegociado.",
+            "Acelere recebíveis: cobre atrasados, antecipe entradas seguras e reduza prazo de novos recebimentos.",
+            "Suspenda gastos que não gerem venda, margem, entrega ou retenção no curto prazo."
+        ]
+    if "margem" in t or "resultado" in t:
+        return [
+            "Revise preço por canal considerando imposto, taxa, frete, embalagem, desconto e custo real.",
+            "Separe produtos/serviços por margem: mantenha, reajuste ou descontinue o que destrói resultado.",
+            "Crie uma ação no Plano de Ação para corrigir o principal item de custo desta semana."
+        ]
+    if "pagar" in t or "recebíveis" in t:
+        return [
+            "Abra Contas a Pagar e Contas a Receber e confira vencimentos, atrasos e valores grandes.",
+            "Negocie prazos de saída antes de assumir novas compras ou contratações.",
+            "Transforme as 3 maiores contas em decisões: pagar, renegociar, parcelar ou cortar."
+        ]
+    if "capital" in t or "giro" in t:
+        return [
+            "Reduza dinheiro parado: estoque sem giro, contas longas para receber e compras antecipadas.",
+            "Faça uma previsão de 30 dias no Fluxo de Caixa antes de escalar marketing ou equipe.",
+            "Defina uma meta mínima de caixa e acompanhe no Painel semanalmente."
+        ]
+    if "plano" in t or "ação" in t:
+        return [
+            "Crie 3 ações: uma financeira, uma comercial e uma operacional.",
+            "Cada ação precisa ter responsável, prazo e status; sem isso, é apenas intenção.",
+            "Revise essas ações na Rotina Executiva semanal."
+        ]
+    return [action or "Transforme o alerta em uma ação com responsável e prazo.", "Registre a ação no Plano de Ação.", "Revise o resultado em até 7 dias."]
+
+def growth_lanes():
+    m=calc(); cash=cash_df(); dre=dre_df(); acts=actions_df(); market=marketing_df(); unit=unit_df(); okrs=okr_df(); fb=feedback_df(); routines=routines_df(); dec=decisions_df()
+    financeiro = 20 + (20 if not cash.empty else 0) + (20 if not dre.empty else 0) + (20 if m['margem']>=10 else 0) + (20 if m['caixa']>=0 else 0)
+    mercado = 15 + (25 if not market.empty else 0) + (20 if not fb.empty else 0) + (20 if not unit.empty else 0) + (20 if m['margem']>=10 else 0)
+    execucao = 15 + min(35, len(acts)*7) + (25 if not okrs.empty else 0) + (25 if not routines.empty else 0)
+    operacao = 25 + (20 if m['estoque'] <= max(1,m['receita']) else 0) + (20 if m['ncg'] <= max(1,m['receita']) else 0) + (20 if not dec.empty else 0) + (15 if not acts.empty else 0)
+    lideranca = 20 + (25 if not okrs.empty else 0) + (25 if not routines.empty else 0) + (20 if not dec.empty else 0) + (10 if not acts.empty else 0)
+    return [
+        ("Financeiro", min(100,financeiro), "Caixa, DRE, margem, contas e capital de giro.", "Se estiver baixo: atualizar DRE, renegociar contas e revisar preço/custo."),
+        ("Mercado e Oferta", min(100,mercado), "Cliente ideal, dor, promessa, prova, CAC, LTV e feedback real.", "Se estiver baixo: fazer conversas com clientes e testar uma oferta simples."),
+        ("Execução", min(100,execucao), "Plano, OKRs, responsáveis, prazos e rotina semanal.", "Se estiver baixo: criar 3 ações prioritárias para 7 dias."),
+        ("Operação", min(100,operacao), "Processo, estoque, giro, decisões e capacidade operacional.", "Se estiver baixo: padronizar a rotina crítica antes de escalar."),
+        ("Liderança", min(100,lideranca), "Dono, decisão, governança, reunião e cadência de gestão.", "Se estiver baixo: registrar decisões e criar ritual semanal de liderança."),
+    ]
+
+def render_growth_lanes():
+    for title,score,body,action in growth_lanes():
+        st.markdown(f"<div class='strategy-lane'><div class='lane-head'><div class='lane-title'>{title}</div><div class='lane-score'>{score}/100</div></div><div class='lane-body'>{body}</div><div class='lane-action'>{action}</div></div>", unsafe_allow_html=True)
+
 def sidebar():
     u=st.session_state.user
     st.sidebar.markdown(f'<div class="user-pill">👤 <b>{u["name"]}</b><br>{u.get("role","usuario")}</div>',unsafe_allow_html=True)
-    pages=["Sala do CEO","Jornada Guiada","Mapa de Crescimento","Minha Empresa","Painel","Indicadores","Marketing e Oferta","Unidade Econômica","OKRs e 90 Dias","Fluxo de Caixa","Contas a Pagar","Contas a Receber","DRE","Plano de Ação","Calendário","Rotina Executiva","Validação MVP","Decisões","Conselheiro CEO","Relatórios","Alerta"]
-    if is_admin():pages.append("Usuários")
+    pages=[
+        "Minha Empresa",
+        "Painel",
+        "Jornada Guiada",
+        "Indicadores",
+        "Marketing e Oferta",
+        "Unidade Econômica",
+        "OKRs e 90 Dias",
+        "Fluxo de Caixa",
+        "Contas a Pagar",
+        "Contas a Receber",
+        "DRE",
+        "Plano de Ação",
+        "Calendário",
+        "Rotina Executiva",
+        "Decisões",
+        "Relatórios",
+        "Alerta",
+    ]
+    if is_admin():
+        pages.append("Usuários")
     page=st.sidebar.radio("Módulos",pages)
-    st.sidebar.markdown("<br>",unsafe_allow_html=True)
-    if st.sidebar.button("Sair", use_container_width=True): st.session_state.clear(); st.rerun()
+    st.sidebar.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
+    if st.sidebar.button("Sair", use_container_width=True):
+        st.session_state.clear(); st.rerun()
     return page
 def topbar():
-    c1,c2=st.columns([5.8,1.4])
+    c1,c2=st.columns([7,1.45])
     with c1:
-        st.markdown('<div class="topbar"><span class="topbar-title">EXECUTA Experience OS • conselheiro, crescimento, decisão e execução</span><span class="pro-badge">EXPERIENCE OS v6</span></div>', unsafe_allow_html=True)
+        st.empty()
     with c2:
         if st.button("📘 Método EXECUTA", use_container_width=True):
             return "Método EXECUTA"
     return None
-
 def select_record(df,lab,key):
     # Mantido por compatibilidade, mas a v5.1 usa seleção direta na tabela.
     opts=[(lab(r),r.get("id")) for _,r in df.iterrows()]
@@ -665,21 +774,38 @@ def page_minha_empresa():
     dre=latest_dre()
     st.info(f"Último DRE considerado: {date_br(dre.get('period_start'))} a {date_br(dre.get('period_end'))}.") if dre else st.warning("Ainda não há DRE lançado. A leitura usa estimativas do cadastro da empresa.")
 def page_painel():
-    header("Painel Executivo","Resumo de decisão: saúde, caixa, capital de giro, execução e validação do MVP.")
-    m=calc();s,als=alertas();fb=feedback_df();dec=decisions_df();rot=routines_df()
+    header("Painel Executivo","A central do sistema: leitura de CEO, decisão recomendada, conselheiro, caixa, margem e execução.")
+    m=calc();s,als=alertas();dec=decisions_df();rot=routines_df()
     c=st.columns(4)
     with c[0]:metric("Score EXECUTA",f"{s}/100","Saúde geral")
     with c[1]:metric("Caixa atual",brl(m["caixa"]),"Entradas - saídas")
     with c[2]:metric("Capital de giro",brl(m["ncg"]),"Receber + estoque - pagar")
     with c[3]:metric("Resultado",brl(m["resultado"]),f"Margem {pct(m['margem'])}")
-    st.markdown("<div class='section-kicker'>leitura executiva</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='insight-card'><div class='insight-title'>O que os números estão dizendo</div><div class='insight-text'>{exec_reading()}</div></div>", unsafe_allow_html=True)
-    c1,c2,c3=st.columns(3)
+
+    st.markdown("<div class='section-kicker'>sala do ceo</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='ceo-panel-card'><div class='insight-title'>Leitura executiva</div><div class='insight-text'>{exec_reading()}</div></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='ceo-panel-card'><div class='insight-title'>Próximo movimento recomendado</div><div class='insight-text'>{ceo_next_move()}</div></div>", unsafe_allow_html=True)
+
+    with st.expander("Perguntas difíceis que o CEO deve responder esta semana", expanded=False):
+        for q in ceo_questions()[:6]:
+            st.markdown(f"<div class='ceo-question'>{q}</div>", unsafe_allow_html=True)
+
+    st.subheader("Pergunte ao Conselheiro CEO")
+    q=st.text_area("Digite sua dúvida executiva",placeholder="Ex.: Devo investir em tráfego agora ou corrigir margem primeiro?",height=105,key="painel_advisor_q")
+    if st.button("Gerar orientação executiva", key="painel_advisor_btn"):
+        if not q.strip():
+            st.error("Digite uma pergunta.")
+        else:
+            ans=advisor_answer(q)
+            st.session_state.painel_answer=ans
+            db.insert("advisor_history",dict(id=str(uuid.uuid4()),asked_at=dt.datetime.now().isoformat(timespec="seconds"),question=q,answer=ans,created_by=user_name()))
+    if st.session_state.get("painel_answer"):
+        st.markdown(st.session_state.painel_answer)
+
+    c1,c2=st.columns(2)
     with c1:metric("Contas a pagar",brl(m["pagar"]),"em aberto")
     with c2:metric("Contas a receber",brl(m["receber"]),"em aberto")
-    with c3:
-        avg = float(fb.score.mean()) if not fb.empty else 0
-        metric("Validação MVP",f"{avg:.1f}/10" if avg else "sem dados","média dos usuários/testadores")
+
     st.subheader("Prioridades da semana")
     acts=actions_df()
     if acts.empty: st.warning("Crie pelo menos 3 ações no Plano de Ação: uma de caixa, uma de margem e uma de venda/cliente.")
@@ -691,12 +817,16 @@ def page_painel():
     if df.empty:st.info("Sem movimentos de caixa.")
     else:
         show=df.head(12).copy();show["date"]=show.date.apply(date_br);show["amount"]=show.amount.apply(brl);st.dataframe(show[["date","type","category","description","amount","channel","created_by"]],use_container_width=True,hide_index=True)
-
 def page_alerta():
-    header("Alerta","Riscos e prioridades que antes apareciam no Painel agora ficam centralizados aqui.");s,als=alertas();metric("Score EXECUTA",f"{s}/100","Quanto menor, maior a urgência")
-    if not als:st.success("Nenhum alerta crítico identificado no momento.");return
+    header("Alerta","Riscos, pontos de atenção e plano prático para corrigir cada problema.")
+    s,als=alertas();metric("Score EXECUTA",f"{s}/100","Quanto menor, maior a urgência")
+    if not als:
+        st.success("Nenhum alerta crítico identificado no momento.")
+        return
     for n,t,a in als:
         (st.error if n=="Crítico" else st.warning)(f"**{n}: {t}** — {a}")
+        steps=solution_steps(t,a)
+        st.markdown("<div class='solution-card'><div class='solution-title'>O que fazer para solucionar</div><ol>" + "".join([f"<li>{x}</li>" for x in steps]) + "</ol></div>", unsafe_allow_html=True)
 def page_fluxo():
     header("Fluxo de Caixa","Lançar entradas/saídas, parcelas e controlar histórico financeiro.");readonly_warning()
     if can_edit():
@@ -831,21 +961,34 @@ def page_actions():
         if c2.button("Excluir toda a linha selecionada",key="delete_action_selected"):
             db.delete("action_plan",rec["id"]); st.success("Linha excluída com sucesso."); st.rerun()
 def page_calendar():
-    header("Calendário","Agenda com compromissos diários, categorias e níveis por cor.");readonly_warning();colors={"Baixa":"#29E6A7","Média":"#FFCC66","Alta":"#FF8A3D","Crítica":"#FF5C7A"}
+    header("Calendário","Agenda com compromissos e vencimentos: verde para contas a receber, vermelho para contas a pagar.")
+    readonly_warning();colors={"Baixa":"#29E6A7","Média":"#FFCC66","Alta":"#FF8A3D","Crítica":"#FF5C7A"}
     if can_edit():
         with st.form("event_form",clear_on_submit=True):
             c1,c2,c3=st.columns(3)
             with c1:ed=st.date_input("Data",value=dt.date.today(),format="DD/MM/YYYY");et=st.text_input("Horário",placeholder="Ex.: 14:30")
             with c2:title=st.text_input("Compromisso");cat=st.selectbox("Categoria",["Financeiro","Comercial","Operação","Reunião","Cliente","Pessoal","Outro"])
             with c3:level=st.selectbox("Nível",["Baixa","Média","Alta","Crítica"]);notes=st.text_input("Observações")
-            if st.form_submit_button("Adicionar compromisso"):db.insert("calendar_events",dict(id=str(uuid.uuid4()),event_date=ed.strftime(DATE_DB),event_time=et,title=title,category=cat,level=level,color=colors[level],notes=notes,created_by=user_name()));st.success("Compromisso adicionado.");st.rerun()
+            if st.form_submit_button("Adicionar compromisso"):
+                db.insert("calendar_events",dict(id=str(uuid.uuid4()),event_date=ed.strftime(DATE_DB),event_time=et,title=title,category=cat,level=level,color=colors[level],notes=notes,created_by=user_name()))
+                st.success("Compromisso adicionado.");st.rerun()
+    st.markdown("<div class='tooltip-box'><span class='help-badge'>?</span><b>Como ler o calendário</b><br><span class='calendar-dot' style='background:#29E6A7'></span> verde = conta a receber. <span class='calendar-dot' style='background:#FF5C7A'></span> vermelho = conta a pagar. Os compromissos aparecem com a cor do nível escolhido.</div>", unsafe_allow_html=True)
     today=dt.date.today();c1,c2=st.columns(2);month=c1.selectbox("Mês",list(range(1,13)),index=today.month-1,format_func=lambda m:f"{m:02d}");year=c2.number_input("Ano",min_value=2020,max_value=2100,value=today.year,step=1)
-    events=events_df();ms=dt.date(int(year),int(month),1);me=dt.date(int(year),int(month),pycal.monthrange(int(year),int(month))[1]);mev=events[(events.event_date>=ms.strftime(DATE_DB))&(events.event_date<=me.strftime(DATE_DB))] if not events.empty else events
+    events=events_df();acc=accounts_df();ms=dt.date(int(year),int(month),1);me=dt.date(int(year),int(month),pycal.monthrange(int(year),int(month))[1])
+    mev=events[(events.event_date>=ms.strftime(DATE_DB))&(events.event_date<=me.strftime(DATE_DB))] if not events.empty else events
+    month_acc=acc[(acc.due_date>=ms.strftime(DATE_DB))&(acc.due_date<=me.strftime(DATE_DB))&(~acc.status.isin(["Pago","Recebido"]))] if not acc.empty else acc
     st.subheader("Calendário do mês");cal=pycal.Calendar(firstweekday=0)
     for week in cal.monthdatescalendar(int(year),int(month)):
         cols=st.columns(7)
         for i,d in enumerate(week):
-            de=mev[mev.event_date==d.strftime(DATE_DB)] if not mev.empty else pd.DataFrame();mut="opacity:.35;" if d.month!=int(month) else "";chips=""
+            day=d.strftime(DATE_DB)
+            de=mev[mev.event_date==day] if not mev.empty else pd.DataFrame()
+            da=month_acc[month_acc.due_date==day] if not month_acc.empty else pd.DataFrame()
+            mut="opacity:.35;" if d.month!=int(month) else "";chips=""
+            if not da.empty:
+                rec_count=len(da[da.kind=="Receber"]); pay_count=len(da[da.kind=="Pagar"])
+                if rec_count: chips+=f'<span class="event-chip" style="background:#29E6A7">● Receber {rec_count}</span>'
+                if pay_count: chips+=f'<span class="event-chip" style="background:#FF5C7A;color:#fff">● Pagar {pay_count}</span>'
             if not de.empty:
                 for _,ev in de.head(3).iterrows():chips+=f'<span class="event-chip" style="background:{ev.get("color") or "#00D1FF"}">{ev.get("event_time") or ""} {str(ev.get("title") or "")[:12]}</span>'
             cols[i].markdown(f'<div class="calendar-day" style="{mut}"><div class="calendar-date">{d.day}</div>{chips}</div>',unsafe_allow_html=True)
@@ -858,7 +1001,11 @@ def page_calendar():
             st.success(f"Compromisso selecionado: {date_br(rec.get('event_date'))} • {rec.get('event_time')} • {rec.get('title')}")
             if st.button("Excluir compromisso selecionado", key="delete_calendar_selected"):
                 db.delete("calendar_events", rec["id"]); st.success("Compromisso excluído com sucesso."); st.rerun()
-
+    st.subheader("Vencimentos do mês")
+    if month_acc.empty: st.info("Nenhuma conta a pagar ou receber no mês.")
+    else:
+        show=month_acc.copy();show["due_date"]=show.due_date.apply(date_br);show["amount"]=show.amount.apply(brl)
+        st.dataframe(show[["due_date","kind","supplier_client","description","amount","status"]],use_container_width=True,hide_index=True)
 def page_indicadores():
     header("Indicadores","KPIs essenciais para decisão: margem, liquidez, execução, validação e risco.")
     m=calc();s,als=alertas();fb=feedback_df();acts=actions_df();acc=accounts_df()
@@ -905,7 +1052,7 @@ def page_rotina_executiva():
     st.dataframe(show[["routine_date","routine_type","score","focus","decisions","risks","next_actions","created_by"]],use_container_width=True,hide_index=True)
 
 def page_validacao_mvp():
-    header("Validação MVP","Coleta de feedback real: problema, valor percebido, objeções e melhorias prioritárias.")
+    header("Feedback de Mercado","Coleta de feedback real: problema, valor percebido, objeções e melhorias prioritárias.")
     readonly_warning()
     if can_edit():
         with st.form("mvp_feedback_form",clear_on_submit=True):
@@ -959,21 +1106,38 @@ def page_decisoes():
     st.dataframe(show[["decision_date","area","decision","reason","expected_result","owner","due_date","status","created_by"]],use_container_width=True,hide_index=True)
 
 def page_relatorios():
-    header("Relatórios","Relatório executivo pronto para copiar, salvar ou enviar para sócios/equipe.")
-    m=calc();s,als=alertas();fb=feedback_df();acts=actions_df();dec=decisions_df()
-    report=f"""# Relatório Executivo EXECUTA\n\nData: {date_br(dt.date.today())}\n\n## 1. Saúde geral\nScore EXECUTA: {s}/100\nCaixa atual: {brl(m['caixa'])}\nCapital de giro: {brl(m['ncg'])}\nResultado: {brl(m['resultado'])}\nMargem: {pct(m['margem'])}\n\n## 2. Leitura executiva\n{exec_reading()}\n\n## 2.1 Próximo movimento do CEO\n{ceo_next_move()}\n\n## 3. Alertas\n"""
+    header("Relatórios","Mapa de crescimento + relatório executivo em um único módulo.")
+    st.subheader("Mapa de Crescimento")
+    st.caption("Leitura estratégica por frentes: financeiro, mercado, execução, operação e liderança. Use isso para decidir onde agir primeiro.")
+    render_growth_lanes()
+    st.warning("Regra executiva: não acelerar marketing ou contratação se Financeiro, Mercado e Execução estiverem fracos. Primeiro corrija a base, depois escale.")
+
+    st.subheader("Relatório Executivo")
+    m=calc();s,als=alertas();acts=actions_df();dec=decisions_df()
+    report = "# Relatório Executivo EXECUTA\n\n"
+    report += f"Data: {date_br(dt.date.today())}\n\n"
+    report += "## 1. Saúde geral\n"
+    report += f"Score EXECUTA: {s}/100\nCaixa atual: {brl(m['caixa'])}\nCapital de giro: {brl(m['ncg'])}\nResultado: {brl(m['resultado'])}\nMargem: {pct(m['margem'])}\n\n"
+    report += "## 2. Leitura executiva\n" + exec_reading() + "\n\n"
+    report += "## 2.1 Próximo movimento do CEO\n" + ceo_next_move() + "\n\n"
+    report += "## 3. Mapa de crescimento\n"
+    for title,score,body,action in growth_lanes():
+        report += f"- {title}: {score}/100 — {body} Ação: {action}\n"
+    report += "\n## 4. Alertas e correções\n"
     if als:
-        report += "\n".join([f"- {n}: {t} — {a}" for n,t,a in als])
+        for n,t,a in als:
+            report += f"- {n}: {t} — {a}\n"
+            for step in solution_steps(t,a):
+                report += f"  - Fazer: {step}\n"
     else:
-        report += "Nenhum alerta crítico identificado."
-    report += "\n\n## 4. Plano de ação\n"
-    if acts.empty: report += "Nenhuma ação cadastrada."
+        report += "Nenhum alerta crítico identificado.\n"
+    report += "\n## 5. Plano de ação\n"
+    if acts.empty:
+        report += "Nenhuma ação cadastrada."
     else:
-        for _,r in acts.head(10).iterrows(): report += f"- [{r.get('status')}] {r.get('area')} — {r.get('action')} | Responsável: {r.get('responsible')} | Prazo: {date_br(r.get('due_date'))}\n"
-    report += "\n## 5. Validação MVP\n"
-    if fb.empty: report += "Nenhum feedback registrado."
-    else: report += f"Nota média: {float(fb.score.mean()):.1f}/10 em {len(fb)} feedbacks."
-    st.text_area("Relatório gerado",report,height=420)
+        for _,r in acts.head(10).iterrows():
+            report += f"- [{r.get('status')}] {r.get('area')} — {r.get('action')} | Responsável: {r.get('responsible')} | Prazo: {date_br(r.get('due_date'))}\n"
+    st.text_area("Relatório gerado",report,height=460)
     st.download_button("Baixar relatório .md",report,file_name=f"relatorio_executa_{today_db()}.md",mime="text/markdown")
 
 def page_metodo():
@@ -985,7 +1149,7 @@ def page_metodo():
         ["2. DRE + Fluxo", "Separar resultado de caixa", "Lucro e caixa são coisas diferentes; os dois precisam ser acompanhados."],
         ["3. Indicadores", "Ler sinais", "Score, margem, giro, execução e feedback indicam o próximo gargalo."],
         ["4. Plano + Rotina", "Transformar análise em execução", "Toda decisão precisa de responsável, prazo e revisão."],
-        ["5. Validação MVP", "Aprender com usuários reais", "O produto melhora quando o mercado mostra onde dói e pelo que pagaria."],
+        ["5. Feedback de Mercado", "Aprender com usuários reais", "O produto melhora quando o mercado mostra onde dói e pelo que pagaria."],
     ],columns=["Etapa","Função","Por que importa"]),use_container_width=True,hide_index=True)
     st.subheader("Sete frentes")
     for i,(t,d) in enumerate(EXECUTA_FRENTES,1):st.markdown(f"**{i}. {t}** — {d}")
@@ -1019,7 +1183,7 @@ def advisor_answer(q):
     if "geral" in temas: bloco.append("Comece pela verdade: empresa saudável precisa provar caixa, margem, demanda, operação, liderança e execução.")
     out.append("## 4. Análise por tema\n"+"\n".join(f"- {b}" for b in bloco))
     out.append("## 5. Perguntas que eu faria antes de decidir\n"+"\n".join(f"- {x}" for x in ceo_questions()[:5]))
-    out.append("## 6. Plano prático de 7 dias\n1. Atualizar DRE e fluxo de caixa.\n2. Baixar contas pagas/recebidas e revisar vencimentos.\n3. Registrar uma decisão importante no módulo Decisões.\n4. Criar 3 ações com responsável e prazo.\n5. Coletar feedback real no módulo Validação MVP.\n6. Revisar Marketing e Oferta.\n7. Fazer Rotina Executiva semanal e decidir se acelera, corrige ou pausa.")
+    out.append("## 6. Plano prático de 7 dias\n1. Atualizar DRE e fluxo de caixa.\n2. Baixar contas pagas/recebidas e revisar vencimentos.\n3. Registrar uma decisão importante no módulo Decisões.\n4. Criar 3 ações com responsável e prazo.\n5. Coletar feedback real no módulo Feedback de Mercado.\n6. Revisar Marketing e Oferta.\n7. Fazer Rotina Executiva semanal e decidir se acelera, corrige ou pausa.")
     if market.empty: out.append("\n**Observação crítica:** ainda não existe playbook de Marketing e Oferta. Sem clareza de cliente, dor e promessa, o app vira financeiro — não conselheiro de crescimento.")
     if units.empty: out.append("\n**Observação crítica:** ainda não existe Unidade Econômica. Sem CAC, ticket, margem e LTV, escalar marketing é chute.")
     if okrs.empty: out.append("\n**Observação crítica:** ainda não existem OKRs de 90 dias. Sem foco, o empresário troca prioridade toda semana.")
@@ -1033,32 +1197,40 @@ def page_advisor():
             ans=advisor_answer(q);st.session_state.last_answer=ans;db.insert("advisor_history",dict(id=str(uuid.uuid4()),asked_at=dt.datetime.now().isoformat(timespec="seconds"),question=q,answer=ans,created_by=user_name()))
     if st.session_state.get("last_answer"):st.markdown(st.session_state.last_answer)
 def page_users():
-    header("Usuários",f"Somente administrador. Limite de {MAX_USERS} usuários.")
-    if not is_admin():st.error("Você não tem permissão para acessar este módulo.");return
-    users=db.select("app_users",order="created_at");st.write(f"Usuários cadastrados: **{len(users)}/{MAX_USERS}**")
-    if users:st.dataframe(pd.DataFrame(users)[["name","email","role","active","created_at"]],use_container_width=True,hide_index=True)
-    with st.form("newuser"):
-        code=st.text_input("Código de criação",type="password");name=st.text_input("Nome");email=st.text_input("E-mail");pw=st.text_input("Senha",type="password");rv=st.selectbox("Perfil",["administrador","usuario","somente leitura"])
-        if st.form_submit_button("Criar usuário"):
-            if code!=secret("SETUP_CODE","executa2026"):st.error("Código incorreto.")
-            else:
-                ok,msg=create_user(name,email,pw,rv);st.success(msg) if ok else st.error(msg)
+    header("Usuários","Área administrativa de acesso. Este módulo só aparece para administrador.")
+    if not is_admin():
+        st.error("Você não tem permissão para acessar este módulo.")
+        return
+    users=db.select("app_users",order="created_at")
+    if users:
+        show=pd.DataFrame(users)[["name","email","role","active","created_at"]]
+        st.dataframe(show,use_container_width=True,hide_index=True)
+    with st.expander("Criar novo acesso", expanded=False):
+        with st.form("newuser"):
+            code=st.text_input("Código de criação",type="password")
+            name=st.text_input("Nome")
+            email=st.text_input("E-mail")
+            pw=st.text_input("Senha",type="password")
+            rv=st.selectbox("Perfil",["administrador","usuario","somente leitura"])
+            if st.form_submit_button("Criar usuário"):
+                if code!=secret("SETUP_CODE","executa2026"):
+                    st.error("Código incorreto.")
+                else:
+                    ok,msg=create_user(name,email,pw,rv)
+                    st.success(msg) if ok else st.error(msg)
 def main():
     if "user" not in st.session_state:login_screen();return
     page=sidebar()
     override=topbar()
     if override:
         page=override
-    if page=="Sala do CEO":page_sala_ceo()
-    elif page=="Jornada Guiada":page_jornada_guiada()
-    elif page=="Mapa de Crescimento":page_mapa_crescimento()
-    elif page=="Minha Empresa":page_minha_empresa()
+    if page=="Minha Empresa":page_minha_empresa()
     elif page=="Painel":page_painel()
+    elif page=="Jornada Guiada":page_jornada_guiada()
     elif page=="Indicadores":page_indicadores()
     elif page=="Marketing e Oferta":page_marketing_oferta()
     elif page=="Unidade Econômica":page_unit_economics()
     elif page=="OKRs e 90 Dias":page_okrs_90()
-    elif page=="Alerta":page_alerta()
     elif page=="Fluxo de Caixa":page_fluxo()
     elif page=="Contas a Pagar":page_accounts("Pagar")
     elif page=="Contas a Receber":page_accounts("Receber")
@@ -1066,10 +1238,9 @@ def main():
     elif page=="Plano de Ação":page_actions()
     elif page=="Calendário":page_calendar()
     elif page=="Rotina Executiva":page_rotina_executiva()
-    elif page=="Validação MVP":page_validacao_mvp()
     elif page=="Decisões":page_decisoes()
-    elif page=="Método EXECUTA":page_metodo()
-    elif page=="Conselheiro CEO":page_advisor()
     elif page=="Relatórios":page_relatorios()
+    elif page=="Alerta":page_alerta()
+    elif page=="Método EXECUTA":page_metodo()
     elif page=="Usuários":page_users()
 main()

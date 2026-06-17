@@ -65,3 +65,15 @@ Esta versão foi refinada para melhorar a experiência do usuário e transformar
 ### Filosofia do produto
 
 O app não deve ser percebido como “sistema para guardar dados”. Ele deve ser percebido como um conselheiro operacional: lê informações, aponta gargalos, força decisão, organiza plano e cria rotina de execução.
+
+
+## v6.1 Refinada
+
+- Reordenado menu lateral: Minha Empresa agora é o primeiro módulo.
+- Removidos da lateral: Sala do CEO, Conselheiro CEO, Mapa de Crescimento e Validação MVP.
+- Conteúdo de Sala do CEO e Conselheiro CEO foi incorporado ao Painel.
+- Mapa de Crescimento foi unido ao módulo Relatórios.
+- Alertas agora mostram o que fazer para corrigir cada ponto de atenção.
+- Calendário mostra vencimentos de contas: verde para receber e vermelho para pagar.
+- Login não mostra mais cadastro público nem quantidade de usuários; primeiro acesso cria administrador, depois só admin cria usuários.
+- Ajustes de espaçamento para evitar conteúdo superior cortado.

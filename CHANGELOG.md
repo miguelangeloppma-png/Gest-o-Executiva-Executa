@@ -31,3 +31,16 @@
 - Reforço de tooltips/ajudas técnicas nos módulos principais.
 - Sala do CEO reposicionada como central de decisão e execução.
 - Mantida compatibilidade com Supabase e estrutura da v5.1.
+
+
+## Experience OS v6.1 REFINADA
+
+- Minha Empresa passa a ser o primeiro módulo.
+- Painel recebeu a leitura de CEO, próximo movimento e Conselheiro CEO.
+- Sala do CEO e Conselheiro CEO saíram da lateral para evitar repetição.
+- Mapa de Crescimento foi unificado com Relatórios.
+- Validação MVP saiu da navegação do usuário.
+- Alerta ganhou plano de solução por problema.
+- Calendário ganhou bolinhas de contas a pagar e a receber.
+- Login e Usuários ficaram mais privados e menos expostos.
+- Ajustes de layout para reduzir informações cortadas no topo.
