@@ -10,10 +10,43 @@ except Exception:
     create_client = None
 
 APP_NAME="Gestão Executiva EXECUTA — Executive OS"
-APP_VERSION="v6.4 FINAL EXECUTIVA"
+APP_VERSION="v7 MULTIEMPRESA"
 MAX_USERS=10
 DATE_DB="%Y-%m-%d"
 DATE_BR="%d/%m/%Y"
+
+DEFAULT_COMPANY_ID = "default-company"
+
+TENANT_TABLES = {
+    "company_profile",
+    "cash_flow",
+    "accounts",
+    "action_plan",
+    "advisor_history",
+    "dre_records",
+    "calendar_events",
+    "mvp_feedback",
+    "executive_routines",
+    "decision_log",
+    "marketing_playbook",
+    "unit_economics",
+    "okr_records",
+}
+
+def has_logged_user():
+    return "user" in st.session_state and bool(st.session_state.get("user"))
+
+def current_company_id():
+    user = st.session_state.get("user", {}) if "st" in globals() else {}
+    return user.get("company_id") or DEFAULT_COMPANY_ID
+
+def current_company_name():
+    user = st.session_state.get("user", {}) if "st" in globals() else {}
+    return user.get("company_name") or "Empresa atual"
+
+def is_company_table(table_name):
+    return table_name in TENANT_TABLES
+
 
 st.set_page_config(page_title=APP_NAME,page_icon="⚡",layout="wide",initial_sidebar_state="expanded")
 st.markdown("""
@@ -390,25 +423,34 @@ class DB:
             except Exception:self.sb=None;self.mode="sqlite"
         if self.mode=="sqlite":
             self.conn=sqlite3.connect("gestao_executiva_web_mvp_v2.db",check_same_thread=False);self.conn.row_factory=sqlite3.Row;self.ensure()
+
     def ensure(self):
         cur=self.conn.cursor()
-        cur.execute("create table if not exists app_users(id text primary key,name text,email text unique,password_salt text,password_hash text,role text,active int default 1,created_at text default current_timestamp)")
-        cur.execute("create table if not exists company_profile(id text primary key,company_name text,owner_name text,segment text,business_size text,monthly_revenue real default 0,fixed_costs real default 0,variable_costs real default 0,stock_value real default 0,initial_cash real default 0,notes text,updated_at text)")
-        cur.execute("create table if not exists cash_flow(id text primary key,date text,type text,category text,description text,amount real default 0,channel text,created_by text,created_at text default current_timestamp)")
-        cur.execute("create table if not exists accounts(id text primary key,due_date text,kind text,supplier_client text,description text,amount real default 0,status text default 'Aberto',paid_date text,created_by text,created_at text default current_timestamp)")
-        cur.execute("create table if not exists action_plan(id text primary key,priority text,area text,action text,responsible text,due_date text,status text default 'Pendente',created_by text,created_at text default current_timestamp)")
-        cur.execute("create table if not exists advisor_history(id text primary key,asked_at text,question text,answer text,created_by text)")
-        cur.execute("create table if not exists dre_records(id text primary key,period_start text,period_end text,receita_bruta real default 0,deducoes_impostos real default 0,receita_liquida real default 0,custos_produtos_servicos real default 0,lucro_bruto real default 0,despesas_operacionais real default 0,resultados_financeiros real default 0,ebitda real default 0,lucro_operacional real default 0,lucro_liquido real default 0,notes text,created_by text,created_at text default current_timestamp)")
-        cur.execute("create table if not exists calendar_events(id text primary key,event_date text,event_time text,title text,category text,level text,color text,notes text,created_by text,created_at text default current_timestamp)")
-        cur.execute("create table if not exists mvp_feedback(id text primary key,feedback_date text,person text,profile text,score int default 0,main_pain text,liked text,missing text,objection text,status text,created_by text,created_at text default current_timestamp)")
-        cur.execute("create table if not exists executive_routines(id text primary key,routine_date text,routine_type text,score int default 0,focus text,decisions text,risks text,next_actions text,created_by text,created_at text default current_timestamp)")
-        cur.execute("create table if not exists decision_log(id text primary key,decision_date text,area text,decision text,reason text,expected_result text,owner text,due_date text,status text,created_by text,created_at text default current_timestamp)")
-        cur.execute("create table if not exists marketing_playbook(id text primary key,created_at text default current_timestamp,segment text,ideal_customer text,main_pain text,promise text,offer text,proof text,objections text,channels text,next_test text,created_by text)")
-        cur.execute("create table if not exists unit_economics(id text primary key,created_at text default current_timestamp,ticket_medio real default 0,margem_contribuicao real default 0,cac real default 0,compras_ano real default 1,retencao_meses real default 12,churn_mensal real default 0,created_by text)")
-        cur.execute("create table if not exists okr_records(id text primary key,created_at text default current_timestamp,quarter text,objective text,key_result text,target text,current_value text,confidence int default 5,owner text,due_date text,status text,created_by text)")
+        cur.execute("create table if not exists companies(id text primary key,name text,owner_name text,active int default 1,created_at text default current_timestamp)")
+        cur.execute("insert or ignore into companies(id,name,owner_name,active) values(?,?,?,1)", (DEFAULT_COMPANY_ID, "Empresa Principal", "Administrador"))
+        cur.execute("create table if not exists app_users(id text primary key,company_id text,name text,email text unique,password_salt text,password_hash text,role text,active int default 1,created_at text default current_timestamp)")
+        cur.execute("create table if not exists company_profile(id text primary key,company_id text,company_name text,owner_name text,segment text,business_size text,monthly_revenue real default 0,fixed_costs real default 0,variable_costs real default 0,stock_value real default 0,initial_cash real default 0,notes text,updated_at text)")
+        cur.execute("create table if not exists cash_flow(id text primary key,company_id text,date text,type text,category text,description text,amount real default 0,channel text,created_by text,created_at text default current_timestamp)")
+        cur.execute("create table if not exists accounts(id text primary key,company_id text,due_date text,kind text,supplier_client text,description text,amount real default 0,status text default 'Aberto',paid_date text,created_by text,created_at text default current_timestamp)")
+        cur.execute("create table if not exists action_plan(id text primary key,company_id text,priority text,area text,action text,responsible text,due_date text,status text default 'Pendente',created_by text,created_at text default current_timestamp)")
+        cur.execute("create table if not exists advisor_history(id text primary key,company_id text,asked_at text,question text,answer text,created_by text)")
+        cur.execute("create table if not exists dre_records(id text primary key,company_id text,period_start text,period_end text,receita_bruta real default 0,deducoes_impostos real default 0,receita_liquida real default 0,custos_produtos_servicos real default 0,lucro_bruto real default 0,despesas_operacionais real default 0,resultados_financeiros real default 0,ebitda real default 0,lucro_operacional real default 0,lucro_liquido real default 0,notes text,created_by text,created_at text default current_timestamp)")
+        cur.execute("create table if not exists calendar_events(id text primary key,company_id text,event_date text,event_time text,title text,category text,level text,color text,notes text,created_by text,created_at text default current_timestamp)")
+        cur.execute("create table if not exists mvp_feedback(id text primary key,company_id text,feedback_date text,person text,profile text,score int default 0,main_pain text,liked text,missing text,objection text,status text,created_by text,created_at text default current_timestamp)")
+        cur.execute("create table if not exists executive_routines(id text primary key,company_id text,routine_date text,routine_type text,score int default 0,focus text,decisions text,risks text,next_actions text,created_by text,created_at text default current_timestamp)")
+        cur.execute("create table if not exists decision_log(id text primary key,company_id text,decision_date text,area text,decision text,reason text,expected_result text,owner text,due_date text,status text,created_by text,created_at text default current_timestamp)")
+        cur.execute("create table if not exists marketing_playbook(id text primary key,company_id text,created_at text default current_timestamp,segment text,ideal_customer text,main_pain text,promise text,offer text,proof text,objections text,channels text,next_test text,created_by text)")
+        cur.execute("create table if not exists unit_economics(id text primary key,company_id text,created_at text default current_timestamp,ticket_medio real default 0,margem_contribuicao real default 0,cac real default 0,compras_ano real default 1,retencao_meses real default 12,churn_mensal real default 0,created_by text)")
+        cur.execute("create table if not exists okr_records(id text primary key,company_id text,created_at text default current_timestamp,quarter text,objective text,key_result text,target text,current_value text,confidence int default 5,owner text,due_date text,status text,created_by text)")
         self.conn.commit()
+
     def select(self,t,filters=None,order=None,desc=False,limit=None):
-        filters=filters or {}
+        filters=dict(filters or {})
+        if has_logged_user():
+            if is_company_table(t) and "company_id" not in filters:
+                filters["company_id"]=current_company_id()
+            if t=="app_users" and "company_id" not in filters:
+                filters["company_id"]=current_company_id()
         if self.mode=="supabase":
             q=self.sb.table(t).select("*")
             for k,v in filters.items(): q=q.eq(k,v)
@@ -419,33 +461,101 @@ class DB:
             except Exception:
                 return []
         sql=f"select * from {t}";vals=[]
-        if filters: sql+=" where "+" and ".join([f"{k}=?" for k in filters]); vals=list(filters.values())
+        if filters:
+            sql+=" where "+" and ".join([f"{k}=?" for k in filters])
+            vals=list(filters.values())
         if order: sql+=f" order by {order} {'desc' if desc else 'asc'}"
         if limit: sql+=f" limit {int(limit)}"
-        return [dict(r) for r in self.conn.execute(sql,vals).fetchall()]
+        try:
+            return [dict(r) for r in self.conn.execute(sql,vals).fetchall()]
+        except Exception:
+            return []
+
     def insert(self,t,d):
+        d=dict(d or {})
+        if is_company_table(t) and "company_id" not in d:
+            d["company_id"]=current_company_id()
+        if t=="app_users" and "company_id" not in d:
+            d["company_id"]=current_company_id()
         if self.mode=="supabase":
             try: return self.sb.table(t).insert(d).execute()
             except Exception as e: st.error(f"Erro ao salvar em {t}: {e}"); return None
-        ks=list(d.keys()); self.conn.execute(f"insert into {t} ({','.join(ks)}) values ({','.join(['?']*len(ks))})",[d[k] for k in ks]); self.conn.commit()
+        ks=list(d.keys())
+        self.conn.execute(f"insert into {t} ({','.join(ks)}) values ({','.join(['?']*len(ks))})",[d[k] for k in ks])
+        self.conn.commit()
+
     def update(self,t,row_id,d):
+        d=dict(d or {})
         if self.mode=="supabase":
-            try: return self.sb.table(t).update(d).eq("id",row_id).execute()
+            try:
+                q=self.sb.table(t).update(d).eq("id",row_id)
+                if has_logged_user() and (is_company_table(t) or t=="app_users"):
+                    q=q.eq("company_id", current_company_id())
+                return q.execute()
             except Exception as e: st.error(f"Erro ao editar em {t}: {e}"); return None
-        ks=list(d.keys()); self.conn.execute(f"update {t} set {','.join([k+'=?' for k in ks])} where id=?",[d[k] for k in ks]+[row_id]); self.conn.commit()
+        ks=list(d.keys())
+        self.conn.execute(f"update {t} set {','.join([k+'=?' for k in ks])} where id=?",[d[k] for k in ks]+[row_id])
+        self.conn.commit()
+
     def delete(self,t,row_id):
         if self.mode=="supabase":
-            try: return self.sb.table(t).delete().eq("id",row_id).execute()
+            try:
+                q=self.sb.table(t).delete().eq("id",row_id)
+                if has_logged_user() and (is_company_table(t) or t=="app_users"):
+                    q=q.eq("company_id", current_company_id())
+                return q.execute()
             except Exception as e: st.error(f"Erro ao apagar em {t}: {e}"); return None
-        self.conn.execute(f"delete from {t} where id=?",(row_id,)); self.conn.commit()
+        self.conn.execute(f"delete from {t} where id=?",(row_id,))
+        self.conn.commit()
+
     def count(self,t):
+        filters={}
+        if has_logged_user():
+            if is_company_table(t):
+                filters["company_id"]=current_company_id()
+            if t=="app_users":
+                filters["company_id"]=current_company_id()
         if self.mode=="supabase":
-            try: return len(self.sb.table(t).select("id").execute().data or [])
+            try:
+                q=self.sb.table(t).select("id")
+                for k,v in filters.items(): q=q.eq(k,v)
+                return len(q.execute().data or [])
             except Exception: return 0
-        return int(self.conn.execute(f"select count(*) from {t}").fetchone()[0])
-@st.cache_resource
+        sql=f"select count(*) from {t}"
+        vals=[]
+        if filters:
+            sql+=" where "+" and ".join([f"{k}=?" for k in filters])
+            vals=list(filters.values())
+        return int(self.conn.execute(sql,vals).fetchone()[0])
 def get_db(): return DB()
 db=get_db()
+
+
+def get_company(company_id=None):
+    cid = company_id or current_company_id()
+    rows = db.select("companies", {"id": cid}, limit=1)
+    return rows[0] if rows else {"id": cid, "name": "Empresa atual", "owner_name": ""}
+
+def create_company_record(name, owner_name=""):
+    name = (name or "").strip() or "Nova empresa"
+    company_id = str(uuid.uuid4())
+    db.insert("companies", dict(id=company_id, name=name, owner_name=owner_name or "", active=1))
+    return company_id
+
+def first_company_id():
+    rows = db.select("companies", order="created_at", limit=1)
+    if rows:
+        return rows[0].get("id") or DEFAULT_COMPANY_ID
+    db.insert("companies", dict(id=DEFAULT_COMPANY_ID, name="Empresa Principal", owner_name="Administrador", active=1))
+    return DEFAULT_COMPANY_ID
+
+def attach_company_info(user):
+    user = dict(user or {})
+    cid = user.get("company_id") or first_company_id()
+    user["company_id"] = cid
+    comp = get_company(cid)
+    user["company_name"] = comp.get("name") or "Empresa atual"
+    return user
 
 def role(): return st.session_state.get("user",{}).get("role","usuario")
 def is_admin(): return role()=="administrador"
@@ -454,37 +564,54 @@ def readonly_warning():
     if not can_edit(): st.info("Seu perfil é somente leitura. Você pode visualizar, mas não pode cadastrar, editar ou apagar.")
 def user_name(): return st.session_state.get("user",{}).get("name","Usuário")
 
-def create_user(name,email,pw,role_value="usuario"):
-    if db.count("app_users")>=MAX_USERS:return False,f"Limite de {MAX_USERS} usuários atingido."
+
+def create_user(name,email,pw,role_value="usuario",company_id=None):
+    cid = company_id or current_company_id()
+    if has_logged_user() and db.count("app_users")>=MAX_USERS:
+        return False,f"Limite de {MAX_USERS} usuários atingido nesta empresa."
     email=email.strip().lower()
-    if not name or not email or len(pw)<6:return False,"Preencha nome, e-mail e senha com no mínimo 6 caracteres."
-    if db.select("app_users",{"email":email}):return False,"E-mail já cadastrado."
-    s,d=hpw(pw);db.insert("app_users",dict(id=str(uuid.uuid4()),name=name,email=email,password_salt=s,password_hash=d,role=role_value,active=1))
+    if not name or not email or len(pw)<6:
+        return False,"Preencha nome, e-mail e senha com no mínimo 6 caracteres."
+    if db.select("app_users",{"email":email}):
+        return False,"E-mail já cadastrado."
+    s,d=hpw(pw)
+    db.insert("app_users",dict(id=str(uuid.uuid4()),company_id=cid,name=name,email=email,password_salt=s,password_hash=d,role=role_value,active=1))
     return True,"Usuário criado."
+
 def login_user(email,pw):
     us=db.select("app_users",{"email":email.strip().lower()})
     if not us:return None,"Usuário não encontrado."
     u=us[0]
     if int(u.get("active",1))!=1:return None,"Usuário inativo."
     if not cpw(pw,u["password_salt"],u["password_hash"]):return None,"Senha incorreta."
-    return u,"OK"
+    if not u.get("company_id"):
+        cid = first_company_id()
+        try:
+            db.update("app_users", u["id"], {"company_id": cid})
+            u["company_id"] = cid
+        except Exception:
+            u["company_id"] = cid
+    return attach_company_info(u),"OK"
+
 def login_screen():
-    header(APP_NAME, "Acesso executivo da empresa")
+    header(APP_NAME, "Acesso executivo multiempresa")
     total_users = db.count("app_users")
     if total_users == 0:
-        st.warning("Primeiro acesso: crie o administrador inicial. Depois disso, novos usuários serão criados apenas por um administrador dentro do sistema.")
+        st.warning("Primeiro acesso: crie a primeira empresa e o administrador inicial.")
         with st.form("first_admin"):
             code = st.text_input("Código de criação", type="password")
+            company_name = st.text_input("Nome da empresa", placeholder="Ex.: Casulo Livros")
             name = st.text_input("Nome do administrador")
             email = st.text_input("E-mail")
             pw = st.text_input("Senha", type="password")
-            sub = st.form_submit_button("Criar administrador")
+            sub = st.form_submit_button("Criar empresa e administrador")
         if sub:
             if code != secret("SETUP_CODE", "executa2026"):
                 st.error("Código de criação incorreto.")
             else:
-                ok, msg = create_user(name, email, pw, "administrador")
-                st.success(msg) if ok else st.error(msg)
+                cid = create_company_record(company_name, name)
+                ok, msg = create_user(name, email, pw, "administrador", cid)
+                st.success("Empresa e administrador criados.") if ok else st.error(msg)
         return
 
     c1, c2 = st.columns([1.15, .85], gap="large")
@@ -502,13 +629,17 @@ def login_screen():
             else:
                 st.error(msg)
     with c2:
-        st.markdown("<div class='tooltip-box'><span class='help-badge'>?</span><b>Acesso controlado</b><br>Novos usuários não aparecem para qualquer visitante. Apenas o administrador cria acessos dentro do sistema.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='tooltip-box'><span class='help-badge'>?</span><b>Multiempresa ativo</b><br>Cada usuário entra apenas na empresa à qual pertence. Os dados de uma empresa não aparecem para outra.</div>", unsafe_allow_html=True)
         st.info(f"Banco atual: **{db.mode.upper()}**")
+
 def ensure_profile():
+    cid = current_company_id()
     r=db.select("company_profile",limit=1)
     if r:return r[0]
-    row=dict(id="main",company_name="",owner_name="",segment="",business_size="Pequena",monthly_revenue=0,fixed_costs=0,variable_costs=0,stock_value=0,initial_cash=0,notes="",updated_at=today_db())
-    db.insert("company_profile",row);return row
+    comp = get_company(cid)
+    row=dict(id=f"profile-{cid}",company_id=cid,company_name=comp.get("name",""),owner_name=comp.get("owner_name",""),segment="",business_size="Pequena",monthly_revenue=0,fixed_costs=0,variable_costs=0,stock_value=0,initial_cash=0,notes="",updated_at=today_db())
+    db.insert("company_profile",row)
+    return row
 def df_table(t,order=None,desc=False): return pd.DataFrame(db.select(t,order=order,desc=desc))
 def cash_df():
     df=df_table("cash_flow","date",True)
@@ -677,27 +808,18 @@ def render_growth_lanes():
     for title,score,body,action in growth_lanes():
         st.markdown(f"<div class='strategy-lane'><div class='lane-head'><div class='lane-title'>{title}</div><div class='lane-score'>{score}/100</div></div><div class='lane-body'>{body}</div><div class='lane-action'>{action}</div></div>", unsafe_allow_html=True)
 
+
 def sidebar():
     u=st.session_state.user
-    st.sidebar.markdown(f'<div class="user-pill">👤 <b>{u["name"]}</b><br>{u.get("role","usuario")}</div>',unsafe_allow_html=True)
-    pages=[
-        "Minha Empresa",
-        "Painel",
-        "Fluxo de Caixa",
-        "Contas a Pagar",
-        "Contas a Receber",
-        "DRE",
-        "Calendário",
-        "Relatórios",
-        "Plano de Ação",
-        "Alertas",
-    ]
-    if is_admin():
-        pages.append("Usuários")
-    page=st.sidebar.radio("Módulos",pages)
-    st.sidebar.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+    st.sidebar.markdown(f'<div class="user-pill">👤 <b>{_html.escape(str(u["name"]))}</b><br>{_html.escape(str(u.get("role","usuario")))}<br><span style="color:#8EA4BC;font-size:12px;">{_html.escape(str(current_company_name()))}</span></div>',unsafe_allow_html=True)
+    st.sidebar.markdown("**Módulos**")
+    pages=["Minha Empresa","Painel","Fluxo de Caixa","Contas a Pagar","Contas a Receber","DRE","Calendário","Relatórios","Plano de Ação","Alertas"]
+    if is_admin():pages.append("Usuários")
+    page=st.sidebar.radio("Módulos",pages,label_visibility="collapsed")
+    st.sidebar.markdown("<br>",unsafe_allow_html=True)
     if st.sidebar.button("Sair", use_container_width=True):
-        st.session_state.clear(); st.rerun()
+        st.session_state.clear()
+        st.rerun()
     return page
 def topbar():
     c1,c2=st.columns([6.8,1.9])
@@ -1432,28 +1554,62 @@ def page_advisor():
         else:
             ans=advisor_answer(q);st.session_state.last_answer=ans;db.insert("advisor_history",dict(id=str(uuid.uuid4()),asked_at=dt.datetime.now().isoformat(timespec="seconds"),question=q,answer=ans,created_by=user_name()))
     if st.session_state.get("last_answer"):st.markdown(st.session_state.last_answer)
+
 def page_users():
-    header("Usuários","Área administrativa de acesso. Este módulo só aparece para administrador.")
+    header("Usuários e Empresas","Área administrativa. Usuários comuns não enxergam este módulo.")
     if not is_admin():
         st.error("Você não tem permissão para acessar este módulo.")
         return
+
+    st.markdown(f"<div class='exec-principle'><b>Empresa atual:</b> {_html.escape(str(current_company_name()))}<br>Os usuários abaixo enxergam apenas os dados desta empresa. Dados de outras empresas ficam isolados.</div>", unsafe_allow_html=True)
+
+    help_title("Usuários desta empresa","Lista apenas os usuários vinculados à empresa atual. Eles não acessam dados de outras empresas.")
     users=db.select("app_users",order="created_at")
     if users:
         show=pd.DataFrame(users)[["name","email","role","active","created_at"]]
         st.dataframe(show,use_container_width=True,hide_index=True)
-    with st.expander("Criar novo acesso", expanded=False):
-        with st.form("newuser"):
-            code=st.text_input("Código de criação",type="password")
-            name=st.text_input("Nome")
-            email=st.text_input("E-mail")
-            pw=st.text_input("Senha",type="password")
-            rv=st.selectbox("Perfil",["administrador","usuario","somente leitura"])
-            if st.form_submit_button("Criar usuário"):
+    else:
+        st.info("Nenhum usuário nesta empresa.")
+
+    with st.expander("Criar novo usuário para esta empresa", expanded=False):
+        with st.form("newuser_same_company"):
+            code=st.text_input("Código de criação",type="password", key="same_company_code")
+            name=st.text_input("Nome", key="same_company_name")
+            email=st.text_input("E-mail", key="same_company_email")
+            pw=st.text_input("Senha",type="password", key="same_company_pw")
+            rv=st.selectbox("Perfil",["administrador","usuario","somente leitura"], key="same_company_role")
+            if st.form_submit_button("Criar usuário nesta empresa"):
                 if code!=secret("SETUP_CODE","executa2026"):
                     st.error("Código incorreto.")
                 else:
-                    ok,msg=create_user(name,email,pw,rv)
+                    ok,msg=create_user(name,email,pw,rv,current_company_id())
                     st.success(msg) if ok else st.error(msg)
+
+    help_title("Criar nova empresa / cliente","Use isto quando uma nova empresa for usar o sistema. Ela terá dados totalmente separados da sua empresa atual.")
+    with st.expander("Criar nova empresa com administrador próprio", expanded=False):
+        with st.form("new_company_form"):
+            code=st.text_input("Código de criação",type="password", key="new_company_code")
+            company_name=st.text_input("Nome da nova empresa", placeholder="Ex.: Empresa do Cliente", key="new_company_name")
+            admin_name=st.text_input("Nome do administrador da nova empresa", key="new_company_admin")
+            admin_email=st.text_input("E-mail do administrador", key="new_company_email")
+            admin_pw=st.text_input("Senha inicial", type="password", key="new_company_pw")
+            if st.form_submit_button("Criar nova empresa e administrador"):
+                if code!=secret("SETUP_CODE","executa2026"):
+                    st.error("Código incorreto.")
+                else:
+                    cid = create_company_record(company_name, admin_name)
+                    ok,msg = create_user(admin_name, admin_email, admin_pw, "administrador", cid)
+                    if ok:
+                        st.success("Nova empresa criada com administrador próprio. Os dados dela ficarão separados.")
+                    else:
+                        st.error(msg)
+
+    with st.expander("Empresas cadastradas", expanded=False):
+        comps=db.select("companies", order="created_at")
+        if comps:
+            st.dataframe(pd.DataFrame(comps)[["name","owner_name","active","created_at"]], use_container_width=True, hide_index=True)
+        else:
+            st.info("Nenhuma empresa encontrada.")
 def main():
     if "user" not in st.session_state:login_screen();return
     page=sidebar()

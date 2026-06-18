@@ -37,3 +37,11 @@
 - Relatórios reescritos para revisão executiva semanal/mensal.
 - Mapa de Crescimento recalculado sem depender de módulos removidos.
 - Textos e explicações melhorados sem alterar a estrutura oficial do menu.
+
+## v7 MULTIEMPRESA
+
+- Criada tabela `companies`.
+- Adicionado `company_id` nas tabelas de dados.
+- Implementado isolamento por empresa nas consultas e inserções.
+- Usuários agora pertencem a uma empresa específica.
+- Módulo Usuários permite criar nova empresa/cliente com administrador próprio.

@@ -72,3 +72,15 @@ um conselheiro prático para o empreendedor, não apenas um sistema de cadastro.
 - Design refinado com hierarquia visual mais premium.
 - Balõezinhos de interrogação mantidos nos títulos e pontos relevantes.
 - Mantida a estrutura oficial de módulos, sem criar novos módulos.
+
+## v7 MULTIEMPRESA
+
+Esta versão separa os dados por empresa.
+
+- Cada empresa tem um `company_id`.
+- Fluxo de Caixa, Contas, DRE, Calendário, Plano de Ação, Relatórios e Minha Empresa passam a ser filtrados pela empresa do usuário logado.
+- O administrador cria usuários apenas para a empresa atual.
+- O administrador também pode criar uma nova empresa/cliente com administrador próprio.
+- Dados antigos são migrados para `Empresa Principal`.
+
+Antes de subir esta versão, rode o novo `supabase_schema.sql` no Supabase.
