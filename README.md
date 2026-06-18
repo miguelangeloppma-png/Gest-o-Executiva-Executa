@@ -96,3 +96,14 @@ Correção da hierarquia de acesso:
 - Somente leitura: não cria usuários e não edita dados.
 
 O script SQL promove o primeiro usuário criado para `dono do app`, caso ainda não exista nenhum dono.
+
+
+## v7.2 REMOÇÕES
+
+Adicionadas opções de remoção controlada:
+
+- Dono do app pode remover usuários, apagar dados de uma empresa e apagar empresa inteira.
+- Administrador da empresa pode remover usuários comuns da própria empresa.
+- Usuário comum pode remover o colaborador criado para a própria empresa.
+- Contas a Pagar/Receber agora permitem excluir também linhas do histórico já pago/recebido.
+- O usuário logado não pode remover a própria conta.

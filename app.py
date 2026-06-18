@@ -10,7 +10,7 @@ except Exception:
     create_client = None
 
 APP_NAME="Gestão Executiva EXECUTA — Executive OS"
-APP_VERSION="v7.1 MULTIEMPRESA PERMISSÕES"
+APP_VERSION="v7.2 MULTIEMPRESA REMOÇÕES"
 MAX_USERS=10
 DATE_DB="%Y-%m-%d"
 DATE_BR="%d/%m/%Y"
@@ -1278,7 +1278,15 @@ def page_accounts(kind):
     help_title("Histórico: já pago/recebido")
     if closed_df.empty:st.info(f"Nenhum registro {closed.lower()} ainda.")
     else:
-        show=closed_df.copy();show["due_date"]=show.due_date.apply(date_br);show["paid_date"]=show.paid_date.apply(date_br);show["amount"]=show.amount.apply(brl);st.dataframe(show[["paid_date","due_date","supplier_client","description","amount","status","created_by"]],use_container_width=True,hide_index=True)
+        raw_closed=closed_df.reset_index(drop=True).copy()
+        show=raw_closed.copy();show["due_date"]=show.due_date.apply(date_br);show["paid_date"]=show.paid_date.apply(date_br);show["amount"]=show.amount.apply(brl)
+        selected_closed=selected_row_from_table(raw_closed,show,["paid_date","due_date","supplier_client","description","amount","status","created_by"],f"acc_closed_{kind}","Clique em uma linha do histórico para selecionar.")
+        if can_edit() and selected_closed:
+            st.success(f"Histórico selecionado: {date_br(selected_closed.get('paid_date'))} • {selected_closed.get('supplier_client')} • {brl(selected_closed.get('amount'))}")
+            if st.button("Excluir linha do histórico selecionada", key=f"delete_closed_acc_{kind}"):
+                db.delete("accounts", selected_closed["id"])
+                st.success("Linha do histórico excluída com sucesso.")
+                st.rerun()
 
 def page_dre():
     header("DRE","Preencha e pesquise por período. Datas no padrão dd/mm/aaaa.");readonly_warning()
@@ -1588,6 +1596,58 @@ def page_advisor():
     if st.session_state.get("last_answer"):st.markdown(st.session_state.last_answer)
 
 
+
+def delete_company_dataset(company_id):
+    """Remove todos os dados operacionais de uma empresa, preservando a própria empresa e usuários."""
+    for table in [
+        "cash_flow", "accounts", "action_plan", "advisor_history", "dre_records", "calendar_events",
+        "mvp_feedback", "executive_routines", "decision_log", "marketing_playbook", "unit_economics", "okr_records",
+        "company_profile"
+    ]:
+        rows = db.select(table, {"company_id": company_id})
+        for row in rows:
+            db.delete(table, row.get("id"))
+
+
+def delete_company_everything(company_id):
+    """Remove dados, usuários e cadastro de uma empresa. Ação exclusiva do Dono do App."""
+    delete_company_dataset(company_id)
+    users = db.select("app_users", {"company_id": company_id})
+    for user in users:
+        db.delete("app_users", user.get("id"))
+    if company_id != DEFAULT_COMPANY_ID:
+        db.delete("companies", company_id)
+
+
+def user_delete_allowed(target_user):
+    """Define se o usuário logado pode remover o usuário selecionado."""
+    current = st.session_state.get("user", {})
+    if not target_user:
+        return False, "Nenhum usuário selecionado."
+    if target_user.get("id") == current.get("id"):
+        return False, "Você não pode remover a própria conta logada."
+    if is_owner():
+        return True, ""
+    if is_company_admin():
+        if target_user.get("role") in ["dono do app", "super_admin", "administrador"]:
+            return False, "Administrador da empresa não pode remover outro administrador nem dono do app."
+        return True, ""
+    if role() == "usuario":
+        if target_user.get("role") not in ["usuario", "somente leitura"]:
+            return False, "Usuário comum não pode remover administradores."
+        return True, ""
+    return False, "Seu perfil não permite remover usuários."
+
+
+def delete_user_record(target_user):
+    ok, msg = user_delete_allowed(target_user)
+    if not ok:
+        st.warning(msg)
+        return False
+    db.delete("app_users", target_user.get("id"))
+    return True
+
+
 def collaborator_count_for_user():
     # Nesta versão simples, contamos usuários da empresa com mesmo perfil normal.
     # O limite de colaborador para usuário comum é controlado por quantidade total criada por ele de forma operacional.
@@ -1595,8 +1655,9 @@ def collaborator_count_for_user():
     users = db.select("app_users")
     return max(0, len(users)-1)
 
+
 def page_users():
-    header("Usuários","Controle de acesso da empresa.")
+    header("Usuários","Controle de acesso da empresa, colaboradores e remoções.")
     if role()=="somente leitura":
         st.error("Você não tem permissão para acessar este módulo.")
         return
@@ -1605,14 +1666,40 @@ def page_users():
 
     # DONO DO APP: visão geral completa
     if is_owner():
-        st.markdown("<div class='exec-principle'><b>Você está como Dono do App.</b><br>Você pode criar empresas, criar administradores para clientes e visualizar a estrutura geral do sistema.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='exec-principle'><b>Você está como Dono do App.</b><br>Você pode criar empresas, remover empresas, criar administradores para clientes e controlar acessos. Use remoções com cuidado.</div>", unsafe_allow_html=True)
 
-        help_title("Empresas cadastradas","Aqui aparecem todas as empresas/clientes do sistema. Somente o dono do app deve enxergar esta área.")
+        help_title("Empresas cadastradas","Aqui aparecem todas as empresas/clientes do sistema. Você pode selecionar uma empresa para ações administrativas.")
         comps=db.select("companies", order="created_at")
+        selected_company=None
         if comps:
-            st.dataframe(pd.DataFrame(comps)[["name","owner_name","active","created_at"]], use_container_width=True, hide_index=True)
+            rawc=pd.DataFrame(comps)
+            showc=rawc.copy()
+            selected_company = selected_row_from_table(rawc, showc, ["name","owner_name","active","created_at"], "companies_select", "Clique em uma empresa para selecionar.")
         else:
             st.info("Nenhuma empresa encontrada.")
+
+        if selected_company:
+            st.success(f"Empresa selecionada: {selected_company.get('name')}")
+            with st.expander("Ações de remoção da empresa selecionada", expanded=False):
+                st.warning("Estas ações são fortes. Confira se selecionou a empresa correta antes de confirmar.")
+                confirm_name = st.text_input("Digite o nome da empresa para confirmar", key="confirm_company_delete_name")
+                cdel1, cdel2 = st.columns(2)
+                if cdel1.button("Apagar apenas os dados desta empresa", key="delete_company_data_only"):
+                    if confirm_name.strip() == str(selected_company.get("name") or "").strip():
+                        delete_company_dataset(selected_company.get("id"))
+                        st.success("Dados da empresa apagados. Usuários e cadastro da empresa foram preservados.")
+                        st.rerun()
+                    else:
+                        st.error("Nome da empresa não confere.")
+                if cdel2.button("Apagar empresa inteira", key="delete_company_everything"):
+                    if selected_company.get("id") == current_company_id():
+                        st.error("Você não pode apagar a empresa em que está logado agora.")
+                    elif confirm_name.strip() == str(selected_company.get("name") or "").strip():
+                        delete_company_everything(selected_company.get("id"))
+                        st.success("Empresa, usuários e dados apagados.")
+                        st.rerun()
+                    else:
+                        st.error("Nome da empresa não confere.")
 
         help_title("Criar nova empresa / cliente","Crie uma empresa separada com administrador próprio. Os dados dela não aparecem para outras empresas.")
         with st.expander("Criar nova empresa com administrador próprio", expanded=False):
@@ -1633,12 +1720,22 @@ def page_users():
                         else:
                             st.error(msg)
 
-        help_title("Todos os usuários da empresa atual","Aqui você vê e cria usuários para a empresa selecionada/logada.")
+        help_title("Usuários da empresa atual","Aqui você vê, cria e remove usuários vinculados à empresa em que você está logado agora.")
         users=db.select("app_users",order="created_at")
+        selected_user=None
         if users:
-            st.dataframe(pd.DataFrame(users)[["name","email","role","active","created_at"]],use_container_width=True,hide_index=True)
+            raw=pd.DataFrame(users)
+            show=raw[["name","email","role","active","created_at"]].copy()
+            selected_user = selected_row_from_table(raw, show, ["name","email","role","active","created_at"], "owner_users_select", "Clique em um usuário para selecionar e remover.")
         else:
             st.info("Nenhum usuário nesta empresa.")
+
+        if selected_user:
+            st.success(f"Usuário selecionado: {selected_user.get('name')} • {selected_user.get('email')}")
+            if st.button("Remover usuário selecionado", key="owner_delete_user"):
+                if delete_user_record(selected_user):
+                    st.success("Usuário removido.")
+                    st.rerun()
 
         with st.expander("Criar usuário na empresa atual", expanded=False):
             with st.form("owner_create_user_current_company"):
@@ -1657,12 +1754,22 @@ def page_users():
 
     # ADMINISTRADOR DA EMPRESA: só própria empresa
     if is_company_admin():
-        st.markdown(f"<div class='exec-principle'><b>Empresa atual:</b> {_html.escape(str(current_company_name()))}<br>Você é administrador desta empresa. Pode criar usuários apenas para esta empresa.</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='exec-principle'><b>Empresa atual:</b> {_html.escape(str(current_company_name()))}<br>Você é administrador desta empresa. Pode criar e remover usuários comuns da própria empresa.</div>", unsafe_allow_html=True)
         users=db.select("app_users",order="created_at")
+        selected_user=None
         if users:
-            st.dataframe(pd.DataFrame(users)[["name","email","role","active","created_at"]],use_container_width=True,hide_index=True)
+            raw=pd.DataFrame(users)
+            show=raw[["name","email","role","active","created_at"]].copy()
+            selected_user = selected_row_from_table(raw, show, ["name","email","role","active","created_at"], "admin_users_select", "Clique em um usuário para selecionar.")
         else:
             st.info("Nenhum usuário nesta empresa.")
+
+        if selected_user:
+            st.success(f"Usuário selecionado: {selected_user.get('name')} • {selected_user.get('email')}")
+            if st.button("Remover usuário selecionado", key="admin_delete_user"):
+                if delete_user_record(selected_user):
+                    st.success("Usuário removido.")
+                    st.rerun()
 
         with st.expander("Criar usuário para esta empresa", expanded=False):
             with st.form("company_admin_create_user"):
@@ -1679,7 +1786,7 @@ def page_users():
                         st.success(msg) if ok else st.error(msg)
         return
 
-    # USUÁRIO COMUM: vê apenas a própria conta e pode criar 1 colaborador
+    # USUÁRIO COMUM: vê apenas a própria conta e pode criar/remover 1 colaborador
     if role()=="usuario":
         st.markdown(f"<div class='exec-principle'><b>Sua conta</b><br>Você está vinculado à empresa: {_html.escape(str(current_company_name()))}. Você não vê outras empresas nem cria novas empresas.</div>", unsafe_allow_html=True)
         own = pd.DataFrame([{
@@ -1691,19 +1798,26 @@ def page_users():
         st.dataframe(own,use_container_width=True,hide_index=True)
 
         users_company = db.select("app_users")
-        if len(users_company) >= 2:
-            st.info("Esta empresa já possui colaborador cadastrado. Para criar mais acessos, peça ao administrador da empresa.")
-            return
-
-        with st.expander("Criar 1 colaborador para esta empresa", expanded=False):
-            with st.form("normal_user_create_one_collaborator"):
-                name=st.text_input("Nome do colaborador")
-                email=st.text_input("E-mail do colaborador")
-                pw=st.text_input("Senha inicial",type="password")
-                rv=st.selectbox("Perfil do colaborador",["usuario","somente leitura"])
-                if st.form_submit_button("Criar colaborador"):
-                    ok,msg=create_user(name,email,pw,rv,current_company_id())
-                    st.success(msg) if ok else st.error(msg)
+        collaborators = [u for u in users_company if u.get("id") != current_user.get("id") and u.get("role") in ["usuario","somente leitura"]]
+        if collaborators:
+            help_title("Colaborador da sua empresa","Você pode remover o colaborador criado para esta empresa.")
+            raw=pd.DataFrame(collaborators)
+            show=raw[["name","email","role","active","created_at"]].copy()
+            selected_collab = selected_row_from_table(raw, show, ["name","email","role","active","created_at"], "normal_user_collab_select", "Clique no colaborador para selecionar.")
+            if selected_collab and st.button("Remover colaborador selecionado", key="normal_user_delete_collab"):
+                if delete_user_record(selected_collab):
+                    st.success("Colaborador removido.")
+                    st.rerun()
+        else:
+            with st.expander("Criar 1 colaborador para esta empresa", expanded=False):
+                with st.form("normal_user_create_one_collaborator"):
+                    name=st.text_input("Nome do colaborador")
+                    email=st.text_input("E-mail do colaborador")
+                    pw=st.text_input("Senha inicial",type="password")
+                    rv=st.selectbox("Perfil do colaborador",["usuario","somente leitura"])
+                    if st.form_submit_button("Criar colaborador"):
+                        ok,msg=create_user(name,email,pw,rv,current_company_id())
+                        st.success(msg) if ok else st.error(msg)
         return
 def main():
     if "user" not in st.session_state:login_screen();return

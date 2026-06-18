@@ -55,3 +55,13 @@
 - Usuário comum pode criar apenas 1 colaborador na própria empresa.
 - Somente leitura não acessa criação de usuários.
 - Corrigido menu para manter Contas a Receber nomeado corretamente.
+
+
+## v7.2 REMOÇÕES
+
+- Adicionada remoção de usuários no módulo Usuários.
+- Adicionada remoção de empresas para o Dono do App.
+- Adicionada opção de apagar apenas dados de uma empresa, preservando usuários.
+- Adicionada opção de apagar empresa inteira, com usuários e dados.
+- Adicionada remoção de linhas do histórico de contas pagas/recebidas.
+- Bloqueada remoção da própria conta logada.
