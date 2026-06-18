@@ -18,3 +18,11 @@
 - Corrigido problema em que apareciam métodos/códigos do Streamlit na tela.
 - Mantidos balõezinhos visíveis de interrogação nos títulos principais e seções relevantes.
 - Versão baseada na v6.3 BASE LIMPA.
+
+
+## v6.3.2 — Correção final dos códigos na tela
+
+- Corrigido bloco indevido `main() DeltaGenerator` aparecendo no app.
+- Alterada chamada final de `main()` para atribuição interna segura.
+- Mantida a estrutura da v6.3 base limpa.
+- Mantidos os balõezinhos visíveis de interrogação.

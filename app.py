@@ -10,7 +10,7 @@ except Exception:
     create_client = None
 
 APP_NAME="Gestão Executiva EXECUTA Web"
-APP_VERSION="EXECUTA Experience OS v6.3 BASE LIMPA"
+APP_VERSION="EXECUTA Experience OS v6.3.2 CORREÇÃO FINAL CÓDIGOS"
 MAX_USERS=10
 DATE_DB="%Y-%m-%d"
 DATE_BR="%d/%m/%Y"
@@ -1308,4 +1308,5 @@ def main():
     elif page=="Alertas":page_alerta()
     elif page=="Método EXECUTA":page_metodo()
     elif page=="Usuários":page_users()
-main()
+    return None
+_EXECUTA_APP_RESULT = main()

@@ -48,3 +48,10 @@ Depois faça Reboot no Streamlit Cloud.
 Esta versão corrige o problema em que aparecia a documentação/códigos internos do Streamlit dentro do app.
 A causa era uma alteração global nas funções internas do Streamlit para tentar inserir ajuda automaticamente.
 Agora as explicações usam apenas componentes próprios e seguros do EXECUTA.
+
+
+## v6.3.2 — Correção final dos códigos na tela
+
+Correção definitiva do problema em que aparecia um bloco com `main() DeltaGenerator` e documentação interna do Streamlit.
+A causa era a chamada solta `main()` no final do arquivo, que podia ser renderizada pelo mecanismo "magic" do Streamlit.
+Agora a execução foi alterada para uma atribuição interna, impedindo que qualquer documentação/código apareça para o usuário.
