@@ -10,7 +10,7 @@ except Exception:
     create_client = None
 
 APP_NAME="Gestão Executiva EXECUTA — Executive OS"
-APP_VERSION="v7.2 MULTIEMPRESA REMOÇÕES"
+APP_VERSION="v7.3 HOTFIX ESTÁVEL"
 MAX_USERS=10
 DATE_DB="%Y-%m-%d"
 DATE_BR="%d/%m/%Y"
@@ -840,16 +840,33 @@ def render_growth_lanes():
 
 
 
+
 def sidebar():
     u=st.session_state.user
-    st.sidebar.markdown(f'<div class="user-pill">👤 <b>{_html.escape(str(u["name"]))}</b><br>{_html.escape(str(u.get("role","usuario")))}<br><span style="color:#8EA4BC;font-size:12px;">{_html.escape(str(current_company_name()))}</span></div>',unsafe_allow_html=True)
+    st.sidebar.markdown(
+        f'<div class="user-pill">👤 <b>{_html.escape(str(u.get("name","Usuário")))}</b><br>'
+        f'{_html.escape(str(u.get("role","usuario")))}<br>'
+        f'<span style="color:#8EA4BC;font-size:12px;">{_html.escape(str(current_company_name()))}</span></div>',
+        unsafe_allow_html=True
+    )
     st.sidebar.markdown("**Módulos**")
-    pages=["Minha Empresa","Painel","Fluxo de Caixa","Contas a Pagar","Contas a Receber","DRE","Calendário","Relatórios","Plano de Ação","Alertas"]
+    pages=[
+        "Minha Empresa",
+        "Painel",
+        "Fluxo de Caixa",
+        "Contas a Pagar",
+        "Contas a Receber",
+        "DRE",
+        "Calendário",
+        "Relatórios",
+        "Plano de Ação",
+        "Alertas"
+    ]
     if can_manage_users() and role() != "somente leitura":
         pages.append("Usuários")
-    page=st.sidebar.radio("Módulos",pages,label_visibility="collapsed")
+    page=st.sidebar.radio("Módulos",pages,label_visibility="collapsed", key="sidebar_modulos_v73")
     st.sidebar.markdown("<br>",unsafe_allow_html=True)
-    if st.sidebar.button("Sair", use_container_width=True):
+    if st.sidebar.button("Sair", use_container_width=True, key="btn_sair_v73"):
         st.session_state.clear()
         st.rerun()
     return page
@@ -1656,161 +1673,163 @@ def collaborator_count_for_user():
     return max(0, len(users)-1)
 
 
+
 def page_users():
-    header("Usuários","Controle de acesso da empresa, colaboradores e remoções.")
+    header("Usuários e Empresas","Controle de acesso, empresas, colaboradores e remoções.")
     if role()=="somente leitura":
         st.error("Você não tem permissão para acessar este módulo.")
         return
 
     current_user = st.session_state.get("user", {})
 
-    # DONO DO APP: visão geral completa
-    if is_owner():
-        st.markdown("<div class='exec-principle'><b>Você está como Dono do App.</b><br>Você pode criar empresas, remover empresas, criar administradores para clientes e controlar acessos. Use remoções com cuidado.</div>", unsafe_allow_html=True)
+    def user_label(u):
+        return f"{u.get('name','')} | {u.get('email','')} | {u.get('role','')}"
 
-        help_title("Empresas cadastradas","Aqui aparecem todas as empresas/clientes do sistema. Você pode selecionar uma empresa para ações administrativas.")
+    def company_label(c):
+        return f"{c.get('name','')} | {c.get('owner_name','')}"
+
+    # DONO DO APP
+    if is_owner():
+        st.markdown("<div class='exec-principle'><b>Você está como Dono do App.</b><br>Você pode criar empresas, administradores, usuários e remover dados. Use remoções com cuidado.</div>", unsafe_allow_html=True)
+
+        help_title("Empresas cadastradas","Lista todas as empresas/clientes do sistema. Esta área só aparece para o dono do app.")
         comps=db.select("companies", order="created_at")
-        selected_company=None
         if comps:
-            rawc=pd.DataFrame(comps)
-            showc=rawc.copy()
-            selected_company = selected_row_from_table(rawc, showc, ["name","owner_name","active","created_at"], "companies_select", "Clique em uma empresa para selecionar.")
+            st.table(pd.DataFrame(comps)[["name","owner_name","active","created_at"]])
         else:
             st.info("Nenhuma empresa encontrada.")
 
-        if selected_company:
-            st.success(f"Empresa selecionada: {selected_company.get('name')}")
-            with st.expander("Ações de remoção da empresa selecionada", expanded=False):
-                st.warning("Estas ações são fortes. Confira se selecionou a empresa correta antes de confirmar.")
-                confirm_name = st.text_input("Digite o nome da empresa para confirmar", key="confirm_company_delete_name")
-                cdel1, cdel2 = st.columns(2)
-                if cdel1.button("Apagar apenas os dados desta empresa", key="delete_company_data_only"):
-                    if confirm_name.strip() == str(selected_company.get("name") or "").strip():
-                        delete_company_dataset(selected_company.get("id"))
-                        st.success("Dados da empresa apagados. Usuários e cadastro da empresa foram preservados.")
-                        st.rerun()
-                    else:
-                        st.error("Nome da empresa não confere.")
-                if cdel2.button("Apagar empresa inteira", key="delete_company_everything"):
-                    if selected_company.get("id") == current_company_id():
-                        st.error("Você não pode apagar a empresa em que está logado agora.")
-                    elif confirm_name.strip() == str(selected_company.get("name") or "").strip():
-                        delete_company_everything(selected_company.get("id"))
-                        st.success("Empresa, usuários e dados apagados.")
-                        st.rerun()
-                    else:
-                        st.error("Nome da empresa não confere.")
-
-        help_title("Criar nova empresa / cliente","Crie uma empresa separada com administrador próprio. Os dados dela não aparecem para outras empresas.")
         with st.expander("Criar nova empresa com administrador próprio", expanded=False):
-            with st.form("new_company_form"):
-                code=st.text_input("Código de criação",type="password", key="new_company_code")
-                company_name=st.text_input("Nome da nova empresa", placeholder="Ex.: Empresa do Cliente", key="new_company_name")
-                admin_name=st.text_input("Nome do administrador da nova empresa", key="new_company_admin")
-                admin_email=st.text_input("E-mail do administrador", key="new_company_email")
-                admin_pw=st.text_input("Senha inicial", type="password", key="new_company_pw")
+            with st.form("new_company_form_v73"):
+                code=st.text_input("Código de criação",type="password", key="new_company_code_v73")
+                company_name=st.text_input("Nome da nova empresa", placeholder="Ex.: Empresa do Cliente", key="new_company_name_v73")
+                admin_name=st.text_input("Nome do administrador da nova empresa", key="new_company_admin_v73")
+                admin_email=st.text_input("E-mail do administrador", key="new_company_email_v73")
+                admin_pw=st.text_input("Senha inicial", type="password", key="new_company_pw_v73")
                 if st.form_submit_button("Criar nova empresa e administrador"):
                     if code!=secret("SETUP_CODE","executa2026"):
                         st.error("Código incorreto.")
                     else:
                         cid = create_company_record(company_name, admin_name)
                         ok,msg = create_user(admin_name, admin_email, admin_pw, "administrador", cid)
-                        if ok:
-                            st.success("Nova empresa criada com administrador próprio. Os dados dela ficarão separados.")
-                        else:
-                            st.error(msg)
+                        st.success("Nova empresa criada com administrador próprio.") if ok else st.error(msg)
 
-        help_title("Usuários da empresa atual","Aqui você vê, cria e remove usuários vinculados à empresa em que você está logado agora.")
+        help_title("Usuários da empresa atual","Usuários vinculados à empresa em que você está logado agora.")
         users=db.select("app_users",order="created_at")
-        selected_user=None
         if users:
-            raw=pd.DataFrame(users)
-            show=raw[["name","email","role","active","created_at"]].copy()
-            selected_user = selected_row_from_table(raw, show, ["name","email","role","active","created_at"], "owner_users_select", "Clique em um usuário para selecionar e remover.")
+            st.table(pd.DataFrame(users)[["name","email","role","active","created_at"]])
         else:
             st.info("Nenhum usuário nesta empresa.")
-
-        if selected_user:
-            st.success(f"Usuário selecionado: {selected_user.get('name')} • {selected_user.get('email')}")
-            if st.button("Remover usuário selecionado", key="owner_delete_user"):
-                if delete_user_record(selected_user):
-                    st.success("Usuário removido.")
-                    st.rerun()
 
         with st.expander("Criar usuário na empresa atual", expanded=False):
-            with st.form("owner_create_user_current_company"):
-                code=st.text_input("Código de criação",type="password", key="owner_code")
-                name=st.text_input("Nome", key="owner_user_name")
-                email=st.text_input("E-mail", key="owner_user_email")
-                pw=st.text_input("Senha",type="password", key="owner_user_pw")
-                rv=st.selectbox("Perfil",["administrador","usuario","somente leitura"], key="owner_user_role")
+            with st.form("owner_create_user_current_company_v73"):
+                code=st.text_input("Código de criação",type="password", key="owner_code_v73")
+                name=st.text_input("Nome", key="owner_user_name_v73")
+                email=st.text_input("E-mail", key="owner_user_email_v73")
+                pw=st.text_input("Senha",type="password", key="owner_user_pw_v73")
+                rv=st.selectbox("Perfil",["administrador","usuario","somente leitura"], key="owner_user_role_v73")
                 if st.form_submit_button("Criar usuário"):
                     if code!=secret("SETUP_CODE","executa2026"):
                         st.error("Código incorreto.")
                     else:
                         ok,msg=create_user(name,email,pw,rv,current_company_id())
                         st.success(msg) if ok else st.error(msg)
+
+        help_title("Remover usuário","Remove usuário da empresa atual. Você não pode remover sua própria conta logada.")
+        removable=[u for u in users if u.get("id") != current_user.get("id")]
+        if removable:
+            selected=st.selectbox("Escolha o usuário para remover", removable, format_func=user_label, key="owner_remove_user_v73")
+            confirm=st.checkbox("Confirmo que quero remover este usuário", key="confirm_owner_remove_user_v73")
+            if st.button("Remover usuário selecionado", key="btn_owner_remove_user_v73"):
+                if confirm:
+                    db.delete("app_users", selected["id"])
+                    st.success("Usuário removido.")
+                    st.rerun()
+                else:
+                    st.warning("Marque a confirmação antes de remover.")
+        else:
+            st.info("Nenhum usuário removível nesta empresa.")
+
+        help_title("Remover empresa / cliente","Use apenas quando quiser apagar uma empresa inteira. A empresa logada não pode ser removida por segurança.")
+        if comps:
+            removable_companies=[c for c in comps if c.get("id") != current_company_id()]
+            if removable_companies:
+                comp=st.selectbox("Escolha a empresa para remover", removable_companies, format_func=company_label, key="owner_remove_company_v73")
+                remove_data=st.checkbox("Apagar também todos os dados e usuários desta empresa", key="remove_company_data_v73")
+                confirm_comp=st.checkbox("Confirmo que quero remover esta empresa", key="confirm_remove_company_v73")
+                if st.button("Remover empresa selecionada", key="btn_remove_company_v73"):
+                    if not confirm_comp:
+                        st.warning("Marque a confirmação antes de remover.")
+                    else:
+                        cid=comp.get("id")
+                        if remove_data:
+                            for table in ["cash_flow","accounts","action_plan","advisor_history","dre_records","calendar_events","company_profile","mvp_feedback","executive_routines","decision_log","marketing_playbook","unit_economics","okr_records","app_users"]:
+                                rows=db.select(table, {"company_id": cid})
+                                for r in rows:
+                                    db.delete(table, r.get("id"))
+                        db.delete("companies", cid)
+                        st.success("Empresa removida.")
+                        st.rerun()
+            else:
+                st.info("Não há outras empresas removíveis.")
         return
 
-    # ADMINISTRADOR DA EMPRESA: só própria empresa
+    # ADMINISTRADOR DA EMPRESA
     if is_company_admin():
-        st.markdown(f"<div class='exec-principle'><b>Empresa atual:</b> {_html.escape(str(current_company_name()))}<br>Você é administrador desta empresa. Pode criar e remover usuários comuns da própria empresa.</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='exec-principle'><b>Empresa atual:</b> {_html.escape(str(current_company_name()))}<br>Você administra apenas esta empresa.</div>", unsafe_allow_html=True)
         users=db.select("app_users",order="created_at")
-        selected_user=None
         if users:
-            raw=pd.DataFrame(users)
-            show=raw[["name","email","role","active","created_at"]].copy()
-            selected_user = selected_row_from_table(raw, show, ["name","email","role","active","created_at"], "admin_users_select", "Clique em um usuário para selecionar.")
+            st.table(pd.DataFrame(users)[["name","email","role","active","created_at"]])
         else:
             st.info("Nenhum usuário nesta empresa.")
 
-        if selected_user:
-            st.success(f"Usuário selecionado: {selected_user.get('name')} • {selected_user.get('email')}")
-            if st.button("Remover usuário selecionado", key="admin_delete_user"):
-                if delete_user_record(selected_user):
-                    st.success("Usuário removido.")
-                    st.rerun()
-
         with st.expander("Criar usuário para esta empresa", expanded=False):
-            with st.form("company_admin_create_user"):
-                code=st.text_input("Código de criação",type="password", key="admin_code")
-                name=st.text_input("Nome", key="admin_user_name")
-                email=st.text_input("E-mail", key="admin_user_email")
-                pw=st.text_input("Senha",type="password", key="admin_user_pw")
-                rv=st.selectbox("Perfil",["usuario","somente leitura"], key="admin_user_role")
+            with st.form("company_admin_create_user_v73"):
+                code=st.text_input("Código de criação",type="password", key="admin_code_v73")
+                name=st.text_input("Nome", key="admin_user_name_v73")
+                email=st.text_input("E-mail", key="admin_user_email_v73")
+                pw=st.text_input("Senha",type="password", key="admin_user_pw_v73")
+                rv=st.selectbox("Perfil",["usuario","somente leitura"], key="admin_user_role_v73")
                 if st.form_submit_button("Criar usuário"):
                     if code!=secret("SETUP_CODE","executa2026"):
                         st.error("Código incorreto.")
                     else:
                         ok,msg=create_user(name,email,pw,rv,current_company_id())
                         st.success(msg) if ok else st.error(msg)
+
+        help_title("Remover usuário da empresa","Administrador só remove usuário comum ou somente leitura. Não remove administrador nem dono do app.")
+        removable=[u for u in users if u.get("id") != current_user.get("id") and u.get("role") in ["usuario","somente leitura"]]
+        if removable:
+            selected=st.selectbox("Escolha o usuário para remover", removable, format_func=user_label, key="admin_remove_user_v73")
+            confirm=st.checkbox("Confirmo que quero remover este usuário", key="confirm_admin_remove_user_v73")
+            if st.button("Remover usuário selecionado", key="btn_admin_remove_user_v73"):
+                if confirm:
+                    db.delete("app_users", selected["id"])
+                    st.success("Usuário removido.")
+                    st.rerun()
+                else:
+                    st.warning("Marque a confirmação antes de remover.")
+        else:
+            st.info("Nenhum usuário comum removível.")
         return
 
-    # USUÁRIO COMUM: vê apenas a própria conta e pode criar/remover 1 colaborador
+    # USUÁRIO COMUM
     if role()=="usuario":
         st.markdown(f"<div class='exec-principle'><b>Sua conta</b><br>Você está vinculado à empresa: {_html.escape(str(current_company_name()))}. Você não vê outras empresas nem cria novas empresas.</div>", unsafe_allow_html=True)
-        own = pd.DataFrame([{
-            "name": current_user.get("name",""),
-            "email": current_user.get("email",""),
-            "role": current_user.get("role",""),
-            "empresa": current_company_name()
+        own=pd.DataFrame([{
+            "name":current_user.get("name",""),
+            "email":current_user.get("email",""),
+            "role":current_user.get("role",""),
+            "empresa":current_company_name()
         }])
-        st.dataframe(own,use_container_width=True,hide_index=True)
+        st.table(own)
 
-        users_company = db.select("app_users")
-        collaborators = [u for u in users_company if u.get("id") != current_user.get("id") and u.get("role") in ["usuario","somente leitura"]]
-        if collaborators:
-            help_title("Colaborador da sua empresa","Você pode remover o colaborador criado para esta empresa.")
-            raw=pd.DataFrame(collaborators)
-            show=raw[["name","email","role","active","created_at"]].copy()
-            selected_collab = selected_row_from_table(raw, show, ["name","email","role","active","created_at"], "normal_user_collab_select", "Clique no colaborador para selecionar.")
-            if selected_collab and st.button("Remover colaborador selecionado", key="normal_user_delete_collab"):
-                if delete_user_record(selected_collab):
-                    st.success("Colaborador removido.")
-                    st.rerun()
-        else:
+        users_company=db.select("app_users")
+        collaborators=[u for u in users_company if u.get("id") != current_user.get("id") and u.get("role") in ["usuario","somente leitura"]]
+
+        if not collaborators and len(users_company) < 2:
             with st.expander("Criar 1 colaborador para esta empresa", expanded=False):
-                with st.form("normal_user_create_one_collaborator"):
+                with st.form("normal_user_create_one_collaborator_v73"):
                     name=st.text_input("Nome do colaborador")
                     email=st.text_input("E-mail do colaborador")
                     pw=st.text_input("Senha inicial",type="password")
@@ -1818,6 +1837,20 @@ def page_users():
                     if st.form_submit_button("Criar colaborador"):
                         ok,msg=create_user(name,email,pw,rv,current_company_id())
                         st.success(msg) if ok else st.error(msg)
+        else:
+            st.info("Esta empresa já possui colaborador cadastrado. Para criar mais acessos, peça ao administrador.")
+
+        if collaborators:
+            help_title("Remover colaborador","Você pode remover o colaborador criado para sua própria empresa.")
+            selected=st.selectbox("Escolha o colaborador para remover", collaborators, format_func=user_label, key="user_remove_collab_v73")
+            confirm=st.checkbox("Confirmo que quero remover este colaborador", key="confirm_user_remove_collab_v73")
+            if st.button("Remover colaborador", key="btn_user_remove_collab_v73"):
+                if confirm:
+                    db.delete("app_users", selected["id"])
+                    st.success("Colaborador removido.")
+                    st.rerun()
+                else:
+                    st.warning("Marque a confirmação antes de remover.")
         return
 def main():
     if "user" not in st.session_state:login_screen();return

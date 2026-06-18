@@ -65,3 +65,12 @@
 - Adicionada opção de apagar empresa inteira, com usuários e dados.
 - Adicionada remoção de linhas do histórico de contas pagas/recebidas.
 - Bloqueada remoção da própria conta logada.
+
+
+## v7.3 HOTFIX ESTÁVEL
+
+- Corrigido menu `Contas a Receber`.
+- Corrigido título em `Usuários`.
+- Removido uso instável de seleção de linhas em tabelas na área de usuários.
+- Remoção de usuários e empresas agora usa `selectbox` com confirmação.
+- Mantido modelo Dono do App / Administrador / Usuário / Somente leitura.

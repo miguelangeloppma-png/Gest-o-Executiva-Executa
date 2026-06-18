@@ -107,3 +107,13 @@ Adicionadas opções de remoção controlada:
 - Usuário comum pode remover o colaborador criado para a própria empresa.
 - Contas a Pagar/Receber agora permitem excluir também linhas do histórico já pago/recebido.
 - O usuário logado não pode remover a própria conta.
+
+
+## v7.3 HOTFIX ESTÁVEL
+
+Correções:
+- Corrigido nome do módulo `Contas a Receber`.
+- Corrigido título do módulo `Usuários`.
+- Substituídas tabelas instáveis de seleção por listas simples com `selectbox`.
+- Reduzido risco do erro visual `removeChild` do Streamlit após muitas atualizações.
+- Mantidas permissões multiempresa e remoções.
