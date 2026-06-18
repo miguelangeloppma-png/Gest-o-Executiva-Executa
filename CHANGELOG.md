@@ -74,3 +74,12 @@
 - Removido uso instável de seleção de linhas em tabelas na área de usuários.
 - Remoção de usuários e empresas agora usa `selectbox` com confirmação.
 - Mantido modelo Dono do App / Administrador / Usuário / Somente leitura.
+
+
+## v7.4 DONO DO APP CORRIGIDO
+
+- Corrigido bug em que a conta principal aparecia como usuário comum.
+- Adicionado reconhecimento por e-mail do dono do app.
+- Refeita tela Usuários para Dono do App, Administrador da Empresa e Usuário comum.
+- Dono do app agora cria empresas e define o perfil da conta inicial.
+- Usuário comum mantém a tela simplificada conforme solicitado.

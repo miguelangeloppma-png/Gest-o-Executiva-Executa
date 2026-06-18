@@ -117,3 +117,20 @@ Correções:
 - Substituídas tabelas instáveis de seleção por listas simples com `selectbox`.
 - Reduzido risco do erro visual `removeChild` do Streamlit após muitas atualizações.
 - Mantidas permissões multiempresa e remoções.
+
+
+## v7.4 DONO DO APP CORRIGIDO
+
+Correção da hierarquia real:
+
+- A conta do dono do app agora é reconhecida como `dono do app`.
+- O dono do app vê:
+  - própria conta;
+  - adicionar colaborador na própria empresa;
+  - empresas cadastradas;
+  - criar nova empresa/cliente;
+  - escolher se a conta inicial da nova empresa será administrador, usuário ou somente leitura;
+  - remover usuários e empresas.
+- Administrador da empresa vê apenas a própria empresa.
+- Usuário comum vê apenas a própria conta e pode criar 1 colaborador.
+- O SQL promove automaticamente os e-mails principais do dono para `dono do app`.

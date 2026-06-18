@@ -126,3 +126,26 @@ and not exists (
   select 1 from app_users where role in ('dono do app','super_admin')
 );
 
+
+
+-- v7.4 DONO DO APP CORRIGIDO
+-- Promove automaticamente os e-mails principais do dono para Dono do App.
+update app_users
+set role = 'dono do app'
+where lower(email) in (
+  'miguel.asiqueirappma@gmail.com',
+  'miguelangeloppma@gmail.com',
+  'miguelangelo.ppma@gmail.com'
+);
+
+-- Caso ainda não exista dono do app, promove o primeiro usuário criado.
+update app_users
+set role = 'dono do app'
+where id = (
+  select id from app_users
+  order by created_at asc
+  limit 1
+)
+and not exists (
+  select 1 from app_users where role in ('dono do app','super_admin')
+);
