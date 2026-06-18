@@ -55,3 +55,20 @@ Agora as explicações usam apenas componentes próprios e seguros do EXECUTA.
 Correção definitiva do problema em que aparecia um bloco com `main() DeltaGenerator` e documentação interna do Streamlit.
 A causa era a chamada solta `main()` no final do arquivo, que podia ser renderizada pelo mecanismo "magic" do Streamlit.
 Agora a execução foi alterada para uma atribuição interna, impedindo que qualquer documentação/código apareça para o usuário.
+
+
+## v6.4 FINAL EXECUTIVA
+
+Versão refinada sem acrescentar módulos. O objetivo foi elevar a experiência do produto para funcionar como um Executive OS:
+um conselheiro prático para o empreendedor, não apenas um sistema de cadastro.
+
+### Principais refinamentos
+
+- Painel reescrito como sala de comando executiva.
+- Textos mais consultivos, objetivos e orientados à decisão.
+- Conselheiro Executivo alinhado apenas aos módulos existentes.
+- Remoção de referências visíveis a módulos que não fazem parte do menu oficial.
+- Relatórios com mapa de crescimento mais coerente com os dados disponíveis.
+- Design refinado com hierarquia visual mais premium.
+- Balõezinhos de interrogação mantidos nos títulos e pontos relevantes.
+- Mantida a estrutura oficial de módulos, sem criar novos módulos.

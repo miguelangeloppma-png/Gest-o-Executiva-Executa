@@ -9,8 +9,8 @@ try:
 except Exception:
     create_client = None
 
-APP_NAME="Gestão Executiva EXECUTA Web"
-APP_VERSION="EXECUTA Experience OS v6.3.2 CORREÇÃO FINAL CÓDIGOS"
+APP_NAME="Gestão Executiva EXECUTA — Executive OS"
+APP_VERSION="v6.4 FINAL EXECUTIVA"
 MAX_USERS=10
 DATE_DB="%Y-%m-%d"
 DATE_BR="%d/%m/%Y"
@@ -140,6 +140,110 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+
+# Refinamento final v6.4 — Executive OS
+st.markdown("""
+<style>
+/* Base premium, mais limpa e menos carregada */
+.block-container{padding-top:.65rem!important;max-width:1440px!important;}
+.stApp{background:
+  radial-gradient(circle at 14% 0%,rgba(0,209,255,.10),transparent 30%),
+  radial-gradient(circle at 92% 8%,rgba(124,92,255,.12),transparent 26%),
+  linear-gradient(180deg,#070A12 0%,#090E18 100%)!important;
+}
+.main-header{
+  border:1px solid rgba(0,209,255,.18)!important;
+  background:linear-gradient(135deg,rgba(18,27,43,.98),rgba(9,14,24,.96))!important;
+  box-shadow:0 18px 48px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.04)!important;
+}
+.main-title{font-size:29px!important;letter-spacing:-.03em!important;}
+.main-subtitle{color:#AFC0D2!important;max-width:1060px!important;}
+.metric-card{
+  min-height:124px!important;
+  border-radius:24px!important;
+  background:linear-gradient(145deg,rgba(17,25,39,.98),rgba(11,17,29,.94))!important;
+  border:1px solid rgba(255,255,255,.075)!important;
+  box-shadow:0 16px 42px rgba(0,0,0,.22)!important;
+}
+.metric-value{font-size:27px!important;letter-spacing:-.025em!important;}
+.metric-status{font-size:12.5px!important;color:#59DFFF!important;}
+[data-testid="stSidebar"]{
+  background:linear-gradient(180deg,#090E18 0%,#0E1624 100%)!important;
+  border-right:1px solid rgba(0,209,255,.16)!important;
+}
+[data-testid="stSidebar"] div[role="radiogroup"] label{
+  min-height:45px!important;
+  border-radius:16px!important;
+  border:1px solid rgba(255,255,255,.065)!important;
+  background:rgba(255,255,255,.025)!important;
+}
+[data-testid="stSidebar"] div[role="radiogroup"] label:hover{
+  background:rgba(0,209,255,.08)!important;
+  border-color:rgba(0,209,255,.35)!important;
+}
+.user-pill{
+  border-radius:22px!important;
+  padding:16px!important;
+  background:linear-gradient(135deg,rgba(0,209,255,.10),rgba(124,92,255,.08))!important;
+}
+.top-method-btn div[data-testid="stButton"] > button{
+  min-height:34px!important;
+  border-radius:999px!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  letter-spacing:.01em!important;
+}
+.exec-briefing{
+  padding:18px 20px;border-radius:24px;
+  border:1px solid rgba(0,209,255,.18);
+  background:linear-gradient(135deg,rgba(0,209,255,.075),rgba(124,92,255,.065));
+  box-shadow:0 18px 45px rgba(0,0,0,.22);
+  margin:12px 0 14px 0;
+}
+.exec-briefing-title{font-size:17px;font-weight:950;color:#EEF6FF;margin-bottom:6px;}
+.exec-briefing-text{font-size:14px;line-height:1.52;color:#C6D6E8;}
+.exec-decision-card{
+  padding:17px 18px;border-radius:22px;margin-bottom:12px;
+  border:1px solid rgba(255,255,255,.08);
+  background:linear-gradient(145deg,rgba(17,25,39,.96),rgba(10,16,28,.92));
+}
+.exec-decision-title{font-size:14px;font-weight:950;color:#00D1FF;text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;}
+.exec-decision-text{font-size:13.5px;line-height:1.5;color:#D8E6F5;}
+.exec-principle{
+  padding:14px 16px;border-radius:18px;margin:10px 0 14px 0;
+  border:1px solid rgba(41,230,167,.18);
+  background:rgba(41,230,167,.065);
+  color:#DDEBFA;font-size:13.5px;line-height:1.52;
+}
+.exec-warning{
+  padding:14px 16px;border-radius:18px;margin:10px 0 14px 0;
+  border:1px solid rgba(255,204,102,.22);
+  background:rgba(255,204,102,.075);
+  color:#F4E8C8;font-size:13.5px;line-height:1.52;
+}
+.help-subtitle{
+  margin-top:14px!important;
+  margin-bottom:8px!important;
+  font-size:18px!important;
+  font-weight:950!important;
+  color:#EEF6FF!important;
+  letter-spacing:-.02em!important;
+}
+.visible-q{
+  width:17px!important;height:17px!important;
+  background:rgba(0,209,255,.16)!important;
+  color:#4EE6FF!important;
+}
+.stDataFrame{border-radius:18px!important;overflow:hidden!important;}
+div[data-testid="stForm"]{
+  border:1px solid rgba(255,255,255,.075)!important;
+  background:rgba(16,23,37,.38)!important;
+  border-radius:22px!important;
+  padding:14px!important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 EXECUTA_FRENTES=[("Diagnóstico executivo","Medir caixa, margem, estoque, canais, equipe, riscos e oportunidades antes de decidir."),("Validação de mercado","Testar demanda antes de investir pesado."),("Engenharia financeira","Controlar caixa, margem, capital de giro, preço e dívida."),("Sistema comercial","Transformar venda em processo previsível."),("Operação e escala","Padronizar atendimento, entrega, compras, estoque e treinamento."),("Tecnologia e dados","Reduzir erro, economizar tempo e integrar dados."),("Cultura e governança","Reduzir dependência do fundador e formar líderes.")]
 PILARES=["Verdade financeira","Cliente no centro","Venda como sistema","Operação replicável","Tecnologia útil","Gente forte","Cultura com consequência","Escala com caixa","Marca com narrativa","Governança para durar"]
 
@@ -175,14 +279,14 @@ def money_input(label,value=0,key=None,help_text=""):
 
 HELP_TEXTS={
     "Minha Empresa":"Cadastro principal da empresa. Aqui entram os dados-base usados para interpretar caixa, custos, estoque, porte e saúde geral. Exemplo: preencha faturamento, custos fixos, custos variáveis, estoque e caixa inicial com valores reais ou estimados.",
-    "Painel":"Tela principal de decisão. Mostra a leitura executiva da empresa: caixa, capital de giro, resultado, margem, prioridades e próximos movimentos.",
+    "Painel":"Sala de comando do empreendedor. Não é apenas um resumo: é a tela que interpreta os números, aponta risco, recomenda decisão e transforma gestão em ação.",
     "Fluxo de Caixa":"Registra dinheiro que entrou ou saiu. Use para acompanhar caixa real, lançamentos parcelados e histórico financeiro.",
     "Contas a Pagar":"Lista de compromissos financeiros futuros da empresa. Exemplo: fornecedores, aluguel, impostos, folha, cartão e parcelas.",
     "Contas a Receber":"Lista de valores que a empresa tem a receber. Exemplo: vendas a prazo, marketplaces, boletos, clientes e recebíveis futuros.",
     "DRE":"Demonstração do Resultado do Exercício. Mostra se a empresa está dando lucro ou prejuízo, separando receita, impostos, custos e despesas.",
     "Calendário":"Agenda executiva e financeira. Mostra compromissos e também vencimentos de contas a pagar e a receber.",
-    "Relatórios":"Relatório executivo com leitura de crescimento, gargalos, alertas, decisões e plano de ação. Serve para revisão semanal ou mensal.",
-    "Plano de Ação":"Transforma diagnóstico em execução. Cada ação precisa ter prioridade, área, responsável, prazo e status.",
+    "Relatórios":"Consolidação executiva para revisão semanal ou mensal. Une saúde financeira, mapa de crescimento, alertas, plano de ação e leitura do próximo movimento.",
+    "Plano de Ação":"Transforma conselho em execução. Cada ação precisa ter prioridade, área, responsável, prazo e status; caso contrário, vira intenção sem resultado.",
     "Alertas":"Mostra riscos e pontos de atenção. Cada alerta vem acompanhado do que fazer para corrigir o problema.",
     "Usuários":"Área administrativa para controlar acessos. Deve ser usada apenas pelo administrador.",
     "Score EXECUTA":"Nota geral calculada a partir de caixa, margem, contas, execução e riscos. Quanto maior, mais saudável está a empresa.",
@@ -470,18 +574,28 @@ def status_badge(score):
     if score>=45:return "<span class='badge-warn'>atenção</span>"
     return "<span class='badge-risk'>risco</span>"
 
+
 def exec_reading():
-    m=calc();s,als=alertas();fb=feedback_df();actions=actions_df();dec=decisions_df()
-    txt=[]
-    if s>=75:txt.append("A empresa está em uma zona administrável, mas o foco deve ser consolidar rotina, margem e previsibilidade.")
-    elif s>=45:txt.append("A empresa tem sinais de atenção. O caminho é reduzir variáveis soltas, reforçar caixa e transformar ação em rotina semanal.")
-    else:txt.append("A empresa está em zona de risco. Antes de crescer, é necessário proteger caixa, rever margem, priorizar pagamentos e atacar gargalos operacionais.")
-    if not fb.empty:
-        avg=float(fb.score.mean()); txt.append(f"Feedback de mercado médio: {avg:.1f}/10. Use os feedbacks para melhorar oferta, comunicação e funcionalidades antes de escalar.")
-    if actions.empty: txt.append("O plano de ação está vazio; sem ação com dono e prazo, o painel vira apenas relatório.")
-    if not dec.empty: txt.append("Há decisões registradas; revise semanalmente se elas produziram resultado real.")
-    if als: txt.append("Alertas principais: " + "; ".join([a[1] for a in als[:3]]) + ".")
-    return " ".join(txt)
+    m=calc();s,als=alertas();actions=actions_df();cash=cash_df();dre=dre_df();acc=accounts_df()
+    frases=[]
+    if s>=75:
+        frases.append("A empresa está em zona administrável. O papel agora é manter cadência: revisar caixa, margem e plano de ação toda semana para não perder controle enquanto cresce.")
+    elif s>=45:
+        frases.append("A empresa está em zona de atenção. Ela provavelmente ainda funciona, mas existem sinais de fragilidade em caixa, margem, contas ou execução. O foco deve ser corrigir antes de acelerar.")
+    else:
+        frases.append("A empresa está em zona de risco. Antes de buscar crescimento, o empresário precisa proteger caixa, revisar margem, controlar vencimentos e reduzir decisões baseadas em achismo.")
+    if cash.empty:
+        frases.append("O fluxo de caixa ainda está vazio; sem registrar entradas e saídas, o sistema não consegue enxergar a realidade financeira.")
+    if dre.empty:
+        frases.append("Ainda não há DRE lançado; sem DRE, você vê dinheiro entrando e saindo, mas não sabe se a operação gera lucro de verdade.")
+    if not acc.empty and m["pagar"] > m["receber"] + m["caixa"]:
+        frases.append("As contas a pagar exigem atenção porque superam a soma de caixa e recebíveis em aberto.")
+    if actions.empty:
+        frases.append("O plano de ação está vazio; sem responsável e prazo, a empresa até entende o problema, mas não muda comportamento.")
+    if als:
+        frases.append("Alertas prioritários: " + "; ".join([a[1] for a in als[:3]]) + ".")
+    return " ".join(frases)
+
 def latest_dre():
     r=db.select("dre_records",order="period_end",desc=True,limit=1)
     return r[0] if r else {}
@@ -543,19 +657,20 @@ def solution_steps(title, action):
         ]
     return [action or "Transforme o alerta em uma ação com responsável e prazo.", "Registre a ação no Plano de Ação.", "Revise o resultado em até 7 dias."]
 
+
 def growth_lanes():
-    m=calc(); cash=cash_df(); dre=dre_df(); acts=actions_df(); market=marketing_df(); unit=unit_df(); okrs=okr_df(); fb=feedback_df(); routines=routines_df(); dec=decisions_df()
-    financeiro = 20 + (20 if not cash.empty else 0) + (20 if not dre.empty else 0) + (20 if m['margem']>=10 else 0) + (20 if m['caixa']>=0 else 0)
-    mercado = 15 + (25 if not market.empty else 0) + (20 if not fb.empty else 0) + (20 if not unit.empty else 0) + (20 if m['margem']>=10 else 0)
-    execucao = 15 + min(35, len(acts)*7) + (25 if not okrs.empty else 0) + (25 if not routines.empty else 0)
-    operacao = 25 + (20 if m['estoque'] <= max(1,m['receita']) else 0) + (20 if m['ncg'] <= max(1,m['receita']) else 0) + (20 if not dec.empty else 0) + (15 if not acts.empty else 0)
-    lideranca = 20 + (25 if not okrs.empty else 0) + (25 if not routines.empty else 0) + (20 if not dec.empty else 0) + (10 if not acts.empty else 0)
+    m=calc(); cash=cash_df(); dre=dre_df(); acts=actions_df(); acc=accounts_df(); events=events_df()
+    financeiro = 15 + (25 if not cash.empty else 0) + (25 if not dre.empty else 0) + (20 if m['margem']>=10 else 0) + (15 if m['caixa']>=0 else 0)
+    caixa = 20 + (25 if m['caixa']>=0 else 0) + (25 if m['pagar'] <= m['receber'] + m['caixa'] else 0) + (15 if not acc.empty else 0) + (15 if m['ncg'] <= max(1,m['receita']) else 0)
+    execucao = 20 + min(45, len(acts)*9) + (20 if not acts.empty and "status" in acts and len(acts[acts.status=="Concluído"])>0 else 0) + (15 if not events.empty else 0)
+    operacao = 25 + (25 if m['estoque'] <= max(1,m['receita']) else 0) + (25 if m['ncg'] <= max(1,m['receita']) else 0) + (25 if not acts.empty else 0)
+    lideranca = 20 + (30 if not acts.empty else 0) + (25 if not dre.empty else 0) + (25 if not cash.empty else 0)
     return [
-        ("Financeiro", min(100,financeiro), "Caixa, DRE, margem, contas e capital de giro.", "Se estiver baixo: atualizar DRE, renegociar contas e revisar preço/custo."),
-        ("Mercado e Oferta", min(100,mercado), "Cliente ideal, dor, promessa, prova, CAC, LTV e feedback real.", "Se estiver baixo: fazer conversas com clientes e testar uma oferta simples."),
-        ("Execução", min(100,execucao), "Plano, OKRs, responsáveis, prazos e rotina semanal.", "Se estiver baixo: criar 3 ações prioritárias para 7 dias."),
-        ("Operação", min(100,operacao), "Processo, estoque, giro, decisões e capacidade operacional.", "Se estiver baixo: padronizar a rotina crítica antes de escalar."),
-        ("Liderança", min(100,lideranca), "Dono, decisão, governança, reunião e cadência de gestão.", "Se estiver baixo: registrar decisões e criar ritual semanal de liderança."),
+        ("Financeiro", min(100,financeiro), "DRE, margem, resultado e consistência dos números.", "Se estiver baixo: atualizar DRE, revisar preço/custo e separar lucro de caixa."),
+        ("Caixa e liquidez", min(100,caixa), "Caixa atual, contas a pagar, recebíveis e capital de giro.", "Se estiver baixo: renegociar vencimentos, acelerar recebíveis e cortar gastos não essenciais."),
+        ("Execução", min(100,execucao), "Plano de ação, responsáveis, prazos, calendário e conclusão.", "Se estiver baixo: criar poucas ações, com dono claro e revisão semanal."),
+        ("Operação", min(100,operacao), "Estoque, giro, capacidade operacional e disciplina de processo.", "Se estiver baixo: reduzir estoque parado, padronizar rotina crítica e evitar crescimento desorganizado."),
+        ("Liderança", min(100,lideranca), "Qualidade da decisão do empreendedor e ritmo de acompanhamento.", "Se estiver baixo: usar o Painel semanalmente, registrar ações e acompanhar indicadores.")
     ]
 
 def render_growth_lanes():
@@ -643,29 +758,38 @@ def selected_row_from_table(raw_df, display_df, columns, key, caption="Clique em
             return raw.iloc[int(chosen[1])].to_dict()
     return None
 
+
 def ceo_next_move():
-    m=calc(); s,als=alertas(); fb=feedback_df(); acts=actions_df(); dec=decisions_df(); okrs=okr_df()
-    if m["caixa"] < 0 or (als and any(a[0]=="Crítico" and "Caixa" in a[1] for a in als)):
-        return "Modo sobrevivência: proteger caixa, renegociar vencimentos, acelerar recebíveis e suspender gastos que não geram venda no curto prazo."
+    m=calc(); s,als=alertas(); acts=actions_df(); cash=cash_df(); dre=dre_df(); acc=accounts_df()
+    if cash.empty:
+        return "Primeiro movimento: lançar entradas e saídas reais no Fluxo de Caixa. Sem caixa registrado, qualquer conselho vira chute."
+    if dre.empty:
+        return "Segundo movimento: lançar o DRE do período. O empreendedor precisa separar caixa de lucro para saber se a empresa realmente ganha dinheiro."
+    if m["caixa"] < 0:
+        return "Modo proteção: renegociar pagamentos, acelerar recebíveis, cortar gastos não essenciais e travar qualquer investimento que não gere retorno imediato."
+    if m["pagar"] > m["receber"] + m["caixa"]:
+        return "Modo liquidez: revisar próximos vencimentos, priorizar contas críticas e negociar prazo antes de assumir novas compras."
     if m["margem"] < 10:
-        return "Modo margem: revisar preço, CMV/CPV/CSP, frete, taxas, mix de produtos e canais antes de tentar escalar vendas."
+        return "Modo margem: revisar preço, custo direto, impostos, taxas, frete e mix de produtos. Crescer com margem fraca aumenta faturamento e também o problema."
     if acts.empty:
-        return "Modo execução: transformar diagnóstico em 3 ações com responsável, prazo e métrica. Sem dono e prazo, o sistema vira cadastro."
-    if fb.empty:
-        return "Modo mercado: coletar 10 feedbacks reais de clientes/testadores antes de investir em divulgação forte."
-    if okrs.empty:
-        return "Modo foco: definir 1 objetivo de 90 dias e no máximo 3 resultados-chave. O risco agora é dispersão."
-    return "Modo escala controlada: manter ritmo semanal, medir margem por canal, validar oferta e só aumentar investimento no que provar retorno."
+        return "Modo execução: criar 3 ações no Plano de Ação: uma para caixa, uma para margem e uma para venda/cliente, todas com responsável e prazo."
+    return "Modo crescimento controlado: manter rotina semanal, acompanhar margem por canal, proteger caixa e investir apenas no que provar retorno."
+
 
 def ceo_questions():
-    m=calc(); fb=feedback_df(); acts=actions_df(); qs=[]
+    m=calc(); acts=actions_df(); cash=cash_df(); dre=dre_df()
+    qs=[]
+    if cash.empty: qs.append("Quais entradas e saídas reais ainda não foram lançadas no fluxo de caixa?")
+    if dre.empty: qs.append("A empresa está lucrando de verdade ou apenas movimentando dinheiro?")
     if m["pagar"] > m["receber"] + m["caixa"]: qs.append("Quais pagamentos podem ser renegociados sem quebrar a operação?")
-    if m["margem"] < 10: qs.append("Qual produto, serviço ou canal está vendendo bastante, mas destruindo margem?")
-    if fb.empty: qs.append("Quem são os 10 primeiros usuários/clientes que vão dizer a verdade sobre o produto?")
-    if acts.empty: qs.append("Quais são as 3 decisões que, se executadas esta semana, mudam o negócio?")
-    qs += ["Qual decisão você está adiando por medo de encarar os números?", "O que deve parar de ser feito para liberar caixa, tempo e foco?", "Qual métrica provaria que a empresa está pronta para crescer?"]
+    if m["margem"] < 10: qs.append("Qual produto, serviço ou canal vende, mas destrói margem?")
+    if acts.empty: qs.append("Quais 3 ações com responsável e prazo mudariam a empresa nos próximos 7 dias?")
+    qs += [
+        "Qual decisão você está adiando porque os números podem mostrar uma verdade desconfortável?",
+        "O que precisa ser parado para liberar caixa, tempo e foco?",
+        "Qual métrica provaria que a empresa está pronta para crescer com segurança?"
+    ]
     return qs[:6]
-
 
 def page_jornada_guiada():
     header("Jornada Guiada", "Onboarding executivo para o usuário não se perder: primeiro realidade, depois leitura, decisão, execução e revisão.")
@@ -673,7 +797,7 @@ def page_jornada_guiada():
     st.markdown(f"<div class='exec-hero'><h3>Seu avanço de estruturação: {score}%</h3><p>O objetivo não é preencher tudo por preencher. O objetivo é criar uma rotina que ajude a empresa a faturar mais com caixa, margem, foco e execução.</p></div>", unsafe_allow_html=True)
     c=st.columns(3)
     with c[0]: ux_card("1. Verdade", "Cadastre a empresa, fluxo, contas e DRE. O app precisa de realidade para aconselhar.", "Evite achismo")
-    with c[1]: ux_card("2. Decisão", "Use Indicadores, Alerta, Unidade Econômica e Conselheiro CEO para escolher o próximo movimento.", "Menos opinião, mais evidência")
+    with c[1]: ux_card("2. Decisão", "Use Indicadores, Alerta, Unidade Econômica e Conselheiro Executivo para escolher o próximo movimento.", "Menos opinião, mais evidência")
     with c[2]: ux_card("3. Execução", "Transforme decisão em Plano de Ação, OKRs, Rotina Executiva e Decisões registradas.", "Dono + prazo + revisão")
     st.subheader("Checklist de maturidade do uso")
     for i,(name,done,title,desc) in enumerate(steps,1):
@@ -712,7 +836,7 @@ def page_sala_ceo():
     with c[3]: metric("Execução", str(len(acts)), "ações registradas")
     with c[4]: metric("Decisões", str(len(dec)), "memória executiva")
     st.markdown("<div class='section-kicker'>próximo movimento recomendado</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='insight-card'><div class='insight-title'>Decisão do Conselheiro CEO</div><div class='insight-text'>{ceo_next_move()}</div></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='insight-card'><div class='insight-title'>Decisão do Conselheiro Executivo</div><div class='insight-text'>{ceo_next_move()}</div></div>", unsafe_allow_html=True)
     c1,c2,c3=st.columns(3)
     with c1:
         st.markdown("<div class='ceo-grid-card'><div class='ceo-card-title'>1. Realidade</div><div class='ceo-card-text'>Números antes de opinião. Fluxo, DRE, contas e margem dizem onde dói.</div></div>", unsafe_allow_html=True)
@@ -826,69 +950,95 @@ def page_okrs_90():
     show=df.copy(); show["due_date"]=show.due_date.apply(date_br)
     st.dataframe(show[["quarter","objective","key_result","target","current_value","confidence","owner","due_date","status","created_by"]], use_container_width=True, hide_index=True)
 
+
 def page_minha_empresa():
-    p=ensure_profile();header("Minha Empresa","Cadastro da empresa e leitura geral da saúde empresarial com base no DRE.");readonly_warning()
+    p=ensure_profile();header("Minha Empresa","A verdade inicial da empresa: perfil, custos, caixa, estoque e base para o aconselhamento executivo.");readonly_warning()
+    st.markdown("<div class='exec-principle'><b>Como pensar esta tela:</b> aqui não é apenas cadastro. Estes dados formam a base do diagnóstico. Quanto mais realistas forem os números, melhor será a leitura executiva no Painel, Alertas e Relatórios.</div>", unsafe_allow_html=True)
     if can_edit():
         with st.form("empresa_form"):
             c1,c2=st.columns(2)
             with c1:
-                company=st.text_input("Nome da empresa",p.get("company_name",""));owner=st.text_input("Responsável",p.get("owner_name",""));segment=st.text_input("Segmento",p.get("segment",""));size=st.selectbox("Porte",["Pequena","Média","Grande","Hiperporte"],index=["Pequena","Média","Grande","Hiperporte"].index(p.get("business_size","Pequena")) if p.get("business_size","Pequena") in ["Pequena","Média","Grande","Hiperporte"] else 0)
+                company=st.text_input("Nome da empresa",p.get("company_name",""), help=_help_for("Nome da empresa"))
+                owner=st.text_input("Responsável",p.get("owner_name",""), help=_help_for("Responsável"))
+                segment=st.text_input("Segmento",p.get("segment",""), help=_help_for("Segmento"))
+                size=st.selectbox("Porte",["Pequena","Média","Grande","Hiperporte"],index=["Pequena","Média","Grande","Hiperporte"].index(p.get("business_size","Pequena")) if p.get("business_size","Pequena") in ["Pequena","Média","Grande","Hiperporte"] else 0, help=_help_for("Porte"))
             with c2:
-                revenue=money_input("Faturamento mensal estimado",p.get("monthly_revenue"),"emp_revenue");fixed=money_input("Custos fixos mensais",p.get("fixed_costs"),"emp_fixed");variable=money_input("Custos variáveis mensais",p.get("variable_costs"),"emp_variable");stock=money_input("Valor em estoque",p.get("stock_value"),"emp_stock");initial=money_input("Caixa inicial",p.get("initial_cash"),"emp_initial")
-            notes=st.text_area("Observações",p.get("notes",""))
+                revenue=money_input("Faturamento mensal estimado",p.get("monthly_revenue"),"emp_revenue",_help_for("Faturamento mensal estimado"))
+                fixed=money_input("Custos fixos mensais",p.get("fixed_costs"),"emp_fixed",_help_for("Custos fixos mensais"))
+                variable=money_input("Custos variáveis mensais",p.get("variable_costs"),"emp_variable",_help_for("Custos variáveis mensais"))
+                stock=money_input("Valor em estoque",p.get("stock_value"),"emp_stock",_help_for("Valor em estoque"))
+                initial=money_input("Caixa inicial",p.get("initial_cash"),"emp_initial",_help_for("Caixa inicial"))
+            notes=st.text_area("Observações",p.get("notes",""), help="Anote contexto que os números não explicam sozinhos: sazonalidade, dívida, estoque parado, mudança de canal, contrato grande ou problema operacional.")
             if st.form_submit_button("Salvar Minha Empresa"):
-                db.update("company_profile","main",dict(company_name=company,owner_name=owner,segment=segment,business_size=size,monthly_revenue=revenue,fixed_costs=fixed,variable_costs=variable,stock_value=stock,initial_cash=initial,notes=notes,updated_at=today_db()));st.success("Minha Empresa salva.");st.rerun()
-    help_title("Leitura rápida da saúde da empresa");m=calc();s,als=alertas();c=st.columns(4)
+                db.update("company_profile","main",dict(company_name=company,owner_name=owner,segment=segment,business_size=size,monthly_revenue=revenue,fixed_costs=fixed,variable_costs=variable,stock_value=stock,initial_cash=initial,notes=notes,updated_at=today_db()))
+                st.success("Minha Empresa salva.")
+                st.rerun()
+    help_title("Leitura rápida da saúde da empresa","Primeira leitura executiva usando cadastro, DRE e fluxo de caixa.")
+    m=calc();s,als=alertas();c=st.columns(4)
     with c[0]:metric("Score EXECUTA",f"{s}/100","Com base nos dados atuais")
     with c[1]:metric("Receita bruta",brl(m["receita"]),"DRE ou estimativa")
     with c[2]:metric("Lucro/resultado",brl(m["resultado"]),f"Margem {pct(m['margem'])}")
     with c[3]:metric("Caixa atual",brl(m["caixa"]),"Caixa inicial + movimentos")
     dre=latest_dre()
     st.info(f"Último DRE considerado: {date_br(dre.get('period_start'))} a {date_br(dre.get('period_end'))}.") if dre else st.warning("Ainda não há DRE lançado. A leitura usa estimativas do cadastro da empresa.")
+
 def page_painel():
-    header("Painel Executivo","A central do sistema: leitura de CEO, decisão recomendada, conselheiro, caixa, margem e execução.")
-    m=calc();s,als=alertas();dec=decisions_df();rot=routines_df()
+    header("Painel Executivo","A sala de comando da empresa: números essenciais, leitura de CEO, decisão recomendada e execução da semana.")
+    m=calc();s,als=alertas()
     c=st.columns(4)
     with c[0]:metric("Score EXECUTA",f"{s}/100","Saúde geral")
     with c[1]:metric("Caixa atual",brl(m["caixa"]),"Entradas - saídas")
     with c[2]:metric("Capital de giro",brl(m["ncg"]),"Receber + estoque - pagar")
     with c[3]:metric("Resultado",brl(m["resultado"]),f"Margem {pct(m['margem'])}")
 
-    st.markdown("<div class='section-kicker'>leitura executiva</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='ceo-panel-card'><div class='insight-title'>Leitura executiva</div><div class='insight-text'>{exec_reading()}</div></div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='ceo-panel-card'><div class='insight-title'>Próximo movimento recomendado</div><div class='insight-text'>{ceo_next_move()}</div></div>", unsafe_allow_html=True)
+    status = "Empresa em controle" if s>=75 else "Empresa em atenção" if s>=45 else "Empresa em risco"
+    st.markdown(f"""
+    <div class='exec-briefing'>
+      <div class='exec-briefing-title'>Briefing executivo da semana</div>
+      <div class='exec-briefing-text'><b>{status}.</b> {exec_reading()}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    with st.expander("Perguntas difíceis que o CEO deve responder esta semana", expanded=False):
-        for q in ceo_questions()[:6]:
-            st.markdown(f"<div class='ceo-question'>{q}</div>", unsafe_allow_html=True)
-
-    help_title("Pergunte ao Conselheiro CEO")
-    q=st.text_area("Digite sua dúvida executiva",placeholder="Ex.: Devo investir em tráfego agora ou corrigir margem primeiro?",height=105,key="painel_advisor_q")
-    if st.button("Gerar orientação executiva", key="painel_advisor_btn"):
-        if not q.strip():
-            st.error("Digite uma pergunta.")
-        else:
-            ans=advisor_answer(q)
-            st.session_state.painel_answer=ans
-            db.insert("advisor_history",dict(id=str(uuid.uuid4()),asked_at=dt.datetime.now().isoformat(timespec="seconds"),question=q,answer=ans,created_by=user_name()))
-    if st.session_state.get("painel_answer"):
-        st.markdown(st.session_state.painel_answer)
+    colA,colB=st.columns(2)
+    with colA:
+        st.markdown(f"<div class='exec-decision-card'><div class='exec-decision-title'>Decisão recomendada</div><div class='exec-decision-text'>{ceo_next_move()}</div></div>", unsafe_allow_html=True)
+    with colB:
+        pergunta = ceo_questions()[0] if ceo_questions() else "Qual decisão precisa ser tomada esta semana?"
+        st.markdown(f"<div class='exec-decision-card'><div class='exec-decision-title'>Pergunta de CEO</div><div class='exec-decision-text'>{pergunta}</div></div>", unsafe_allow_html=True)
 
     c1,c2=st.columns(2)
     with c1:metric("Contas a pagar",brl(m["pagar"]),"em aberto")
     with c2:metric("Contas a receber",brl(m["receber"]),"em aberto")
 
-    help_title("Prioridades da semana")
+    with st.expander("Conselheiro Executivo — fazer uma pergunta", expanded=False):
+        help_title("Pergunte ao Conselheiro Executivo","Use este espaço para receber uma orientação objetiva com base nos dados já lançados.")
+        q=st.text_area("Digite sua dúvida executiva",placeholder="Ex.: Devo priorizar caixa, preço ou vendas esta semana?",height=105,key="painel_advisor_q")
+        if st.button("Gerar orientação executiva", key="painel_advisor_btn"):
+            if not q.strip():
+                st.error("Digite uma pergunta.")
+            else:
+                ans=advisor_answer(q)
+                st.session_state.painel_answer=ans
+                db.insert("advisor_history",dict(id=str(uuid.uuid4()),asked_at=dt.datetime.now().isoformat(timespec="seconds"),question=q,answer=ans,created_by=user_name()))
+        if st.session_state.get("painel_answer"):
+            st.markdown(st.session_state.painel_answer)
+
+    help_title("Prioridades da semana","Lista as ações mais próximas ou críticas. Um executivo não gerencia só pelo que sente; gerencia por prioridade, dono e prazo.")
     acts=actions_df()
-    if acts.empty: st.warning("Crie pelo menos 3 ações no Plano de Ação: uma de caixa, uma de margem e uma de venda/cliente.")
+    if acts.empty:
+        st.warning("Crie pelo menos 3 ações no Plano de Ação: uma de caixa, uma de margem e uma de venda/cliente.")
     else:
         show=acts.head(5).copy(); show["due_date"]=show.due_date.apply(date_br)
         st.dataframe(show[["priority","area","action","responsible","due_date","status"]],use_container_width=True,hide_index=True)
-    help_title("Movimentos recentes")
+
+    help_title("Movimentos recentes","Últimas entradas e saídas lançadas. Use para conferir se o caixa real está sendo alimentado.")
     df=cash_df()
-    if df.empty:st.info("Sem movimentos de caixa.")
+    if df.empty:
+        st.info("Sem movimentos de caixa.")
     else:
-        show=df.head(12).copy();show["date"]=show.date.apply(date_br);show["amount"]=show.amount.apply(brl);st.dataframe(show[["date","type","category","description","amount","channel","created_by"]],use_container_width=True,hide_index=True)
+        show=df.head(12).copy();show["date"]=show.date.apply(date_br);show["amount"]=show.amount.apply(brl)
+        st.dataframe(show[["date","type","category","description","amount","channel","created_by"]],use_container_width=True,hide_index=True)
+
 def page_alerta():
     header("Alertas","Riscos, pontos de atenção e plano prático para corrigir cada problema.")
     s,als=alertas();metric("Score EXECUTA",f"{s}/100","Quanto menor, maior a urgência")
@@ -1177,25 +1327,26 @@ def page_decisoes():
     show=df.copy(); show["decision_date"]=show.decision_date.apply(date_br); show["due_date"]=show.due_date.apply(date_br)
     st.dataframe(show[["decision_date","area","decision","reason","expected_result","owner","due_date","status","created_by"]],use_container_width=True,hide_index=True)
 
-def page_relatorios():
-    header("Relatórios","Mapa de crescimento + relatório executivo em um único módulo.")
-    st.subheader("Mapa de Crescimento")
-    st.caption("Leitura estratégica por frentes: financeiro, mercado, execução, operação e liderança. Use isso para decidir onde agir primeiro.")
-    render_growth_lanes()
-    st.warning("Regra executiva: não acelerar marketing ou contratação se Financeiro, Mercado e Execução estiverem fracos. Primeiro corrija a base, depois escale.")
 
-    st.subheader("Relatório Executivo")
-    m=calc();s,als=alertas();acts=actions_df();dec=decisions_df()
+def page_relatorios():
+    header("Relatórios","Mapa de crescimento e relatório executivo para revisão semanal ou mensal.")
+    help_title("Mapa de Crescimento","Mostra onde a empresa está mais forte ou frágil: financeiro, caixa, execução, operação e liderança.")
+    st.caption("Use esta leitura para escolher o que corrigir primeiro. Crescimento sem base aumenta o problema.")
+    render_growth_lanes()
+    st.markdown("<div class='exec-warning'><b>Regra executiva:</b> não acelere contratação, estoque ou marketing quando caixa, margem e execução ainda estão frágeis. Primeiro corrija a base; depois escale.</div>", unsafe_allow_html=True)
+
+    help_title("Relatório Executivo","Texto consolidado para reunião de gestão, revisão semanal ou acompanhamento mensal.")
+    m=calc();s,als=alertas();acts=actions_df()
     report = "# Relatório Executivo EXECUTA\n\n"
     report += f"Data: {date_br(dt.date.today())}\n\n"
     report += "## 1. Saúde geral\n"
     report += f"Score EXECUTA: {s}/100\nCaixa atual: {brl(m['caixa'])}\nCapital de giro: {brl(m['ncg'])}\nResultado: {brl(m['resultado'])}\nMargem: {pct(m['margem'])}\n\n"
     report += "## 2. Leitura executiva\n" + exec_reading() + "\n\n"
-    report += "## 2.1 Próximo movimento do CEO\n" + ceo_next_move() + "\n\n"
-    report += "## 3. Mapa de crescimento\n"
+    report += "## 3. Decisão recomendada\n" + ceo_next_move() + "\n\n"
+    report += "## 4. Mapa de crescimento\n"
     for title,score,body,action in growth_lanes():
-        report += f"- {title}: {score}/100 — {body} Ação: {action}\n"
-    report += "\n## 4. Alertas e correções\n"
+        report += f"- {title}: {score}/100 — {body} Ação recomendada: {action}\n"
+    report += "\n## 5. Alertas e correções\n"
     if als:
         for n,t,a in als:
             report += f"- {n}: {t} — {a}\n"
@@ -1203,66 +1354,79 @@ def page_relatorios():
                 report += f"  - Fazer: {step}\n"
     else:
         report += "Nenhum alerta crítico identificado.\n"
-    report += "\n## 5. Plano de ação\n"
+    report += "\n## 6. Plano de ação\n"
     if acts.empty:
-        report += "Nenhuma ação cadastrada."
+        report += "Nenhuma ação cadastrada. Recomendação: criar 3 ações com responsável e prazo.\n"
     else:
         for _,r in acts.head(10).iterrows():
             report += f"- [{r.get('status')}] {r.get('area')} — {r.get('action')} | Responsável: {r.get('responsible')} | Prazo: {date_br(r.get('due_date'))}\n"
     st.text_area("Relatório gerado",report,height=460)
     st.download_button("Baixar relatório .md",report,file_name=f"relatorio_executa_{today_db()}.md",mime="text/markdown")
 
+
 def page_metodo():
-    header("O que é o Método EXECUTA","Método de leitura, decisão e execução empresarial: clareza, dinheiro, mercado, operação, liderança e crescimento com controle.")
-    st.markdown('<div class="exec-note"><b>Princípio executivo:</b> a empresa só deve crescer quando prova ter margem, caixa, processo, demanda, liderança e capacidade operacional. Crescer sem esses sinais apenas aumenta o tamanho do problema.</div>', unsafe_allow_html=True)
-    st.subheader("Como usar o método dentro do app")
+    header("O que é o Método EXECUTA","Um método prático para transformar dados em decisão e decisão em execução.")
+    st.markdown('<div class="exec-note"><b>Princípio executivo:</b> a empresa só deve crescer quando prova ter caixa, margem, demanda, processo e capacidade de execução. Crescer sem isso não resolve o problema; apenas aumenta o tamanho dele.</div>', unsafe_allow_html=True)
+    help_title("Como usar o método dentro do app","O usuário não precisa decorar teoria. Ele segue a rotina: cadastrar realidade, ler painel, decidir, executar e revisar.")
     st.dataframe(pd.DataFrame([
-        ["1. Minha Empresa", "Cadastrar realidade", "Sem verdade financeira não existe decisão executiva."],
-        ["2. DRE + Fluxo", "Separar resultado de caixa", "Lucro e caixa são coisas diferentes; os dois precisam ser acompanhados."],
-        ["3. Indicadores", "Ler sinais", "Score, margem, giro, execução e feedback indicam o próximo gargalo."],
-        ["4. Plano + Rotina", "Transformar análise em execução", "Toda decisão precisa de responsável, prazo e revisão."],
-        ["5. Feedback de Mercado", "Aprender com usuários reais", "O produto melhora quando o mercado mostra onde dói e pelo que pagaria."],
-    ],columns=["Etapa","Função","Por que importa"]),use_container_width=True,hide_index=True)
-    st.subheader("Sete frentes")
-    for i,(t,d) in enumerate(EXECUTA_FRENTES,1):st.markdown(f"**{i}. {t}** — {d}")
-    st.subheader("10 pilares")
+        ["1. Minha Empresa", "Definir a realidade inicial", "Dados-base: segmento, porte, caixa, custos, estoque e observações."],
+        ["2. Fluxo + Contas", "Controlar sobrevivência", "Entradas, saídas, vencimentos, recebíveis e pressão de caixa."],
+        ["3. DRE", "Separar lucro de caixa", "Mostra se a operação gera resultado econômico real."],
+        ["4. Painel + Alertas", "Ler como executivo", "O sistema aponta risco, interpretação e decisão recomendada."],
+        ["5. Plano de Ação", "Executar", "Toda melhoria precisa de responsável, prazo e status."],
+        ["6. Relatórios", "Revisar", "Consolida crescimento, gargalos, alertas e próximas decisões."],
+    ],columns=["Etapa","Função","Como aplicar"]),use_container_width=True,hide_index=True)
+    help_title("Sete frentes do EXECUTA","As frentes que ajudam o empresário a estruturar a empresa sem olhar apenas para dinheiro.")
+    for i,(t,d) in enumerate(EXECUTA_FRENTES,1):
+        st.markdown(f"**{i}. {t}** — {d}")
+    help_title("10 pilares","Princípios usados para interpretar a empresa.")
     st.write(", ".join(PILARES))
-    st.subheader("Critério de crescimento")
-    st.warning("Antes de contratar, abrir nova frente, investir em marketing ou escalar canais, confira: margem positiva, caixa suficiente, operação repetível, demanda validada e dono claro para executar.")
+    help_title("Critério de crescimento","Quando a empresa pode começar a acelerar com menos risco.")
+    st.warning("Antes de contratar, comprar mais estoque, abrir novo canal ou investir pesado em marketing, confirme: margem positiva, caixa suficiente, operação repetível, contas controladas e ação com dono claro.")
+
 
 def advisor_answer(q):
-    m=calc(); s,als=alertas(); ql=q.lower(); fb=feedback_df(); acts=actions_df(); dec=decisions_df(); okrs=okr_df(); units=unit_df(); market=marketing_df()
+    m=calc(); s,als=alertas(); ql=q.lower(); acts=actions_df(); cash=cash_df(); dre=dre_df(); acc=accounts_df()
     temas=[]
     if any(x in ql for x in ["caixa","dinheiro","capital","giro","pagar","receber"]):temas.append("caixa")
     if any(x in ql for x in ["margem","lucro","preço","markup","dre","custo"]):temas.append("margem")
-    if any(x in ql for x in ["venda","cliente","marketplace","canal","comercial","marketing","oferta"]):temas.append("comercial")
+    if any(x in ql for x in ["venda","cliente","canal","comercial","marketing","oferta"]):temas.append("comercial")
     if any(x in ql for x in ["processo","estoque","operação","retrabalho","escala"]):temas.append("operacao")
     if any(x in ql for x in ["dono","equipe","liderança","delegar","gestor"]):temas.append("lideranca")
-    if any(x in ql for x in ["mvp","produto","validação","feedback","teste"]):temas.append("mvp")
     if not temas:temas=["geral"]
+
     out=[]
-    out.append(f"# Conselho CEO EXECUTA\n\n**Pergunta:** {q}\n\n## 1. Diagnóstico objetivo\nScore atual: **{s}/100**. Caixa: **{brl(m['caixa'])}**. Resultado: **{brl(m['resultado'])}**. Margem: **{pct(m['margem'])}**. Capital de giro: **{brl(m['ncg'])}**.")
-    if als: out.append("## 2. Alertas que eu não ignoraria\n"+"\n".join(f"- **{n}: {t}** — {a}" for n,t,a in als))
-    else: out.append("## 2. Alertas\nNenhum alerta crítico apareceu, mas continue validando margem, caixa e execução semanal.")
-    out.append("## 3. Decisão executiva\n"+ceo_next_move())
+    out.append(f"# Conselho Executivo EXECUTA\n\n**Pergunta:** {q}\n\n## 1. Diagnóstico sem rodeio\nScore atual: **{s}/100**. Caixa: **{brl(m['caixa'])}**. Resultado: **{brl(m['resultado'])}**. Margem: **{pct(m['margem'])}**. Capital de giro: **{brl(m['ncg'])}**.")
+    if cash.empty:
+        out.append("**Ponto crítico:** o fluxo de caixa ainda está vazio. Antes de qualquer decisão sofisticada, registre entradas e saídas reais.")
+    if dre.empty:
+        out.append("**Ponto crítico:** ainda não há DRE. Sem DRE, você pode confundir faturamento com lucro.")
+    if als:
+        out.append("## 2. Alertas que eu não ignoraria\n"+"\n".join(f"- **{n}: {t}** — {a}" for n,t,a in als))
+    else:
+        out.append("## 2. Alertas\nNenhum alerta crítico apareceu, mas continue revisando caixa, margem e execução semanalmente.")
+
+    out.append("## 3. Decisão recomendada\n"+ceo_next_move())
+
     bloco=[]
-    if "caixa" in temas: bloco.append("**Caixa:** pare de olhar apenas faturamento. Priorize recebíveis, renegocie vencimentos e corte gasto que não gere venda, margem ou retenção.")
-    if "margem" in temas: bloco.append("**Margem:** reveja preço por canal, custo real, taxas, frete, imposto e mix. Crescer com margem ruim só escala prejuízo.")
-    if "comercial" in temas: bloco.append("**Oferta e venda:** descreva ICP, dor, promessa, prova e objeção. Depois teste um canal por vez com métrica clara.")
-    if "operacao" in temas: bloco.append("**Operação:** crie processo repetível antes de contratar ou escalar. Checklist, dono e indicador de erro valem mais que reunião solta.")
-    if "lideranca" in temas: bloco.append("**Liderança:** toda prioridade precisa de responsável, prazo, indicador e revisão. Delegar sem controle é abandonar.")
-    if "mvp" in temas: bloco.append("**MVP:** não busque elogio; busque evidência de dor, uso, pagamento e indicação. Sem feedback real, o produto vira opinião interna.")
-    if "geral" in temas: bloco.append("Comece pela verdade: empresa saudável precisa provar caixa, margem, demanda, operação, liderança e execução.")
-    out.append("## 4. Análise por tema\n"+"\n".join(f"- {b}" for b in bloco))
-    out.append("## 5. Perguntas que eu faria antes de decidir\n"+"\n".join(f"- {x}" for x in ceo_questions()[:5]))
-    out.append("## 6. Plano prático de 7 dias\n1. Atualizar DRE e fluxo de caixa.\n2. Baixar contas pagas/recebidas e revisar vencimentos.\n3. Registrar uma decisão importante no módulo Decisões.\n4. Criar 3 ações com responsável e prazo.\n5. Coletar feedback real no módulo Feedback de Mercado.\n6. Revisar Marketing e Oferta.\n7. Fazer Rotina Executiva semanal e decidir se acelera, corrige ou pausa.")
-    if market.empty: out.append("\n**Observação crítica:** ainda não existe playbook de Marketing e Oferta. Sem clareza de cliente, dor e promessa, o app vira financeiro — não conselheiro de crescimento.")
-    if units.empty: out.append("\n**Observação crítica:** ainda não existe Unidade Econômica. Sem CAC, ticket, margem e LTV, escalar marketing é chute.")
-    if okrs.empty: out.append("\n**Observação crítica:** ainda não existem OKRs de 90 dias. Sem foco, o empresário troca prioridade toda semana.")
+    if "caixa" in temas: bloco.append("**Caixa:** priorize liquidez. Veja vencimentos, cobre recebíveis, renegocie saídas e corte gasto que não gere venda, margem ou operação essencial.")
+    if "margem" in temas: bloco.append("**Margem:** revise preço, custo direto, imposto, taxa, frete e desconto. Vender mais com margem ruim acelera prejuízo.")
+    if "comercial" in temas: bloco.append("**Venda:** não busque apenas volume. Priorize canal, produto ou cliente que gere margem, recorrência e previsibilidade.")
+    if "operacao" in temas: bloco.append("**Operação:** padronize a rotina crítica antes de escalar. Processo fraco cresce como gargalo.")
+    if "lideranca" in temas: bloco.append("**Liderança:** decisão sem responsável e prazo não é decisão; é intenção.")
+    if "geral" in temas: bloco.append("Comece pela verdade: caixa, DRE, contas, margem e plano de ação. O resto vem depois.")
+    out.append("## 4. Leitura por tema\n"+"\n".join(f"- {b}" for b in bloco))
+
+    out.append("## 5. Perguntas de CEO\n"+"\n".join(f"- {x}" for x in ceo_questions()[:5]))
+
+    out.append("## 6. Plano prático de 7 dias\n1. Atualizar Fluxo de Caixa.\n2. Conferir Contas a Pagar e Contas a Receber.\n3. Lançar ou revisar o DRE.\n4. Criar 3 ações com responsável e prazo.\n5. Revisar Alertas e transformar cada alerta crítico em ação.\n6. Abrir Relatórios e verificar o Mapa de Crescimento.\n7. Voltar ao Painel e decidir o próximo movimento da semana.")
+
+    if acts.empty:
+        out.append("\n**Observação crítica:** ainda não há plano de ação. Sem execução registrada, o sistema vira análise sem consequência.")
     return "\n\n".join(out)
 
 def page_advisor():
-    header("Conselheiro CEO","Um conselheiro executivo interno: interpreta números, aponta riscos, faz perguntas difíceis e transforma diagnóstico em ação.");q=st.text_area("Digite sua dúvida executiva",placeholder="Ex.: Devo investir em tráfego agora ou corrigir margem primeiro?",height=130)
+    header("Conselheiro Executivo","Um conselheiro executivo interno: interpreta números, aponta riscos, faz perguntas difíceis e transforma diagnóstico em ação.");q=st.text_area("Digite sua dúvida executiva",placeholder="Ex.: Devo investir em tráfego agora ou corrigir margem primeiro?",height=130)
     if st.button("Gerar orientação"):
         if not q.strip():st.error("Digite uma pergunta.")
         else:
