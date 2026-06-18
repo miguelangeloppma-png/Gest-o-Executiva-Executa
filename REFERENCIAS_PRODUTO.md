@@ -13,3 +13,8 @@ Referências conceituais usadas:
 
 Decisão de produto:
 O EXECUTA deve competir menos como “mais um ERP” e mais como um Executive OS: conselheiro, leitura executiva, rotina, decisão e execução para pequenos empresários.
+
+
+## v6.3
+
+A versão v6.3 prioriza estabilidade de experiência: menos módulos, mais clareza, Painel como centro de decisão, Relatórios como visão consolidada e Alertas com plano de correção.

@@ -1,6 +1,6 @@
 
 from __future__ import annotations
-import calendar as pycal, datetime as dt, hashlib, hmac, sqlite3, uuid
+import calendar as pycal, datetime as dt, hashlib, hmac, sqlite3, uuid, html as _html
 from typing import Any, Dict, Optional, Tuple
 import pandas as pd
 import streamlit as st
@@ -10,7 +10,7 @@ except Exception:
     create_client = None
 
 APP_NAME="Gestão Executiva EXECUTA Web"
-APP_VERSION="EXECUTA Experience OS v6.2 AJUSTADA"
+APP_VERSION="EXECUTA Experience OS v6.3 BASE LIMPA"
 MAX_USERS=10
 DATE_DB="%Y-%m-%d"
 DATE_BR="%d/%m/%Y"
@@ -108,11 +108,13 @@ st.markdown("""
 .strategy-lane{padding:15px;border-radius:20px;border:1px solid rgba(255,255,255,.08);background:rgba(16,23,37,.82);margin-bottom:10px}.lane-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.lane-title{font-size:15px;font-weight:900;color:#EEF6FF}.lane-score{font-size:13px;font-weight:950;color:#00D1FF}.lane-body{color:#AFC0D2;font-size:13px;line-height:1.45;margin-top:8px}.lane-action{color:#29E6A7;font-weight:850;font-size:12px;margin-top:8px}
 .small-help{font-size:12px;color:#8EA4BC;line-height:1.4;margin-top:-2px;margin-bottom:8px}
 
-/* v6.2 — botão do método visível e balões de ajuda em títulos */
-div[data-testid="stHorizontalBlock"] button[kind="secondary"]{white-space:normal!important;}
-.title-help{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:999px;background:rgba(0,209,255,.14);border:1px solid rgba(0,209,255,.35);color:#00D1FF;font-size:12px;font-weight:950;margin-left:8px;cursor:help;vertical-align:middle;}
-.section-title-help{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:999px;background:rgba(0,209,255,.12);border:1px solid rgba(0,209,255,.30);color:#00D1FF;font-size:12px;font-weight:900;margin-left:7px;cursor:help;vertical-align:middle;}
-.clean-form-note{padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);color:#AFC0D2;font-size:13px;line-height:1.45;margin-bottom:12px;}
+/* v6.3 — interrogação visível e layout estável */
+.visible-q{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;line-height:18px;border-radius:999px;margin-left:7px;vertical-align:super;transform:translateY(-2px);background:rgba(0,209,255,.14);border:1px solid rgba(0,209,255,.34);color:#00D1FF;font-size:11px;font-weight:950;cursor:help;box-shadow:0 0 0 3px rgba(0,209,255,.04);}
+.visible-q:hover{background:rgba(0,209,255,.24);border-color:rgba(0,209,255,.62);}
+.help-subtitle{font-size:21px;font-weight:900;color:#EEF6FF;margin:22px 0 8px 0;letter-spacing:-.015em;}
+.metric-label .visible-q{width:16px;height:16px;font-size:10px;margin-left:5px;}
+.top-method-btn div[data-testid="stButton"] > button{min-height:34px!important;padding:6px 10px!important;border-radius:999px!important;font-size:12.5px!important;white-space:normal!important;line-height:1.15!important;background:linear-gradient(135deg,rgba(0,209,255,.20),rgba(124,92,255,.13))!important;}
+.clean-note{padding:12px 14px;border-radius:16px;background:rgba(0,209,255,.06);border:1px solid rgba(0,209,255,.14);color:#AFC0D2;font-size:13px;line-height:1.45;margin-bottom:12px;}
 
 </style>""",unsafe_allow_html=True)
 
@@ -165,63 +167,89 @@ def brl(v): return f"R$ {parse_money(v):,.2f}".replace(",","X").replace(".",",")
 def pct(v):
     try: return f"{float(v or 0):.0f}%"
     except Exception: return "0%"
-
-def htmlesc(v):
-    return str(v or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
-
-HELP_MAP={
-    "Minha Empresa":"Cadastro da realidade da empresa. Aqui entram dados básicos, estrutura, custos, estoque e caixa inicial para o sistema interpretar a saúde do negócio.",
-    "Painel Executivo":"Central de decisão: reúne score, caixa, margem, capital de giro, prioridades e recomendação executiva.",
-    "Alerta":"Mostra riscos e pontos de atenção. Cada alerta deve gerar uma ação prática com responsável e prazo.",
-    "Fluxo de Caixa":"Registra dinheiro que entrou e saiu, ou agenda valores futuros. É a base para saber se a empresa tem fôlego financeiro.",
-    "Contas a Pagar":"Lista compromissos financeiros a vencer ou já pagos. Serve para evitar atraso, multa e surpresa no caixa.",
-    "Contas a Receber":"Lista valores que a empresa tem para receber. Serve para acompanhar recebíveis e antecipar falta de caixa.",
-    "DRE":"Demonstração do Resultado do Exercício. Mostra se a operação dá lucro depois de impostos, custos e despesas.",
-    "Plano de Ação":"Transforma diagnóstico em execução. Toda ação deve ter responsável, prazo e status.",
-    "Calendário":"Agenda compromissos e vencimentos. Verde indica contas a receber; vermelho indica contas a pagar.",
-    "Indicadores":"KPIs essenciais para acompanhar desempenho, risco e evolução da empresa.",
-    "Marketing e Oferta":"Organiza cliente ideal, dor, promessa, prova e canais para vender melhor.",
-    "Unidade Econômica":"Mostra se cada venda gera margem suficiente para sustentar aquisição, operação e crescimento.",
-    "OKRs e 90 Dias":"Define foco trimestral com objetivos, resultados-chave e responsáveis.",
-    "Decisões":"Registra decisões importantes para evitar gestão no improviso.",
-    "Relatórios":"Une mapa de crescimento e relatório executivo para leitura geral da empresa.",
-    "Método EXECUTA":"Método de gestão que conecta diagnóstico, decisão, execução, controle e melhoria contínua.",
-    "Usuários":"Área administrativa para controlar acessos. Apenas administradores devem enxergar esse módulo.",
-    "Leitura rápida da saúde da empresa":"Resumo automático com score, receita, resultado e caixa atual.",
-    "Novo lançamento":"Cadastro de entrada ou saída de dinheiro. Pode ser realizado no caixa ou agendado em parcelas.",
-    "Entradas e saídas lançadas":"Histórico do que já foi registrado no fluxo de caixa.",
-    "Histórico de contas pagas e recebidas":"Mostra contas baixadas e já refletidas na operação.",
-    "Em aberto":"Contas ainda não pagas ou recebidas.",
-    "Histórico: já pago/recebido":"Registro do que já foi baixado como pago ou recebido.",
-    "Novo DRE":"Cadastro do resultado financeiro de um período.",
-    "Pesquisar por período":"Filtro para analisar dados entre duas datas.",
-    "Calendário do mês":"Visão mensal dos compromissos e vencimentos.",
-    "Compromissos do mês":"Lista detalhada dos eventos cadastrados no mês selecionado.",
-    "Vencimentos do mês":"Contas a pagar e a receber com vencimento no mês.",
-    "Mapa de Crescimento":"Leitura da empresa por frentes: financeiro, mercado, execução, operação e liderança.",
-    "Relatório Executivo":"Síntese para tomada de decisão e revisão semanal.",
-    "Pergunte ao Conselheiro CEO":"Campo para pedir uma orientação executiva com base nos dados cadastrados.",
-    "Prioridades da semana":"Ações mais importantes que precisam sair do papel nos próximos dias.",
-    "Movimentos recentes":"Últimos lançamentos do fluxo de caixa.",
-}
-
-def help_for(title):
-    return HELP_MAP.get(str(title), "Explicação técnica: este ponto organiza informação essencial para análise, decisão e execução empresarial.")
-
-def header(t,s=""):
-    tip=htmlesc(help_for(t))
-    st.markdown(f'<div class="main-header"><div class="main-title">{htmlesc(t)}<span class="title-help" title="{tip}">?</span></div><div class="main-subtitle">{htmlesc(s)}</div></div>',unsafe_allow_html=True)
-
-def section_title(t):
-    tip=htmlesc(help_for(t))
-    st.markdown(f'<h3 style="margin-top:16px;margin-bottom:8px;color:#EEF6FF;">{htmlesc(t)}<span class="section-title-help" title="{tip}">?</span></h3>',unsafe_allow_html=True)
-
 def money_input(label,value=0,key=None,help_text=""):
-    raw=st.text_input(label,value=("" if value in (None,"") else brl(value).replace("R$ ","")),key=key,placeholder="Ex.: 50.000,00",help=help_text)
+    raw=st.text_input(label,value=("" if value in (None,"") else brl(value).replace("R$ ","")),key=key,placeholder="Ex.: 50.000,00",help=help_text or None)
     val=parse_money(raw)
     if raw: st.caption(f"Valor interpretado: {brl(val)}")
     return val
-def metric(l,v,s=""): st.markdown(f'<div class="metric-card"><div class="metric-label">{l}</div><div class="metric-value">{v}</div><div class="metric-status">{s}</div></div>',unsafe_allow_html=True)
+
+HELP_TEXTS={
+    "Minha Empresa":"Cadastro principal da empresa. Aqui entram os dados-base usados para interpretar caixa, custos, estoque, porte e saúde geral. Exemplo: preencha faturamento, custos fixos, custos variáveis, estoque e caixa inicial com valores reais ou estimados.",
+    "Painel":"Tela principal de decisão. Mostra a leitura executiva da empresa: caixa, capital de giro, resultado, margem, prioridades e próximos movimentos.",
+    "Fluxo de Caixa":"Registra dinheiro que entrou ou saiu. Use para acompanhar caixa real, lançamentos parcelados e histórico financeiro.",
+    "Contas a Pagar":"Lista de compromissos financeiros futuros da empresa. Exemplo: fornecedores, aluguel, impostos, folha, cartão e parcelas.",
+    "Contas a Receber":"Lista de valores que a empresa tem a receber. Exemplo: vendas a prazo, marketplaces, boletos, clientes e recebíveis futuros.",
+    "DRE":"Demonstração do Resultado do Exercício. Mostra se a empresa está dando lucro ou prejuízo, separando receita, impostos, custos e despesas.",
+    "Calendário":"Agenda executiva e financeira. Mostra compromissos e também vencimentos de contas a pagar e a receber.",
+    "Relatórios":"Relatório executivo com leitura de crescimento, gargalos, alertas, decisões e plano de ação. Serve para revisão semanal ou mensal.",
+    "Plano de Ação":"Transforma diagnóstico em execução. Cada ação precisa ter prioridade, área, responsável, prazo e status.",
+    "Alertas":"Mostra riscos e pontos de atenção. Cada alerta vem acompanhado do que fazer para corrigir o problema.",
+    "Usuários":"Área administrativa para controlar acessos. Deve ser usada apenas pelo administrador.",
+    "Score EXECUTA":"Nota geral calculada a partir de caixa, margem, contas, execução e riscos. Quanto maior, mais saudável está a empresa.",
+    "Caixa atual":"Estimativa do dinheiro disponível considerando caixa inicial, entradas e saídas registradas.",
+    "Capital de giro":"Dinheiro necessário para manter a empresa funcionando entre pagar fornecedores, manter estoque e receber dos clientes.",
+    "Resultado":"Diferença entre receitas, custos e despesas. Ajuda a ver se a empresa está gerando lucro ou consumindo caixa.",
+    "Receita bruta":"Tudo que a empresa vendeu antes de descontar impostos, devoluções, taxas e custos. Exemplo: vendeu R$ 50.000,00 no mês, coloque 50.000,00.",
+    "Deduções e impostos":"Descontos sobre a receita: impostos, devoluções, cancelamentos, taxas obrigatórias ou abatimentos.",
+    "Receita líquida":"Receita que sobra depois das deduções e impostos. Fórmula comum: receita bruta menos deduções e impostos.",
+    "Custo dos produtos/serviços (CMV/CPV/CSP)":"Custo direto para entregar o que foi vendido. Exemplo: mercadoria, embalagem, frete de compra, insumos ou custo direto do serviço.",
+    "Lucro bruto":"Receita líquida menos custo direto. Mostra se o produto/serviço vendido tem margem antes das despesas da operação.",
+    "Despesas operacionais":"Gastos para manter a empresa funcionando: aluguel, salários administrativos, marketing, sistemas, energia, contador e estrutura.",
+    "EBITDA":"Resultado operacional antes de juros, impostos, depreciação e amortização. Ajuda a ver a força operacional do negócio.",
+    "Lucro líquido":"Resultado final depois de receitas, custos, despesas e efeitos financeiros. É o lucro real do período.",
+    "Nome da empresa":"Nome comercial ou razão social da empresa. Exemplo: Livraria Alfa Ltda.",
+    "Responsável":"Pessoa principal que administra ou acompanha este sistema. Exemplo: proprietário, gerente ou diretor financeiro.",
+    "Segmento":"Área de atuação da empresa. Exemplo: livros, comércio, serviços, alimentação, marketplace, indústria.",
+    "Porte":"Tamanho operacional da empresa. Use pequena, média, grande ou hiperporte conforme faturamento, equipe e complexidade.",
+    "Faturamento mensal estimado":"Quanto a empresa vende em média por mês antes dos descontos. Exemplo: 80.000,00.",
+    "Custos fixos mensais":"Gastos que aparecem mesmo se vender pouco: aluguel, salários fixos, sistemas, contador, internet, energia mínima.",
+    "Custos variáveis mensais":"Gastos que crescem quando a empresa vende mais: mercadoria, comissão, embalagem, taxas, frete, insumos.",
+    "Valor em estoque":"Valor aproximado parado em produtos/mercadorias. Estoque alto demais pode consumir caixa.",
+    "Caixa inicial":"Dinheiro disponível no início do controle. Exemplo: saldo bancário + dinheiro em caixa.",
+    "Novo lançamento":"Use para registrar entrada ou saída de dinheiro. Se for conta futura, o sistema envia para contas a pagar ou receber.",
+    "Entradas e saídas lançadas":"Histórico do que já entrou ou saiu do caixa. Clique na linha para editar ou excluir.",
+    "Histórico de contas pagas e recebidas":"Mostra contas que já foram baixadas. Serve para conferir o que virou caixa de fato.",
+    "Leitura executiva":"Interpretação dos números em linguagem de gestão. Ajuda a decidir o que fazer, não apenas ver dados.",
+    "Próximo movimento recomendado":"Ação prioritária sugerida para melhorar caixa, margem, execução ou crescimento.",
+    "Prioridades da semana":"Ações mais importantes para os próximos dias. Use para não perder foco.",
+    "Movimentos recentes":"Últimos lançamentos de caixa registrados no sistema.",
+    "Mapa de Crescimento":"Leitura por frentes: financeiro, mercado, execução, operação e liderança. Mostra onde agir primeiro.",
+    "Relatório Executivo":"Texto consolidado para revisão da empresa, reunião semanal ou acompanhamento mensal.",
+}
+
+def _e(x): return _html.escape(str(x), quote=True)
+def _help_for(label, fallback=""):
+    txt=str(label or "").strip()
+    if txt in HELP_TEXTS: return HELP_TEXTS[txt]
+    low=txt.lower()
+    for k,v in HELP_TEXTS.items():
+        if k.lower() in low or low in k.lower(): return v
+    return fallback or f"Explicação: {txt}. Use esta informação para interpretar, preencher corretamente e tomar decisão com menos dúvida."
+def qmark(help_text): return f'<span class="visible-q" title="{_e(help_text)}">?</span>'
+def header(t,s="",help_text=None):
+    ht=help_text or _help_for(t,s)
+    st.markdown(f'<div class="main-header"><div class="main-title">{_e(t)} {qmark(ht)}</div><div class="main-subtitle">{_e(s)}</div></div>',unsafe_allow_html=True)
+def metric(l,v,s=""):
+    ht=_help_for(l,s)
+    st.markdown(f'<div class="metric-card"><div class="metric-label">{_e(l)} {qmark(ht)}</div><div class="metric-value">{_e(v)}</div><div class="metric-status">{_e(s)}</div></div>',unsafe_allow_html=True)
+
+def help_title(text, help_text=None):
+    ht=help_text or _help_for(text)
+    st.markdown(f'<div class="help-subtitle">{_e(text)} {qmark(ht)}</div>', unsafe_allow_html=True)
+
+def _wrap_input_with_help(fn):
+    def wrapped(label, *args, **kwargs):
+        if isinstance(label, str) and label.strip() and not kwargs.get("help"):
+            kwargs["help"]=_help_for(label)
+        return fn(label, *args, **kwargs)
+    return wrapped
+for _fn_name in ["text_input","text_area","number_input","selectbox","date_input","checkbox","slider","radio"]:
+    if hasattr(st,_fn_name):
+        setattr(st,_fn_name,_wrap_input_with_help(getattr(st,_fn_name)))
+
+def _exec_subheader(body, *args, **kwargs):
+    help_title(str(body), _help_for(str(body)))
+st.subheader=_exec_subheader
 
 def ux_card(title, text, action=""):
     st.markdown(f"<div class='ux-card'><div class='ux-card-title'>{title}</div><div class='ux-card-text'>{text}</div>{f'<div class=\'ux-card-action\'>{action}</div>' if action else ''}</div>", unsafe_allow_html=True)
@@ -366,7 +394,7 @@ def login_screen():
 
     c1, c2 = st.columns([1.15, .85], gap="large")
     with c1:
-        section_title("Entrar")
+        st.subheader("Entrar")
         with st.form("login"):
             email = st.text_input("E-mail")
             pw = st.text_input("Senha", type="password")
@@ -549,35 +577,31 @@ def sidebar():
     pages=[
         "Minha Empresa",
         "Painel",
-        "Indicadores",
-        "Marketing e Oferta",
-        "Unidade Econômica",
-        "OKRs e 90 Dias",
         "Fluxo de Caixa",
         "Contas a Pagar",
         "Contas a Receber",
         "DRE",
-        "Plano de Ação",
         "Calendário",
-        "Decisões",
         "Relatórios",
-        "Alerta",
+        "Plano de Ação",
+        "Alertas",
     ]
     if is_admin():
         pages.append("Usuários")
     page=st.sidebar.radio("Módulos",pages)
-    st.sidebar.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
     if st.sidebar.button("Sair", use_container_width=True):
         st.session_state.clear(); st.rerun()
     return page
 def topbar():
-    # Botão pequeno e visível no canto superior direito.
-    # Ele não fica dentro do menu lateral para evitar ser escondido pelo design.
-    c1, c2 = st.columns([8.6, 1.4])
+    c1,c2=st.columns([6.8,1.9])
     with c1:
         st.empty()
     with c2:
-        if st.button("O que é o Método EXECUTA", key="top_method_button", help="Abre uma explicação simples e prática sobre o Método EXECUTA.", use_container_width=True):
+        st.markdown('<div class="top-method-btn">', unsafe_allow_html=True)
+        clicked=st.button("O que é o Método EXECUTA", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        if clicked:
             return "Método EXECUTA"
     return None
 def select_record(df,lab,key):
@@ -660,7 +684,7 @@ def page_jornada_guiada():
     with c[0]: ux_card("1. Verdade", "Cadastre a empresa, fluxo, contas e DRE. O app precisa de realidade para aconselhar.", "Evite achismo")
     with c[1]: ux_card("2. Decisão", "Use Indicadores, Alerta, Unidade Econômica e Conselheiro CEO para escolher o próximo movimento.", "Menos opinião, mais evidência")
     with c[2]: ux_card("3. Execução", "Transforme decisão em Plano de Ação, OKRs, Rotina Executiva e Decisões registradas.", "Dono + prazo + revisão")
-    section_title("Checklist de maturidade do uso")
+    st.subheader("Checklist de maturidade do uso")
     for i,(name,done,title,desc) in enumerate(steps,1):
         status='Concluído' if done else 'Aberto'
         cls='status-done' if done else 'status-open'
@@ -705,10 +729,10 @@ def page_sala_ceo():
         st.markdown("<div class='ceo-grid-card'><div class='ceo-card-title'>2. Decisão</div><div class='ceo-card-text'>Toda decisão importante precisa de motivo, dono, prazo e métrica de sucesso.</div></div>", unsafe_allow_html=True)
     with c3:
         st.markdown("<div class='ceo-grid-card'><div class='ceo-card-title'>3. Execução</div><div class='ceo-card-text'>A empresa melhora por rituais semanais, não por cadastro bonito e abandonado.</div></div>", unsafe_allow_html=True)
-    section_title("Perguntas difíceis do CEO")
+    st.subheader("Perguntas difíceis do CEO")
     for q in ceo_questions(): st.markdown(f"<div class='ceo-question'>{q}</div>", unsafe_allow_html=True)
     if can_edit():
-        section_title("Criar ação rápida a partir da decisão")
+        st.subheader("Criar ação rápida a partir da decisão")
         with st.form("ceo_quick_action", clear_on_submit=True):
             action=st.text_area("Ação executiva", value=ceo_next_move())
             owner=st.text_input("Responsável", user_name())
@@ -743,7 +767,7 @@ def page_marketing_oferta():
         st.info("Nenhum playbook salvo ainda. Comece registrando a hipótese de cliente, dor e oferta.")
         return
     rec=df.iloc[0].to_dict()
-    section_title("Mensagem comercial sugerida")
+    st.subheader("Mensagem comercial sugerida")
     msg=f"Para {rec.get('ideal_customer') or 'seu cliente ideal'}, que sofre com {rec.get('main_pain') or 'uma dor relevante'}, nossa solução entrega {rec.get('promise') or 'um resultado mensurável'}, por meio de {rec.get('offer') or 'uma oferta clara'}, com prova em {rec.get('proof') or 'evidências reais'}."
     st.text_area("Copie e ajuste", msg, height=120)
     show=df.copy(); st.dataframe(show[["created_at","segment","ideal_customer","main_pain","promise","offer","proof","objections","channels","next_test","created_by"]], use_container_width=True, hide_index=True)
@@ -812,31 +836,18 @@ def page_okrs_90():
     st.dataframe(show[["quarter","objective","key_result","target","current_value","confidence","owner","due_date","status","created_by"]], use_container_width=True, hide_index=True)
 
 def page_minha_empresa():
-    p=ensure_profile()
-    header("Minha Empresa","Cadastro limpo da realidade da empresa. Preencha com informações simples; o sistema usa isso para analisar caixa, margem, risco e saúde do negócio.")
-    help_note("Como preencher", "Use dados aproximados quando ainda não tiver números fechados. O objetivo aqui é dar ao sistema uma visão mínima da empresa para começar a orientar melhor.", "Ex.: faturamento 80.000,00; custos fixos 18.000,00; estoque 35.000,00; caixa inicial 12.000,00.")
-    readonly_warning()
+    p=ensure_profile();header("Minha Empresa","Cadastro da empresa e leitura geral da saúde empresarial com base no DRE.");readonly_warning()
     if can_edit():
         with st.form("empresa_form"):
             c1,c2=st.columns(2)
             with c1:
-                company=st.text_input("Nome da empresa",p.get("company_name",""),help="Nome comercial ou razão social. Ex.: Livraria Central.")
-                owner=st.text_input("Responsável",p.get("owner_name",""),help="Pessoa responsável por acompanhar os dados e decisões. Ex.: Miguel.")
-                segment=st.text_input("Segmento",p.get("segment",""),help="Área de atuação da empresa. Ex.: livros, varejo, serviços, tecnologia.")
-                size=st.selectbox("Porte",["Pequena","Média","Grande","Hiperporte"],index=["Pequena","Média","Grande","Hiperporte"].index(p.get("business_size","Pequena")) if p.get("business_size","Pequena") in ["Pequena","Média","Grande","Hiperporte"] else 0,help="Tamanho aproximado da empresa. Use Pequena para operação em validação ou estrutura enxuta.")
+                company=st.text_input("Nome da empresa",p.get("company_name",""));owner=st.text_input("Responsável",p.get("owner_name",""));segment=st.text_input("Segmento",p.get("segment",""));size=st.selectbox("Porte",["Pequena","Média","Grande","Hiperporte"],index=["Pequena","Média","Grande","Hiperporte"].index(p.get("business_size","Pequena")) if p.get("business_size","Pequena") in ["Pequena","Média","Grande","Hiperporte"] else 0)
             with c2:
-                revenue=money_input("Faturamento mensal estimado",p.get("monthly_revenue"),"emp_revenue","Total vendido por mês antes de deduzir impostos, custos e despesas. Ex.: 80.000,00")
-                fixed=money_input("Custos fixos mensais",p.get("fixed_costs"),"emp_fixed","Gastos que existem mesmo vendendo pouco: aluguel, salários, sistemas, contador. Ex.: 18.000,00")
-                variable=money_input("Custos variáveis mensais",p.get("variable_costs"),"emp_variable","Custos ligados diretamente às vendas: produto, comissão, taxas, frete, embalagem. Ex.: 42.000,00")
-                stock=money_input("Valor em estoque",p.get("stock_value"),"emp_stock","Valor aproximado parado em produtos ou insumos. Ex.: 35.000,00")
-                initial=money_input("Caixa inicial",p.get("initial_cash"),"emp_initial","Dinheiro disponível hoje em conta, caixa e reservas operacionais. Ex.: 12.000,00")
-            notes=st.text_area("Observações",p.get("notes",""),help="Use para registrar contexto importante: sazonalidade, dívidas, mudança de equipe, gargalos ou oportunidades.")
+                revenue=money_input("Faturamento mensal estimado",p.get("monthly_revenue"),"emp_revenue");fixed=money_input("Custos fixos mensais",p.get("fixed_costs"),"emp_fixed");variable=money_input("Custos variáveis mensais",p.get("variable_costs"),"emp_variable");stock=money_input("Valor em estoque",p.get("stock_value"),"emp_stock");initial=money_input("Caixa inicial",p.get("initial_cash"),"emp_initial")
+            notes=st.text_area("Observações",p.get("notes",""))
             if st.form_submit_button("Salvar Minha Empresa"):
-                db.update("company_profile","main",dict(company_name=company,owner_name=owner,segment=segment,business_size=size,monthly_revenue=revenue,fixed_costs=fixed,variable_costs=variable,stock_value=stock,initial_cash=initial,notes=notes,updated_at=today_db()))
-                st.success("Minha Empresa salva.")
-                st.rerun()
-    section_title("Leitura rápida da saúde da empresa")
-    m=calc();s,als=alertas();c=st.columns(4)
+                db.update("company_profile","main",dict(company_name=company,owner_name=owner,segment=segment,business_size=size,monthly_revenue=revenue,fixed_costs=fixed,variable_costs=variable,stock_value=stock,initial_cash=initial,notes=notes,updated_at=today_db()));st.success("Minha Empresa salva.");st.rerun()
+    st.subheader("Leitura rápida da saúde da empresa");m=calc();s,als=alertas();c=st.columns(4)
     with c[0]:metric("Score EXECUTA",f"{s}/100","Com base nos dados atuais")
     with c[1]:metric("Receita bruta",brl(m["receita"]),"DRE ou estimativa")
     with c[2]:metric("Lucro/resultado",brl(m["resultado"]),f"Margem {pct(m['margem'])}")
@@ -852,7 +863,7 @@ def page_painel():
     with c[2]:metric("Capital de giro",brl(m["ncg"]),"Receber + estoque - pagar")
     with c[3]:metric("Resultado",brl(m["resultado"]),f"Margem {pct(m['margem'])}")
 
-    st.markdown("<div class='section-kicker'>sala do ceo</div>", unsafe_allow_html=True)
+    st.markdown("<div class='section-kicker'>leitura executiva</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='ceo-panel-card'><div class='insight-title'>Leitura executiva</div><div class='insight-text'>{exec_reading()}</div></div>", unsafe_allow_html=True)
     st.markdown(f"<div class='ceo-panel-card'><div class='insight-title'>Próximo movimento recomendado</div><div class='insight-text'>{ceo_next_move()}</div></div>", unsafe_allow_html=True)
 
@@ -860,7 +871,7 @@ def page_painel():
         for q in ceo_questions()[:6]:
             st.markdown(f"<div class='ceo-question'>{q}</div>", unsafe_allow_html=True)
 
-    section_title("Pergunte ao Conselheiro CEO")
+    st.subheader("Pergunte ao Conselheiro CEO")
     q=st.text_area("Digite sua dúvida executiva",placeholder="Ex.: Devo investir em tráfego agora ou corrigir margem primeiro?",height=105,key="painel_advisor_q")
     if st.button("Gerar orientação executiva", key="painel_advisor_btn"):
         if not q.strip():
@@ -876,19 +887,19 @@ def page_painel():
     with c1:metric("Contas a pagar",brl(m["pagar"]),"em aberto")
     with c2:metric("Contas a receber",brl(m["receber"]),"em aberto")
 
-    section_title("Prioridades da semana")
+    st.subheader("Prioridades da semana")
     acts=actions_df()
     if acts.empty: st.warning("Crie pelo menos 3 ações no Plano de Ação: uma de caixa, uma de margem e uma de venda/cliente.")
     else:
         show=acts.head(5).copy(); show["due_date"]=show.due_date.apply(date_br)
         st.dataframe(show[["priority","area","action","responsible","due_date","status"]],use_container_width=True,hide_index=True)
-    section_title("Movimentos recentes")
+    st.subheader("Movimentos recentes")
     df=cash_df()
     if df.empty:st.info("Sem movimentos de caixa.")
     else:
         show=df.head(12).copy();show["date"]=show.date.apply(date_br);show["amount"]=show.amount.apply(brl);st.dataframe(show[["date","type","category","description","amount","channel","created_by"]],use_container_width=True,hide_index=True)
 def page_alerta():
-    header("Alerta","Riscos, pontos de atenção e plano prático para corrigir cada problema.")
+    header("Alertas","Riscos, pontos de atenção e plano prático para corrigir cada problema.")
     s,als=alertas();metric("Score EXECUTA",f"{s}/100","Quanto menor, maior a urgência")
     if not als:
         st.success("Nenhum alerta crítico identificado no momento.")
@@ -901,7 +912,7 @@ def page_fluxo():
     header("Fluxo de Caixa","Lançar entradas/saídas, parcelas e controlar histórico financeiro.");readonly_warning()
     if can_edit():
         with st.form("cash_form",clear_on_submit=True):
-            section_title("Novo lançamento");c1,c2,c3=st.columns(3)
+            st.subheader("Novo lançamento");c1,c2,c3=st.columns(3)
             with c1:date=st.date_input("Data inicial",value=dt.date.today(),format="DD/MM/YYYY");typ=st.selectbox("Tipo",["Entrada","Saída"]);mode=st.selectbox("Situação",["Realizado no caixa","Conta futura/agendada"])
             with c2:cat=st.text_input("Categoria");amount=money_input("Valor total",0,"fluxo_amount");parcelas=st.number_input("Parcelas",min_value=1,max_value=60,value=1,step=1)
             with c3:channel=st.text_input("Canal/Origem");desc=st.text_input("Descrição");split=st.checkbox("Dividir valor igualmente nas parcelas",value=True)
@@ -912,7 +923,7 @@ def page_fluxo():
                     if mode=="Realizado no caixa":db.insert("cash_flow",dict(id=str(uuid.uuid4()),date=d.strftime(DATE_DB),type=typ,category=cat,description=desc_i,amount=pv,channel=channel,created_by=user_name()))
                     else:db.insert("accounts",dict(id=str(uuid.uuid4()),due_date=d.strftime(DATE_DB),kind="Receber" if typ=="Entrada" else "Pagar",supplier_client=channel,description=desc_i,amount=pv,status="Aberto",paid_date="",created_by=user_name()))
                 st.success("Lançamento adicionado e formulário limpo.");st.rerun()
-    section_title("Entradas e saídas lançadas");df=cash_df()
+    st.subheader("Entradas e saídas lançadas");df=cash_df()
     if df.empty:st.info("Sem lançamentos no caixa.")
     else:
         raw=df.reset_index(drop=True).copy()
@@ -932,7 +943,7 @@ def page_fluxo():
                 db.delete("cash_flow",rec["id"]);st.success("Linha excluída com sucesso.");st.rerun()
         elif can_edit():
             st.info("Para editar ou excluir, clique em uma linha da tabela acima.")
-    section_title("Histórico de contas pagas e recebidas");acc=accounts_df()
+    st.subheader("Histórico de contas pagas e recebidas");acc=accounts_df()
     if acc.empty:st.info("Sem contas baixadas ainda.")
     else:
         hist=acc[acc.status.isin(["Pago","Recebido"])].copy()
@@ -943,7 +954,7 @@ def page_fluxo():
 def page_accounts(kind):
     title="Contas a Pagar" if kind=="Pagar" else "Contas a Receber";closed="Pago" if kind=="Pagar" else "Recebido";header(title,"Visualizar, editar, apagar e baixar contas. Novos lançamentos são criados pelo Fluxo de Caixa.");readonly_warning()
     df=accounts_df();df=df[df.kind==kind].reset_index(drop=True) if not df.empty else df;open_df=df[~df.status.isin([closed])].reset_index(drop=True) if not df.empty else df;closed_df=df[df.status.isin([closed])].reset_index(drop=True) if not df.empty else df
-    section_title("Em aberto")
+    st.subheader("Em aberto")
     selected_open=None
     if open_df.empty:st.info("Nenhuma conta em aberto.")
     else:
@@ -969,7 +980,7 @@ def page_accounts(kind):
                 db.update("accounts",rec["id"],dict(status=closed,paid_date=paid.strftime(DATE_DB)))
                 db.insert("cash_flow",dict(id=str(uuid.uuid4()),date=paid.strftime(DATE_DB),type="Saída" if kind=="Pagar" else "Entrada",category=f"Conta {kind}",description=rec.get("description","") or "",amount=float(rec.get("amount") or 0),channel=rec.get("supplier_client","") or "",created_by=user_name()))
                 st.success(f"Conta marcada como {closed} e lançada no Fluxo de Caixa.");st.rerun()
-    section_title("Histórico: já pago/recebido")
+    st.subheader("Histórico: já pago/recebido")
     if closed_df.empty:st.info(f"Nenhum registro {closed.lower()} ainda.")
     else:
         show=closed_df.copy();show["due_date"]=show.due_date.apply(date_br);show["paid_date"]=show.paid_date.apply(date_br);show["amount"]=show.amount.apply(brl);st.dataframe(show[["paid_date","due_date","supplier_client","description","amount","status","created_by"]],use_container_width=True,hide_index=True)
@@ -979,7 +990,7 @@ def page_dre():
     help_note("Como preencher o DRE", "Use valores do período escolhido. Se não souber algum resultado calculado, deixe zero: o sistema estima receita líquida, lucro bruto, EBITDA, lucro operacional e lucro líquido.", "Receita bruta 100.000,00; impostos 12.000,00; CMV 45.000,00; despesas 25.000,00.")
     if can_edit():
         with st.form("dre_form",clear_on_submit=True):
-            section_title("Novo DRE");c0,c1,c2=st.columns(3)
+            st.subheader("Novo DRE");c0,c1,c2=st.columns(3)
             with c0:ps=st.date_input("Data inicial",value=dt.date.today().replace(day=1),format="DD/MM/YYYY");pe=st.date_input("Data final",value=dt.date.today(),format="DD/MM/YYYY")
             with c1:rb=money_input("Receita bruta",0,"dre_rb","Total vendido/faturado antes de impostos, devoluções e deduções.");ded=money_input("Deduções e impostos",0,"dre_ded","Impostos, devoluções, descontos e abatimentos que reduzem a receita bruta.");rl=money_input("Receita líquida",0,"dre_rl","Receita bruta menos deduções e impostos. Se deixar zero, o sistema calcula automaticamente.");cust=money_input("Custo dos produtos/serviços (CMV/CPV/CSP)",0,"dre_custos","Custo direto do que foi vendido ou entregue: mercadoria, produção ou prestação do serviço.")
             with c2:lb=money_input("Lucro bruto",0,"dre_lb","Receita líquida menos custos diretos. Se deixar zero, o sistema calcula automaticamente.");desp=money_input("Despesas operacionais",0,"dre_desp","Gastos para a empresa funcionar: aluguel, salários, sistemas, marketing, administrativo etc.");rf=money_input("Resultados financeiros",0,"dre_rf","Juros, tarifas, rendimentos, despesas bancárias e efeitos financeiros fora da operação principal.");eb=money_input("EBITDA",0,"dre_ebitda","Resultado operacional antes de juros, impostos, depreciação e amortização. Se deixar zero, o sistema estima.");lo=money_input("Lucro operacional",0,"dre_lo","Resultado da operação antes do lucro líquido final. Se deixar zero, o sistema estima.");ll=money_input("Lucro líquido",0,"dre_ll","Resultado final depois de custos, despesas, impostos e efeitos financeiros. Se deixar zero, o sistema calcula.")
@@ -992,7 +1003,7 @@ def page_dre():
                 if ll==0:ll=lo+rf
                 db.insert("dre_records",dict(id=str(uuid.uuid4()),period_start=ps.strftime(DATE_DB),period_end=pe.strftime(DATE_DB),receita_bruta=rb,deducoes_impostos=ded,receita_liquida=rl,custos_produtos_servicos=cust,lucro_bruto=lb,despesas_operacionais=desp,resultados_financeiros=rf,ebitda=eb,lucro_operacional=lo,lucro_liquido=ll,notes=notes,created_by=user_name()))
                 st.success("DRE salvo.");st.rerun()
-    section_title("Pesquisar por período");c1,c2=st.columns(2);start=c1.date_input("De",value=dt.date.today().replace(day=1),format="DD/MM/YYYY");end=c2.date_input("Até",value=dt.date.today(),format="DD/MM/YYYY")
+    st.subheader("Pesquisar por período");c1,c2=st.columns(2);start=c1.date_input("De",value=dt.date.today().replace(day=1),format="DD/MM/YYYY");end=c2.date_input("Até",value=dt.date.today(),format="DD/MM/YYYY")
     df=dre_df()
     if df.empty:st.info("Nenhum DRE lançado.");return
     filt=df[(df.period_start>=start.strftime(DATE_DB))&(df.period_end<=end.strftime(DATE_DB))].copy()
@@ -1047,7 +1058,7 @@ def page_calendar():
     events=events_df();acc=accounts_df();ms=dt.date(int(year),int(month),1);me=dt.date(int(year),int(month),pycal.monthrange(int(year),int(month))[1])
     mev=events[(events.event_date>=ms.strftime(DATE_DB))&(events.event_date<=me.strftime(DATE_DB))] if not events.empty else events
     month_acc=acc[(acc.due_date>=ms.strftime(DATE_DB))&(acc.due_date<=me.strftime(DATE_DB))&(~acc.status.isin(["Pago","Recebido"]))] if not acc.empty else acc
-    section_title("Calendário do mês");cal=pycal.Calendar(firstweekday=0)
+    st.subheader("Calendário do mês");cal=pycal.Calendar(firstweekday=0)
     for week in cal.monthdatescalendar(int(year),int(month)):
         cols=st.columns(7)
         for i,d in enumerate(week):
@@ -1062,7 +1073,7 @@ def page_calendar():
             if not de.empty:
                 for _,ev in de.head(3).iterrows():chips+=f'<span class="event-chip" style="background:{ev.get("color") or "#00D1FF"}">{ev.get("event_time") or ""} {str(ev.get("title") or "")[:12]}</span>'
             cols[i].markdown(f'<div class="calendar-day" style="{mut}"><div class="calendar-date">{d.day}</div>{chips}</div>',unsafe_allow_html=True)
-    section_title("Compromissos do mês")
+    st.subheader("Compromissos do mês")
     if mev.empty:st.info("Sem compromissos no mês.")
     else:
         raw=mev.reset_index(drop=True).copy();show=raw.copy();show["event_date"]=show.event_date.apply(date_br)
@@ -1071,7 +1082,7 @@ def page_calendar():
             st.success(f"Compromisso selecionado: {date_br(rec.get('event_date'))} • {rec.get('event_time')} • {rec.get('title')}")
             if st.button("Excluir compromisso selecionado", key="delete_calendar_selected"):
                 db.delete("calendar_events", rec["id"]); st.success("Compromisso excluído com sucesso."); st.rerun()
-    section_title("Vencimentos do mês")
+    st.subheader("Vencimentos do mês")
     if month_acc.empty: st.info("Nenhuma conta a pagar ou receber no mês.")
     else:
         show=month_acc.copy();show["due_date"]=show.due_date.apply(date_br);show["amount"]=show.amount.apply(brl)
@@ -1090,7 +1101,7 @@ def page_indicadores():
     with c[2]:metric("Ponto de equilíbrio",brl(m["ponto_equilibrio"]),"mínimo estimado")
     with c[3]:metric("Execução",pct(concl),"ações concluídas")
     with c[4]:metric("MVP",f"{avgfb:.1f}/10" if avgfb else "sem dados","nota média")
-    section_title("Interpretação")
+    st.subheader("Interpretação")
     linhas=[]
     linhas.append(["Margem",pct(m["margem"]),"Boa" if m["margem"]>=15 else "Atenção" if m["margem"]>=5 else "Crítica","Margem baixa limita crescimento e aumenta dependência de caixa."])
     linhas.append(["Capital de giro",brl(m["ncg"]),"Atenção" if m["ncg"]>m["receita"] else "Boa","Quanto maior a necessidade de giro, mais cuidado antes de crescer."])
@@ -1177,12 +1188,12 @@ def page_decisoes():
 
 def page_relatorios():
     header("Relatórios","Mapa de crescimento + relatório executivo em um único módulo.")
-    section_title("Mapa de Crescimento")
+    st.subheader("Mapa de Crescimento")
     st.caption("Leitura estratégica por frentes: financeiro, mercado, execução, operação e liderança. Use isso para decidir onde agir primeiro.")
     render_growth_lanes()
     st.warning("Regra executiva: não acelerar marketing ou contratação se Financeiro, Mercado e Execução estiverem fracos. Primeiro corrija a base, depois escale.")
 
-    section_title("Relatório Executivo")
+    st.subheader("Relatório Executivo")
     m=calc();s,als=alertas();acts=actions_df();dec=decisions_df()
     report = "# Relatório Executivo EXECUTA\n\n"
     report += f"Data: {date_br(dt.date.today())}\n\n"
@@ -1211,9 +1222,9 @@ def page_relatorios():
     st.download_button("Baixar relatório .md",report,file_name=f"relatorio_executa_{today_db()}.md",mime="text/markdown")
 
 def page_metodo():
-    header("Método EXECUTA","Central superior do método: clareza, dinheiro, mercado, operação, liderança e execução.")
+    header("O que é o Método EXECUTA","Método de leitura, decisão e execução empresarial: clareza, dinheiro, mercado, operação, liderança e crescimento com controle.")
     st.markdown('<div class="exec-note"><b>Princípio executivo:</b> a empresa só deve crescer quando prova ter margem, caixa, processo, demanda, liderança e capacidade operacional. Crescer sem esses sinais apenas aumenta o tamanho do problema.</div>', unsafe_allow_html=True)
-    section_title("Como usar o método dentro do app")
+    st.subheader("Como usar o método dentro do app")
     st.dataframe(pd.DataFrame([
         ["1. Minha Empresa", "Cadastrar realidade", "Sem verdade financeira não existe decisão executiva."],
         ["2. DRE + Fluxo", "Separar resultado de caixa", "Lucro e caixa são coisas diferentes; os dois precisam ser acompanhados."],
@@ -1221,11 +1232,11 @@ def page_metodo():
         ["4. Plano + Rotina", "Transformar análise em execução", "Toda decisão precisa de responsável, prazo e revisão."],
         ["5. Feedback de Mercado", "Aprender com usuários reais", "O produto melhora quando o mercado mostra onde dói e pelo que pagaria."],
     ],columns=["Etapa","Função","Por que importa"]),use_container_width=True,hide_index=True)
-    section_title("Sete frentes")
+    st.subheader("Sete frentes")
     for i,(t,d) in enumerate(EXECUTA_FRENTES,1):st.markdown(f"**{i}. {t}** — {d}")
-    section_title("10 pilares")
+    st.subheader("10 pilares")
     st.write(", ".join(PILARES))
-    section_title("Critério de crescimento")
+    st.subheader("Critério de crescimento")
     st.warning("Antes de contratar, abrir nova frente, investir em marketing ou escalar canais, confira: margem positiva, caixa suficiente, operação repetível, demanda validada e dono claro para executar.")
 
 def advisor_answer(q):
@@ -1296,19 +1307,14 @@ def main():
         page=override
     if page=="Minha Empresa":page_minha_empresa()
     elif page=="Painel":page_painel()
-    elif page=="Indicadores":page_indicadores()
-    elif page=="Marketing e Oferta":page_marketing_oferta()
-    elif page=="Unidade Econômica":page_unit_economics()
-    elif page=="OKRs e 90 Dias":page_okrs_90()
     elif page=="Fluxo de Caixa":page_fluxo()
     elif page=="Contas a Pagar":page_accounts("Pagar")
     elif page=="Contas a Receber":page_accounts("Receber")
     elif page=="DRE":page_dre()
-    elif page=="Plano de Ação":page_actions()
     elif page=="Calendário":page_calendar()
-    elif page=="Decisões":page_decisoes()
     elif page=="Relatórios":page_relatorios()
-    elif page=="Alerta":page_alerta()
+    elif page=="Plano de Ação":page_actions()
+    elif page=="Alertas":page_alerta()
     elif page=="Método EXECUTA":page_metodo()
     elif page=="Usuários":page_users()
 main()

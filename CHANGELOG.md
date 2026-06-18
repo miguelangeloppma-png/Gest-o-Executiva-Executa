@@ -1,46 +1,12 @@
 # Changelog
 
-## PRO v4 FINAL
+## v6.3 BASE LIMPA
 
-- Painel executivo refeito com leitura de decisão.
-- Indicadores estratégicos adicionados.
-- Rotina Executiva adicionada.
-- Validação MVP adicionada.
-- Decisões adicionada.
-- Relatórios executivos adicionados.
-- Método EXECUTA mantido no topo, fora da lateral.
-- Alertas no fim da lateral.
-- Tabelas novas no Supabase: `mvp_feedback`, `executive_routines`, `decision_log`.
-- Banco mais tolerante a erros de tabela ausente.
-- Conteúdo reforçado para uso em MVP real.
-
-
-## v5.1 HOTFIX
-
-- Corrigido erro IndexError no Fluxo de Caixa quando a seleção antiga do Streamlit não encontrava mais o registro.
-- Fluxo de Caixa agora permite clicar diretamente na linha da tabela e excluir toda a linha selecionada.
-- Contas a Pagar/Receber agora permitem clicar diretamente na linha em aberto e excluir toda a linha selecionada.
-- DRE, Plano de Ação e Calendário também ganharam seleção direta de linha para ações rápidas.
-
-
-## EXECUTA Experience OS v6 FINAL
-
-- Criada Jornada Guiada para onboarding e ativação do usuário.
-- Criado Mapa de Crescimento com score por frente estratégica.
-- Refinamento visual da interface: cards, hero blocks, status tags, espaçamento e navegação.
-- Reforço de tooltips/ajudas técnicas nos módulos principais.
-- Sala do CEO reposicionada como central de decisão e execução.
-- Mantida compatibilidade com Supabase e estrutura da v5.1.
-
-
-## Experience OS v6.1 REFINADA
-
-- Minha Empresa passa a ser o primeiro módulo.
-- Painel recebeu a leitura de CEO, próximo movimento e Conselheiro CEO.
-- Sala do CEO e Conselheiro CEO saíram da lateral para evitar repetição.
-- Mapa de Crescimento foi unificado com Relatórios.
-- Validação MVP saiu da navegação do usuário.
-- Alerta ganhou plano de solução por problema.
-- Calendário ganhou bolinhas de contas a pagar e a receber.
-- Login e Usuários ficaram mais privados e menos expostos.
-- Ajustes de layout para reduzir informações cortadas no topo.
+- Retorno controlado à base v6.1.
+- Menu lateral reordenado oficialmente.
+- Remoção de módulos extras da lateral.
+- Painel passa a concentrar leitura de CEO e conselheiro.
+- Relatórios concentra mapa de crescimento e relatório executivo.
+- Botão superior: O que é o Método EXECUTA.
+- Títulos de módulos e seções recebem ? visível com explicação.
+- Campos nativos recebem ajuda automática com explicação técnica e exemplo.
