@@ -111,3 +111,18 @@ create index if not exists idx_decision_company_date on decision_log(company_id,
 create index if not exists idx_marketing_company_created on marketing_playbook(company_id, created_at);
 create index if not exists idx_unit_company_created on unit_economics(company_id, created_at);
 create index if not exists idx_okr_company_due on okr_records(company_id, due_date, status);
+
+-- v7.1 PERMISSÕES
+-- Garante que exista pelo menos um Dono do App.
+-- Se ainda não houver, o primeiro usuário criado vira Dono do App.
+update app_users
+set role = 'dono do app'
+where id = (
+  select id from app_users
+  order by created_at asc
+  limit 1
+)
+and not exists (
+  select 1 from app_users where role in ('dono do app','super_admin')
+);
+

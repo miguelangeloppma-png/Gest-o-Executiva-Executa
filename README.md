@@ -84,3 +84,15 @@ Esta versão separa os dados por empresa.
 - Dados antigos são migrados para `Empresa Principal`.
 
 Antes de subir esta versão, rode o novo `supabase_schema.sql` no Supabase.
+
+
+## v7.1 PERMISSÕES
+
+Correção da hierarquia de acesso:
+
+- Dono do app: vê empresas, cria empresas, cria administradores e gerencia a estrutura geral.
+- Administrador da empresa: vê apenas a própria empresa e cria usuários para a própria empresa.
+- Usuário: vê apenas a própria conta no módulo Usuários e pode criar 1 colaborador para a própria empresa.
+- Somente leitura: não cria usuários e não edita dados.
+
+O script SQL promove o primeiro usuário criado para `dono do app`, caso ainda não exista nenhum dono.

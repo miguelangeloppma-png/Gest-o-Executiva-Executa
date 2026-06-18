@@ -45,3 +45,13 @@
 - Implementado isolamento por empresa nas consultas e inserções.
 - Usuários agora pertencem a uma empresa específica.
 - Módulo Usuários permite criar nova empresa/cliente com administrador próprio.
+
+
+## v7.1 PERMISSÕES
+
+- Separado Dono do App de Administrador da Empresa.
+- Removida criação de novas empresas da conta de administrador da empresa.
+- Usuário comum agora vê apenas a própria conta.
+- Usuário comum pode criar apenas 1 colaborador na própria empresa.
+- Somente leitura não acessa criação de usuários.
+- Corrigido menu para manter Contas a Receber nomeado corretamente.

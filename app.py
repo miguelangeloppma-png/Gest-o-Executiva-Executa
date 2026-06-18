@@ -10,7 +10,7 @@ except Exception:
     create_client = None
 
 APP_NAME="Gestão Executiva EXECUTA — Executive OS"
-APP_VERSION="v7 MULTIEMPRESA"
+APP_VERSION="v7.1 MULTIEMPRESA PERMISSÕES"
 MAX_USERS=10
 DATE_DB="%Y-%m-%d"
 DATE_BR="%d/%m/%Y"
@@ -557,27 +557,55 @@ def attach_company_info(user):
     user["company_name"] = comp.get("name") or "Empresa atual"
     return user
 
-def role(): return st.session_state.get("user",{}).get("role","usuario")
-def is_admin(): return role()=="administrador"
-def can_edit(): return role() in ["administrador","usuario"]
+
+def role():
+    return st.session_state.get("user",{}).get("role","usuario")
+
+def is_owner():
+    return role() in ["dono do app", "super_admin"]
+
+def is_admin():
+    return role() in ["dono do app", "super_admin", "administrador"]
+
+def is_company_admin():
+    return role() == "administrador"
+
+def can_manage_users():
+    return role() in ["dono do app", "super_admin", "administrador", "usuario"]
+
+def can_create_company():
+    return role() in ["dono do app", "super_admin"]
+
+def can_edit():
+    return role() in ["dono do app", "super_admin", "administrador", "usuario"]
+
 def readonly_warning():
-    if not can_edit(): st.info("Seu perfil é somente leitura. Você pode visualizar, mas não pode cadastrar, editar ou apagar.")
-def user_name(): return st.session_state.get("user",{}).get("name","Usuário")
+    if not can_edit():
+        st.info("Seu perfil é somente leitura. Você pode visualizar, mas não pode cadastrar, editar ou apagar.")
+
+def user_name():
+    return st.session_state.get("user",{}).get("name","Usuário")
 
 
-def create_user(name,email,pw,role_value="usuario",company_id=None):
+def create_user(name,email,pw,role_value="usuario",company_id=None,created_by_user_id=None):
     cid = company_id or current_company_id()
-    if has_logged_user() and db.count("app_users")>=MAX_USERS:
+    if has_logged_user() and not is_owner() and db.count("app_users")>=MAX_USERS:
         return False,f"Limite de {MAX_USERS} usuários atingido nesta empresa."
     email=email.strip().lower()
     if not name or not email or len(pw)<6:
         return False,"Preencha nome, e-mail e senha com no mínimo 6 caracteres."
     if db.select("app_users",{"email":email}):
         return False,"E-mail já cadastrado."
+    # segurança: usuário comum nunca cria administrador
+    if role()=="usuario" and role_value not in ["usuario", "somente leitura"]:
+        role_value="usuario"
+    if role()=="administrador" and role_value in ["dono do app","super_admin"]:
+        role_value="usuario"
     s,d=hpw(pw)
-    db.insert("app_users",dict(id=str(uuid.uuid4()),company_id=cid,name=name,email=email,password_salt=s,password_hash=d,role=role_value,active=1))
+    data=dict(id=str(uuid.uuid4()),company_id=cid,name=name,email=email,password_salt=s,password_hash=d,role=role_value,active=1)
+    # Se a tabela tiver created_by_user_id, o Supabase aceitará; se não tiver, removemos no erro? Para evitar erro, não gravaremos.
+    db.insert("app_users",data)
     return True,"Usuário criado."
-
 def login_user(email,pw):
     us=db.select("app_users",{"email":email.strip().lower()})
     if not us:return None,"Usuário não encontrado."
@@ -593,25 +621,27 @@ def login_user(email,pw):
             u["company_id"] = cid
     return attach_company_info(u),"OK"
 
+
 def login_screen():
     header(APP_NAME, "Acesso executivo multiempresa")
+
     total_users = db.count("app_users")
     if total_users == 0:
-        st.warning("Primeiro acesso: crie a primeira empresa e o administrador inicial.")
+        st.warning("Primeiro acesso: crie a primeira empresa e o dono do app.")
         with st.form("first_admin"):
             code = st.text_input("Código de criação", type="password")
-            company_name = st.text_input("Nome da empresa", placeholder="Ex.: Casulo Livros")
-            name = st.text_input("Nome do administrador")
+            company_name = st.text_input("Nome da empresa principal", placeholder="Ex.: Gestão Executiva")
+            name = st.text_input("Nome do dono do app")
             email = st.text_input("E-mail")
             pw = st.text_input("Senha", type="password")
-            sub = st.form_submit_button("Criar empresa e administrador")
+            sub = st.form_submit_button("Criar dono do app", use_container_width=True)
         if sub:
             if code != secret("SETUP_CODE", "executa2026"):
                 st.error("Código de criação incorreto.")
             else:
                 cid = create_company_record(company_name, name)
-                ok, msg = create_user(name, email, pw, "administrador", cid)
-                st.success("Empresa e administrador criados.") if ok else st.error(msg)
+                ok, msg = create_user(name, email, pw, "dono do app", cid)
+                st.success("Dono do app criado. Agora faça login.") if ok else st.error(msg)
         return
 
     c1, c2 = st.columns([1.15, .85], gap="large")
@@ -628,10 +658,10 @@ def login_screen():
                 st.rerun()
             else:
                 st.error(msg)
+
     with c2:
         st.markdown("<div class='tooltip-box'><span class='help-badge'>?</span><b>Multiempresa ativo</b><br>Cada usuário entra apenas na empresa à qual pertence. Os dados de uma empresa não aparecem para outra.</div>", unsafe_allow_html=True)
         st.info(f"Banco atual: **{db.mode.upper()}**")
-
 def ensure_profile():
     cid = current_company_id()
     r=db.select("company_profile",limit=1)
@@ -809,12 +839,14 @@ def render_growth_lanes():
         st.markdown(f"<div class='strategy-lane'><div class='lane-head'><div class='lane-title'>{title}</div><div class='lane-score'>{score}/100</div></div><div class='lane-body'>{body}</div><div class='lane-action'>{action}</div></div>", unsafe_allow_html=True)
 
 
+
 def sidebar():
     u=st.session_state.user
     st.sidebar.markdown(f'<div class="user-pill">👤 <b>{_html.escape(str(u["name"]))}</b><br>{_html.escape(str(u.get("role","usuario")))}<br><span style="color:#8EA4BC;font-size:12px;">{_html.escape(str(current_company_name()))}</span></div>',unsafe_allow_html=True)
     st.sidebar.markdown("**Módulos**")
     pages=["Minha Empresa","Painel","Fluxo de Caixa","Contas a Pagar","Contas a Receber","DRE","Calendário","Relatórios","Plano de Ação","Alertas"]
-    if is_admin():pages.append("Usuários")
+    if can_manage_users() and role() != "somente leitura":
+        pages.append("Usuários")
     page=st.sidebar.radio("Módulos",pages,label_visibility="collapsed")
     st.sidebar.markdown("<br>",unsafe_allow_html=True)
     if st.sidebar.button("Sair", use_container_width=True):
@@ -1555,61 +1587,124 @@ def page_advisor():
             ans=advisor_answer(q);st.session_state.last_answer=ans;db.insert("advisor_history",dict(id=str(uuid.uuid4()),asked_at=dt.datetime.now().isoformat(timespec="seconds"),question=q,answer=ans,created_by=user_name()))
     if st.session_state.get("last_answer"):st.markdown(st.session_state.last_answer)
 
+
+def collaborator_count_for_user():
+    # Nesta versão simples, contamos usuários da empresa com mesmo perfil normal.
+    # O limite de colaborador para usuário comum é controlado por quantidade total criada por ele de forma operacional.
+    # Como ainda não temos created_by_user_id no banco antigo, aplicamos regra prática: usuário comum só cria se a empresa tiver até 2 usuários.
+    users = db.select("app_users")
+    return max(0, len(users)-1)
+
 def page_users():
-    header("Usuários e Empresas","Área administrativa. Usuários comuns não enxergam este módulo.")
-    if not is_admin():
+    header("Usuários","Controle de acesso da empresa.")
+    if role()=="somente leitura":
         st.error("Você não tem permissão para acessar este módulo.")
         return
 
-    st.markdown(f"<div class='exec-principle'><b>Empresa atual:</b> {_html.escape(str(current_company_name()))}<br>Os usuários abaixo enxergam apenas os dados desta empresa. Dados de outras empresas ficam isolados.</div>", unsafe_allow_html=True)
+    current_user = st.session_state.get("user", {})
 
-    help_title("Usuários desta empresa","Lista apenas os usuários vinculados à empresa atual. Eles não acessam dados de outras empresas.")
-    users=db.select("app_users",order="created_at")
-    if users:
-        show=pd.DataFrame(users)[["name","email","role","active","created_at"]]
-        st.dataframe(show,use_container_width=True,hide_index=True)
-    else:
-        st.info("Nenhum usuário nesta empresa.")
+    # DONO DO APP: visão geral completa
+    if is_owner():
+        st.markdown("<div class='exec-principle'><b>Você está como Dono do App.</b><br>Você pode criar empresas, criar administradores para clientes e visualizar a estrutura geral do sistema.</div>", unsafe_allow_html=True)
 
-    with st.expander("Criar novo usuário para esta empresa", expanded=False):
-        with st.form("newuser_same_company"):
-            code=st.text_input("Código de criação",type="password", key="same_company_code")
-            name=st.text_input("Nome", key="same_company_name")
-            email=st.text_input("E-mail", key="same_company_email")
-            pw=st.text_input("Senha",type="password", key="same_company_pw")
-            rv=st.selectbox("Perfil",["administrador","usuario","somente leitura"], key="same_company_role")
-            if st.form_submit_button("Criar usuário nesta empresa"):
-                if code!=secret("SETUP_CODE","executa2026"):
-                    st.error("Código incorreto.")
-                else:
-                    ok,msg=create_user(name,email,pw,rv,current_company_id())
-                    st.success(msg) if ok else st.error(msg)
-
-    help_title("Criar nova empresa / cliente","Use isto quando uma nova empresa for usar o sistema. Ela terá dados totalmente separados da sua empresa atual.")
-    with st.expander("Criar nova empresa com administrador próprio", expanded=False):
-        with st.form("new_company_form"):
-            code=st.text_input("Código de criação",type="password", key="new_company_code")
-            company_name=st.text_input("Nome da nova empresa", placeholder="Ex.: Empresa do Cliente", key="new_company_name")
-            admin_name=st.text_input("Nome do administrador da nova empresa", key="new_company_admin")
-            admin_email=st.text_input("E-mail do administrador", key="new_company_email")
-            admin_pw=st.text_input("Senha inicial", type="password", key="new_company_pw")
-            if st.form_submit_button("Criar nova empresa e administrador"):
-                if code!=secret("SETUP_CODE","executa2026"):
-                    st.error("Código incorreto.")
-                else:
-                    cid = create_company_record(company_name, admin_name)
-                    ok,msg = create_user(admin_name, admin_email, admin_pw, "administrador", cid)
-                    if ok:
-                        st.success("Nova empresa criada com administrador próprio. Os dados dela ficarão separados.")
-                    else:
-                        st.error(msg)
-
-    with st.expander("Empresas cadastradas", expanded=False):
+        help_title("Empresas cadastradas","Aqui aparecem todas as empresas/clientes do sistema. Somente o dono do app deve enxergar esta área.")
         comps=db.select("companies", order="created_at")
         if comps:
             st.dataframe(pd.DataFrame(comps)[["name","owner_name","active","created_at"]], use_container_width=True, hide_index=True)
         else:
             st.info("Nenhuma empresa encontrada.")
+
+        help_title("Criar nova empresa / cliente","Crie uma empresa separada com administrador próprio. Os dados dela não aparecem para outras empresas.")
+        with st.expander("Criar nova empresa com administrador próprio", expanded=False):
+            with st.form("new_company_form"):
+                code=st.text_input("Código de criação",type="password", key="new_company_code")
+                company_name=st.text_input("Nome da nova empresa", placeholder="Ex.: Empresa do Cliente", key="new_company_name")
+                admin_name=st.text_input("Nome do administrador da nova empresa", key="new_company_admin")
+                admin_email=st.text_input("E-mail do administrador", key="new_company_email")
+                admin_pw=st.text_input("Senha inicial", type="password", key="new_company_pw")
+                if st.form_submit_button("Criar nova empresa e administrador"):
+                    if code!=secret("SETUP_CODE","executa2026"):
+                        st.error("Código incorreto.")
+                    else:
+                        cid = create_company_record(company_name, admin_name)
+                        ok,msg = create_user(admin_name, admin_email, admin_pw, "administrador", cid)
+                        if ok:
+                            st.success("Nova empresa criada com administrador próprio. Os dados dela ficarão separados.")
+                        else:
+                            st.error(msg)
+
+        help_title("Todos os usuários da empresa atual","Aqui você vê e cria usuários para a empresa selecionada/logada.")
+        users=db.select("app_users",order="created_at")
+        if users:
+            st.dataframe(pd.DataFrame(users)[["name","email","role","active","created_at"]],use_container_width=True,hide_index=True)
+        else:
+            st.info("Nenhum usuário nesta empresa.")
+
+        with st.expander("Criar usuário na empresa atual", expanded=False):
+            with st.form("owner_create_user_current_company"):
+                code=st.text_input("Código de criação",type="password", key="owner_code")
+                name=st.text_input("Nome", key="owner_user_name")
+                email=st.text_input("E-mail", key="owner_user_email")
+                pw=st.text_input("Senha",type="password", key="owner_user_pw")
+                rv=st.selectbox("Perfil",["administrador","usuario","somente leitura"], key="owner_user_role")
+                if st.form_submit_button("Criar usuário"):
+                    if code!=secret("SETUP_CODE","executa2026"):
+                        st.error("Código incorreto.")
+                    else:
+                        ok,msg=create_user(name,email,pw,rv,current_company_id())
+                        st.success(msg) if ok else st.error(msg)
+        return
+
+    # ADMINISTRADOR DA EMPRESA: só própria empresa
+    if is_company_admin():
+        st.markdown(f"<div class='exec-principle'><b>Empresa atual:</b> {_html.escape(str(current_company_name()))}<br>Você é administrador desta empresa. Pode criar usuários apenas para esta empresa.</div>", unsafe_allow_html=True)
+        users=db.select("app_users",order="created_at")
+        if users:
+            st.dataframe(pd.DataFrame(users)[["name","email","role","active","created_at"]],use_container_width=True,hide_index=True)
+        else:
+            st.info("Nenhum usuário nesta empresa.")
+
+        with st.expander("Criar usuário para esta empresa", expanded=False):
+            with st.form("company_admin_create_user"):
+                code=st.text_input("Código de criação",type="password", key="admin_code")
+                name=st.text_input("Nome", key="admin_user_name")
+                email=st.text_input("E-mail", key="admin_user_email")
+                pw=st.text_input("Senha",type="password", key="admin_user_pw")
+                rv=st.selectbox("Perfil",["usuario","somente leitura"], key="admin_user_role")
+                if st.form_submit_button("Criar usuário"):
+                    if code!=secret("SETUP_CODE","executa2026"):
+                        st.error("Código incorreto.")
+                    else:
+                        ok,msg=create_user(name,email,pw,rv,current_company_id())
+                        st.success(msg) if ok else st.error(msg)
+        return
+
+    # USUÁRIO COMUM: vê apenas a própria conta e pode criar 1 colaborador
+    if role()=="usuario":
+        st.markdown(f"<div class='exec-principle'><b>Sua conta</b><br>Você está vinculado à empresa: {_html.escape(str(current_company_name()))}. Você não vê outras empresas nem cria novas empresas.</div>", unsafe_allow_html=True)
+        own = pd.DataFrame([{
+            "name": current_user.get("name",""),
+            "email": current_user.get("email",""),
+            "role": current_user.get("role",""),
+            "empresa": current_company_name()
+        }])
+        st.dataframe(own,use_container_width=True,hide_index=True)
+
+        users_company = db.select("app_users")
+        if len(users_company) >= 2:
+            st.info("Esta empresa já possui colaborador cadastrado. Para criar mais acessos, peça ao administrador da empresa.")
+            return
+
+        with st.expander("Criar 1 colaborador para esta empresa", expanded=False):
+            with st.form("normal_user_create_one_collaborator"):
+                name=st.text_input("Nome do colaborador")
+                email=st.text_input("E-mail do colaborador")
+                pw=st.text_input("Senha inicial",type="password")
+                rv=st.selectbox("Perfil do colaborador",["usuario","somente leitura"])
+                if st.form_submit_button("Criar colaborador"):
+                    ok,msg=create_user(name,email,pw,rv,current_company_id())
+                    st.success(msg) if ok else st.error(msg)
+        return
 def main():
     if "user" not in st.session_state:login_screen();return
     page=sidebar()
