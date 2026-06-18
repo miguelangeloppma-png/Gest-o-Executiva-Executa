@@ -41,3 +41,10 @@ Substitua no GitHub:
 - REFERENCIAS_PRODUTO.md
 
 Depois faça Reboot no Streamlit Cloud.
+
+
+## v6.3.1 — Correção dos códigos na tela
+
+Esta versão corrige o problema em que aparecia a documentação/códigos internos do Streamlit dentro do app.
+A causa era uma alteração global nas funções internas do Streamlit para tentar inserir ajuda automaticamente.
+Agora as explicações usam apenas componentes próprios e seguros do EXECUTA.

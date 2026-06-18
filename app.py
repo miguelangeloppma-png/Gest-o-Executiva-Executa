@@ -237,19 +237,10 @@ def help_title(text, help_text=None):
     ht=help_text or _help_for(text)
     st.markdown(f'<div class="help-subtitle">{_e(text)} {qmark(ht)}</div>', unsafe_allow_html=True)
 
-def _wrap_input_with_help(fn):
-    def wrapped(label, *args, **kwargs):
-        if isinstance(label, str) and label.strip() and not kwargs.get("help"):
-            kwargs["help"]=_help_for(label)
-        return fn(label, *args, **kwargs)
-    return wrapped
-for _fn_name in ["text_input","text_area","number_input","selectbox","date_input","checkbox","slider","radio"]:
-    if hasattr(st,_fn_name):
-        setattr(st,_fn_name,_wrap_input_with_help(getattr(st,_fn_name)))
-
-def _exec_subheader(body, *args, **kwargs):
-    help_title(str(body), _help_for(str(body)))
-st.subheader=_exec_subheader
+# IMPORTANTE:
+# Não alteramos mais funções internas do Streamlit com setattr/st.subheader.
+# Isso causava a exibição indevida da documentação do Streamlit na tela do usuário.
+# Para explicações, usamos apenas componentes visíveis próprios: header(), metric(), help_title() e help_note().
 
 def ux_card(title, text, action=""):
     st.markdown(f"<div class='ux-card'><div class='ux-card-title'>{title}</div><div class='ux-card-text'>{text}</div>{f'<div class=\'ux-card-action\'>{action}</div>' if action else ''}</div>", unsafe_allow_html=True)
@@ -847,7 +838,7 @@ def page_minha_empresa():
             notes=st.text_area("Observações",p.get("notes",""))
             if st.form_submit_button("Salvar Minha Empresa"):
                 db.update("company_profile","main",dict(company_name=company,owner_name=owner,segment=segment,business_size=size,monthly_revenue=revenue,fixed_costs=fixed,variable_costs=variable,stock_value=stock,initial_cash=initial,notes=notes,updated_at=today_db()));st.success("Minha Empresa salva.");st.rerun()
-    st.subheader("Leitura rápida da saúde da empresa");m=calc();s,als=alertas();c=st.columns(4)
+    help_title("Leitura rápida da saúde da empresa");m=calc();s,als=alertas();c=st.columns(4)
     with c[0]:metric("Score EXECUTA",f"{s}/100","Com base nos dados atuais")
     with c[1]:metric("Receita bruta",brl(m["receita"]),"DRE ou estimativa")
     with c[2]:metric("Lucro/resultado",brl(m["resultado"]),f"Margem {pct(m['margem'])}")
@@ -871,7 +862,7 @@ def page_painel():
         for q in ceo_questions()[:6]:
             st.markdown(f"<div class='ceo-question'>{q}</div>", unsafe_allow_html=True)
 
-    st.subheader("Pergunte ao Conselheiro CEO")
+    help_title("Pergunte ao Conselheiro CEO")
     q=st.text_area("Digite sua dúvida executiva",placeholder="Ex.: Devo investir em tráfego agora ou corrigir margem primeiro?",height=105,key="painel_advisor_q")
     if st.button("Gerar orientação executiva", key="painel_advisor_btn"):
         if not q.strip():
@@ -887,13 +878,13 @@ def page_painel():
     with c1:metric("Contas a pagar",brl(m["pagar"]),"em aberto")
     with c2:metric("Contas a receber",brl(m["receber"]),"em aberto")
 
-    st.subheader("Prioridades da semana")
+    help_title("Prioridades da semana")
     acts=actions_df()
     if acts.empty: st.warning("Crie pelo menos 3 ações no Plano de Ação: uma de caixa, uma de margem e uma de venda/cliente.")
     else:
         show=acts.head(5).copy(); show["due_date"]=show.due_date.apply(date_br)
         st.dataframe(show[["priority","area","action","responsible","due_date","status"]],use_container_width=True,hide_index=True)
-    st.subheader("Movimentos recentes")
+    help_title("Movimentos recentes")
     df=cash_df()
     if df.empty:st.info("Sem movimentos de caixa.")
     else:
@@ -912,7 +903,7 @@ def page_fluxo():
     header("Fluxo de Caixa","Lançar entradas/saídas, parcelas e controlar histórico financeiro.");readonly_warning()
     if can_edit():
         with st.form("cash_form",clear_on_submit=True):
-            st.subheader("Novo lançamento");c1,c2,c3=st.columns(3)
+            help_title("Novo lançamento");c1,c2,c3=st.columns(3)
             with c1:date=st.date_input("Data inicial",value=dt.date.today(),format="DD/MM/YYYY");typ=st.selectbox("Tipo",["Entrada","Saída"]);mode=st.selectbox("Situação",["Realizado no caixa","Conta futura/agendada"])
             with c2:cat=st.text_input("Categoria");amount=money_input("Valor total",0,"fluxo_amount");parcelas=st.number_input("Parcelas",min_value=1,max_value=60,value=1,step=1)
             with c3:channel=st.text_input("Canal/Origem");desc=st.text_input("Descrição");split=st.checkbox("Dividir valor igualmente nas parcelas",value=True)
@@ -923,7 +914,7 @@ def page_fluxo():
                     if mode=="Realizado no caixa":db.insert("cash_flow",dict(id=str(uuid.uuid4()),date=d.strftime(DATE_DB),type=typ,category=cat,description=desc_i,amount=pv,channel=channel,created_by=user_name()))
                     else:db.insert("accounts",dict(id=str(uuid.uuid4()),due_date=d.strftime(DATE_DB),kind="Receber" if typ=="Entrada" else "Pagar",supplier_client=channel,description=desc_i,amount=pv,status="Aberto",paid_date="",created_by=user_name()))
                 st.success("Lançamento adicionado e formulário limpo.");st.rerun()
-    st.subheader("Entradas e saídas lançadas");df=cash_df()
+    help_title("Entradas e saídas lançadas");df=cash_df()
     if df.empty:st.info("Sem lançamentos no caixa.")
     else:
         raw=df.reset_index(drop=True).copy()
@@ -943,7 +934,7 @@ def page_fluxo():
                 db.delete("cash_flow",rec["id"]);st.success("Linha excluída com sucesso.");st.rerun()
         elif can_edit():
             st.info("Para editar ou excluir, clique em uma linha da tabela acima.")
-    st.subheader("Histórico de contas pagas e recebidas");acc=accounts_df()
+    help_title("Histórico de contas pagas e recebidas");acc=accounts_df()
     if acc.empty:st.info("Sem contas baixadas ainda.")
     else:
         hist=acc[acc.status.isin(["Pago","Recebido"])].copy()
@@ -954,7 +945,7 @@ def page_fluxo():
 def page_accounts(kind):
     title="Contas a Pagar" if kind=="Pagar" else "Contas a Receber";closed="Pago" if kind=="Pagar" else "Recebido";header(title,"Visualizar, editar, apagar e baixar contas. Novos lançamentos são criados pelo Fluxo de Caixa.");readonly_warning()
     df=accounts_df();df=df[df.kind==kind].reset_index(drop=True) if not df.empty else df;open_df=df[~df.status.isin([closed])].reset_index(drop=True) if not df.empty else df;closed_df=df[df.status.isin([closed])].reset_index(drop=True) if not df.empty else df
-    st.subheader("Em aberto")
+    help_title("Em aberto")
     selected_open=None
     if open_df.empty:st.info("Nenhuma conta em aberto.")
     else:
@@ -980,7 +971,7 @@ def page_accounts(kind):
                 db.update("accounts",rec["id"],dict(status=closed,paid_date=paid.strftime(DATE_DB)))
                 db.insert("cash_flow",dict(id=str(uuid.uuid4()),date=paid.strftime(DATE_DB),type="Saída" if kind=="Pagar" else "Entrada",category=f"Conta {kind}",description=rec.get("description","") or "",amount=float(rec.get("amount") or 0),channel=rec.get("supplier_client","") or "",created_by=user_name()))
                 st.success(f"Conta marcada como {closed} e lançada no Fluxo de Caixa.");st.rerun()
-    st.subheader("Histórico: já pago/recebido")
+    help_title("Histórico: já pago/recebido")
     if closed_df.empty:st.info(f"Nenhum registro {closed.lower()} ainda.")
     else:
         show=closed_df.copy();show["due_date"]=show.due_date.apply(date_br);show["paid_date"]=show.paid_date.apply(date_br);show["amount"]=show.amount.apply(brl);st.dataframe(show[["paid_date","due_date","supplier_client","description","amount","status","created_by"]],use_container_width=True,hide_index=True)
@@ -1003,7 +994,7 @@ def page_dre():
                 if ll==0:ll=lo+rf
                 db.insert("dre_records",dict(id=str(uuid.uuid4()),period_start=ps.strftime(DATE_DB),period_end=pe.strftime(DATE_DB),receita_bruta=rb,deducoes_impostos=ded,receita_liquida=rl,custos_produtos_servicos=cust,lucro_bruto=lb,despesas_operacionais=desp,resultados_financeiros=rf,ebitda=eb,lucro_operacional=lo,lucro_liquido=ll,notes=notes,created_by=user_name()))
                 st.success("DRE salvo.");st.rerun()
-    st.subheader("Pesquisar por período");c1,c2=st.columns(2);start=c1.date_input("De",value=dt.date.today().replace(day=1),format="DD/MM/YYYY");end=c2.date_input("Até",value=dt.date.today(),format="DD/MM/YYYY")
+    help_title("Pesquisar por período");c1,c2=st.columns(2);start=c1.date_input("De",value=dt.date.today().replace(day=1),format="DD/MM/YYYY");end=c2.date_input("Até",value=dt.date.today(),format="DD/MM/YYYY")
     df=dre_df()
     if df.empty:st.info("Nenhum DRE lançado.");return
     filt=df[(df.period_start>=start.strftime(DATE_DB))&(df.period_end<=end.strftime(DATE_DB))].copy()
@@ -1058,7 +1049,7 @@ def page_calendar():
     events=events_df();acc=accounts_df();ms=dt.date(int(year),int(month),1);me=dt.date(int(year),int(month),pycal.monthrange(int(year),int(month))[1])
     mev=events[(events.event_date>=ms.strftime(DATE_DB))&(events.event_date<=me.strftime(DATE_DB))] if not events.empty else events
     month_acc=acc[(acc.due_date>=ms.strftime(DATE_DB))&(acc.due_date<=me.strftime(DATE_DB))&(~acc.status.isin(["Pago","Recebido"]))] if not acc.empty else acc
-    st.subheader("Calendário do mês");cal=pycal.Calendar(firstweekday=0)
+    help_title("Calendário do mês");cal=pycal.Calendar(firstweekday=0)
     for week in cal.monthdatescalendar(int(year),int(month)):
         cols=st.columns(7)
         for i,d in enumerate(week):
@@ -1073,7 +1064,7 @@ def page_calendar():
             if not de.empty:
                 for _,ev in de.head(3).iterrows():chips+=f'<span class="event-chip" style="background:{ev.get("color") or "#00D1FF"}">{ev.get("event_time") or ""} {str(ev.get("title") or "")[:12]}</span>'
             cols[i].markdown(f'<div class="calendar-day" style="{mut}"><div class="calendar-date">{d.day}</div>{chips}</div>',unsafe_allow_html=True)
-    st.subheader("Compromissos do mês")
+    help_title("Compromissos do mês")
     if mev.empty:st.info("Sem compromissos no mês.")
     else:
         raw=mev.reset_index(drop=True).copy();show=raw.copy();show["event_date"]=show.event_date.apply(date_br)
